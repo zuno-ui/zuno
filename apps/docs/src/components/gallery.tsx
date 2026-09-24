@@ -47,10 +47,10 @@ function ComponentDetail({ component, source, deps }: { component: string; sourc
   const hasStates = Boolean(details.states && details.states.length)
   const [packageManager, setPackageManager] = useState("npm")
   const installCommands: Record<string, string> = {
-    bun: "bunx zunoui@alpha add " + component,
-    npm: "npx zunoui@alpha add " + component,
-    pnpm: "pnpm dlx zunoui@alpha add " + component,
-    yarn: "yarn dlx zunoui@alpha add " + component,
+    bun: "bunx zunoui@latest add " + component,
+    npm: "npx zunoui@latest add " + component,
+    pnpm: "pnpm dlx zunoui@latest add " + component,
+    yarn: "yarn dlx zunoui@latest add " + component,
   }
 
   const articleRef = useRef<HTMLElement>(null)
@@ -143,7 +143,7 @@ function ComponentDetail({ component, source, deps }: { component: string; sourc
 export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }: { component?: string; source?: string; deps?: Deps }) {
   const [query, setQuery] = useState("")
   if (component) return <ComponentDetail key={component} component={component} source={source} deps={deps} />
-  const command = "npx zunoui@alpha init"
+  const command = "npx zunoui@latest init"
   return <>
     <div className="docs-breadcrumb">Library <span>/</span> Components</div>
     <section className="docs-hero">

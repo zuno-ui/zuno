@@ -28,6 +28,6 @@ When a component file already exists, the conflict error now suggests setting `a
 
 1. On every push to `main`, the release workflow opens or updates a "chore: release zunoui" PR that applies all pending changesets: it bumps the version and writes `packages/cli/CHANGELOG.md`.
 2. Merging that PR publishes the new version to npm from GitHub Actions, after the website and registry deploy succeeds.
-3. The repository is in pre-release mode (`pre.json`), so versions look like `0.1.0-alpha.1` and publish under the `alpha` dist-tag. Run `bunx changeset pre exit` when it is time for a stable release.
+3. The repository is in pre-release mode (`pre.json`), so versions look like `0.1.0-alpha.1`. During the alpha they publish under the `latest` dist-tag, so `npx zunoui` always gets the newest one. Run `bunx changeset pre exit` when it is time for a stable release.
 
 Check what is pending with `bunx changeset status`. More detail in the [Changesets documentation](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).

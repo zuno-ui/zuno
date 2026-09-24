@@ -11,8 +11,8 @@ Editable React components built on [Base UI](https://base-ui.com) and Tailwind C
 In a React project with Next.js or Vite, TypeScript, Tailwind CSS v4 and an `@/*` alias:
 
 ```sh
-npx zunoui@alpha init
-npx zunoui@alpha add button
+npx zunoui@latest init
+npx zunoui@latest add button
 ```
 
 ```tsx

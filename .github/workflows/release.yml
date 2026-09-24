@@ -76,10 +76,10 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Create a scoped GitHub App token when configured
         id: app-token
-        if: vars.RELEASE_APP_ID != ''
+        if: vars.RELEASE_APP_CLIENT_ID != ''
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         with:
-          app-id: ${{ vars.RELEASE_APP_ID }}
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: zuno
@@ -117,7 +117,7 @@ jobs:
             echo "zunoui@$version is already on npm, nothing to publish." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          case "$version" in *-*) tag="${version#*-}"; tag="${tag%%.*}" ;; *) tag=latest ;; esac
-          npm publish --access public --tag "$tag"
+          # During the alpha every version goes to latest; npm requires an explicit tag for prereleases.
+          npm publish --access public --tag latest
           git tag "zunoui@$version" && git push origin "zunoui@$version"
-          echo "Published zunoui@$version with dist-tag $tag." >> "$GITHUB_STEP_SUMMARY"
+          echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
