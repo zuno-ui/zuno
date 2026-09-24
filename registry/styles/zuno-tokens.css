@@ -1,4 +1,4 @@
-/* ZUNO complementary tokens (roadmap §6.1, §8.5).
+/* ZUNO complementary tokens.
    Roles ZUNO adds on top of the shadcn semantic set: state surfaces, the solid
    destructive surface and motion. They live in their own entry so a project that
    already has a theme can install them without adopting the full Neutral preset.

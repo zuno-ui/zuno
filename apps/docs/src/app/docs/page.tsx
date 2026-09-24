@@ -1,25 +1,23 @@
 import Link from "next/link"
 import { CodeBlock } from "@zuno/showcase"
-export const metadata = { title: "Primeros pasos" }
+export const metadata = { title: "Getting started" }
 export default function DocsPage() {
  return <article className="docs-guide">
-  <div className="docs-breadcrumb">Documentación <span>/</span> Primeros pasos</div>
-  <div className="showcase-eyebrow"><span className="showcase-status-dot" />PRIMERA ENTREGA</div>
-  <h1 className="showcase-title">Empieza por la base.</h1>
-  <p className="showcase-intro">ZUNO distribuye código editable sobre Base UI. La CLI se publica en npm como <code>zunoui</code> (canal <code>alpha</code>) y descarga los componentes del registry público.</p>
-  <h2 id="instalar">1. Instala en tu proyecto</h2>
-  <p>El proyecto necesita React/Vite o Next.js, TypeScript, Tailwind CSS v4 configurado y alias <code>@/*</code> a <code>./src/*</code> o <code>./*</code>. Desde su raíz:</p>
+  <div className="docs-breadcrumb">Documentation <span>/</span> Getting started</div>
+  <div className="showcase-eyebrow"><span className="showcase-status-dot" />ALPHA</div>
+  <h1 className="showcase-title">Start with the foundation.</h1>
+  <p className="showcase-intro">ZUNO ships editable React components built on Base UI. The <code>zunoui</code> CLI copies each component into your project, so the code is yours to change.</p>
+  <h2 id="requirements">1. Requirements</h2>
+  <p>Node.js 22 or later and a React project with Next.js or Vite, TypeScript and Tailwind CSS v4 already configured. The <code>@/*</code> alias must point to <code>./src/*</code> or <code>./*</code> in <code>tsconfig.json</code>. npm, Bun, pnpm and Yarn are supported.</p>
+  <h2 id="install">2. Install</h2>
+  <p>From the root of your project:</p>
   <CodeBlock language="bash" filename="Terminal" code={"npx zunoui@alpha init\nnpx zunoui@alpha add button"} />
-  <p>La CLI detecta el gestor de paquetes por el lockfile; si hay varios, indícalo con <code>--pm npm|bun|pnpm|yarn</code>.</p>
-  <h2 id="local">2. Desarrollo local del registry</h2>
-  <p>Para probar cambios del propio ZUNO, levanta la web (sirve el registry en el puerto 3000) e instala contra ella:</p>
-  <CodeBlock language="bash" filename="Terminal" code={'bun install\nbun run build\nbun run dev\nnode packages/cli/dist/index.js init --cwd fixtures/react-vite --pm bun --registry \'http://localhost:3000/r/{name}.json\'\nnode packages/cli/dist/index.js add button --cwd fixtures/react-vite --pm bun'} />
-  <p>Si el fixture ya apunta al servidor de prueba del puerto 4310, conserva esa configuración y usa <code>bun run registry:serve</code>. La CLI no sustituye un registry configurado por otro de forma silenciosa.</p>
-  <h2 id="usar">3. Usa tu código</h2><CodeBlock filename="example.tsx" code={'import { Button } from "@/components/ui/button"\n\n<Button>Crear proyecto</Button>'} />
-  <p>Button, Field, Input y Textarea utilizan <code>@base-ui/react</code>. Para mostrar los errores de validación de un formulario, compón Field dentro de <code>Form</code>, importado desde <code>@base-ui/react/form</code>. Puedes probarlo en los <Link href="/components/field">ejemplos de Field</Link>.</p>
-  <p>Instala los nuevos controles con <code>add input</code> y <code>add textarea</code>, con el mismo comando. Consulta su API y ejemplos en <Link href="/components/input">Input</Link> y <Link href="/components/textarea">Textarea</Link>.</p>
-  <h2 id="galeria">Galería y fixtures</h2><p>La galería usa los archivos de <code>registry/</code>. Los fixtures usan archivos locales instalados por la CLI. Ambos comparten únicamente la pantalla de ejemplos de <code>@zuno/showcase</code>; ese paquete es interno y no se distribuye con los componentes.</p>
-  <CodeBlock language="bash" filename="Terminal" code={"bun run dev:fixture:vite\nbun run dev:fixture:next"} />
-  <h2 id="alcance">Alcance de la alpha</h2><p>La <Link href="/components">galería</Link> lista el catálogo completo con sus ejemplos y el conteo actualizado. La galería recuerda el tema claro, oscuro o sistema; en modo sistema sigue la preferencia del dispositivo. El proyecto consumidor conserva el control de su integración de temas. La CLI conserva configuraciones y temas existentes, y reutiliza dependencias instaladas compatibles. Los aliases deben usar @/*; los conflictos de archivos o versiones requieren resolución explícita.</p>
+  <p><code>init</code> writes <code>components.json</code>, the ZUNO theme and the <code>cn</code> utility. <code>add</code> copies a component and its dependencies. The CLI detects your package manager from the lockfile; if there are several, pass <code>--pm npm|bun|pnpm|yarn</code>.</p>
+  <h2 id="use">3. Use your code</h2><CodeBlock filename="example.tsx" code={'import { Button } from "@/components/ui/button"\n\n<Button>Create project</Button>'} />
+  <p>Components use <code>@base-ui/react</code> under the hood. To show a form&apos;s validation errors, compose Field inside <code>Form</code> from <code>@base-ui/react/form</code>; try it in the <Link href="/components/field">Field examples</Link>. Every component page lists its install command, dependencies, API and accessibility notes. Browse them all in the <Link href="/components">gallery</Link>.</p>
+  <h2 id="existing">Existing projects</h2>
+  <p><code>init</code> keeps your theme, your <code>components.json</code> fields and other registries. It reuses your configured utility (it must export <code>cn</code>) and compatible installed dependencies, and never overwrites components you have modified. Existing themes must provide the semantic tokens the components read; they are not replaced or filled in automatically. Registry, path and version conflicts are reported before any file is written. Set <code>aliases.ui</code> to <code>@/components/zuno</code> to keep ZUNO components in their own folder.</p>
+  <h2 id="status">Alpha status</h2>
+  <p>The API, the available components and the configuration may change before <code>1.0.0</code>. The gallery remembers the light, dark or system theme; your project keeps control of its own theme integration. Found a bug or want a component? Open an issue on <a href="https://github.com/zuno-ui/zuno/issues" target="_blank" rel="noreferrer">GitHub</a>.</p>
  </article>
 }

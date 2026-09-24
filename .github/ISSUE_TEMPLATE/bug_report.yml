@@ -1,0 +1,50 @@
+name: Bug report
+description: Report unexpected behavior in a component, the CLI or the docs.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues first. For vulnerabilities, follow [SECURITY.md](https://github.com/zuno-ui/zuno/blob/main/SECURITY.md) instead of posting details here.
+  - type: input
+    id: component
+    attributes:
+      label: Component or area
+      description: For example `dialog`, `zunoui init` or the docs site.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: zunoui version, React, Next.js or Vite, and Tailwind CSS versions.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, Node version and package manager.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Explain what should happen and what happened instead. Include the theme (light/dark) and whether you used keyboard, pointer or a screen reader.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Steps, code or a public repository. Mention whether you edited the installed component.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: CLI output or console errors
+      description: Optional.
+      render: text

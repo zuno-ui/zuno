@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { measure, defaultNames } from "../scripts/measure-bundle.mjs"
 
-// Every non-planned component must stay within its incremental JS/CSS budget (roadmap §9.3/§9.4),
+// Every non-planned component must stay within its incremental JS/CSS budget,
 // measured with the real Vite + Tailwind toolchain against a shared base.
 test("bundle: incremental cost stays within budget", { timeout: 300000 }, async t => {
   const names = await defaultNames()

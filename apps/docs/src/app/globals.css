@@ -33,8 +33,6 @@ body { margin: 0; background: var(--background); color: var(--foreground); }
 .docs-command { display: flex; align-items: center; gap: 14px; border: 1px solid var(--showcase-border); border-radius: 8px; padding: 10px 16px; margin-top: 6px; max-width: 620px; background: var(--showcase-soft); }
 .docs-command code { font: 12px/1.5 var(--zuno-font-mono); overflow: auto; white-space: nowrap; flex: 1; }
 .docs-command-dollar { font: 12px var(--zuno-font-mono); color: var(--muted-foreground); }
-.docs-preview-note { margin: 10px 0 22px; font-size: 12px; line-height: 1.7; color: var(--muted-foreground); }
-.docs-preview-note a { text-decoration: underline; text-underline-offset: 3px; }
 .docs-gallery-tools { border-top: 1px solid var(--showcase-border); padding: 24px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .docs-filter-links { display: flex; gap: 5px; flex-wrap: wrap; }
 .docs-filter-links a { padding: 8px 12px; font-size: 14px; border-radius: 6px; color: var(--muted-foreground); }
@@ -79,7 +77,6 @@ body { margin: 0; background: var(--background); color: var(--foreground); }
 .docs-detail .docs-guide { max-width: none; padding-bottom: 0; }
 .docs-detail .docs-guide > h2, .docs-detail .showcase-section-heading h2 { font-family: var(--zuno-font-sans); font-size: 24px; font-weight: 600; line-height: 1.35; letter-spacing: -.025em; color: var(--foreground); text-wrap: balance; }
 .docs-detail .docs-guide > h2 { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; margin: 40px 0 20px; padding: 0 0 14px; border-bottom: 1px solid var(--showcase-border); }
-.docs-detail .docs-guide > h2 .docs-publication-status { margin: 0; line-height: 1.5; }
 .docs-detail-examples { margin-top: 48px; }
 .docs-detail .showcase-section-heading { margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--showcase-border); }
 .docs-detail .showcase-section-heading h2 { margin: 0; }
@@ -138,11 +135,7 @@ body { margin: 0; background: var(--background); color: var(--foreground); }
 .docs-demo-content { width: 100%; max-width: 640px; display: grid; justify-items: stretch; }
 .docs-demo-content > button { justify-self: center; }
 .docs-install-tabs { border: 1px solid var(--showcase-border); border-radius: 10px; overflow: hidden; }
-.docs-publication-status { display: inline-block; vertical-align: middle; margin-left: 10px; padding: 4px 8px; border: 1px solid var(--showcase-border); border-radius: 6px; color: var(--muted-foreground); font-size: 11px; font-weight: 400; letter-spacing: 0; }
-.docs-local-install { margin-top: 20px; padding-bottom: 20px; }
-.docs-local-install summary { cursor: pointer; font-size: 13px; color: var(--muted-foreground); }
-.docs-local-install .zuno-code-block { border: 1px solid var(--showcase-border); border-radius: 8px; overflow: hidden; }
-@media (max-width: 480px) { .docs-detail-demo .showcase-preview { min-height: 280px; } .docs-publication-status { margin: 8px 0 0; } }
+@media (max-width: 480px) { .docs-detail-demo .showcase-preview { min-height: 280px; } }
 
 .docs-install-tabs { background: var(--showcase-soft); border-radius: 12px; }
 .docs-install-toolbar { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 12px; border-bottom: 1px solid var(--showcase-border); }

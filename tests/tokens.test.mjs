@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 
 test("preset: theme parity, utility mappings, text and control contrast", async t => {
-  // The complementary --zuno-* roles live in their own entry (roadmap §8.5), so both files are checked.
+  // The complementary --zuno-* roles live in their own entry, so both files are checked.
   const sources = [await readFile("registry/styles/zuno.css", "utf8"), await readFile("registry/styles/zuno-tokens.css", "utf8")]
   const css = sources.join("\n")
   const colors = block => Object.fromEntries([...block.matchAll(/--([\w-]+): (#[\da-f]{6});/g)].map(([, name, value]) => [name, value]))

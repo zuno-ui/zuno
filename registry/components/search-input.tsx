@@ -22,7 +22,7 @@ export function SearchInput({ className, loading = false, onClear, value, ...pro
         {loading
           ? <Spinner label="Buscando" className="size-4 text-muted-foreground" />
           : hasValue && onClear
-            ? <button type="button" onClick={onClear} aria-label="Limpiar búsqueda" className="flex items-center rounded-md text-muted-foreground transition-colors duration-(--zuno-duration-fast) motion-reduce:transition-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+            ? <button type="button" onClick={onClear} aria-label="Clear search" className="flex items-center rounded-md text-muted-foreground transition-colors duration-(--zuno-duration-fast) motion-reduce:transition-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             : null}

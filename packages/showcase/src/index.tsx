@@ -29,7 +29,7 @@ export function ThemeSelect() {
     return () => window.removeEventListener("storage", sync)
   }, [])
   return <label className="showcase-theme" htmlFor={id}>
-    <span aria-hidden="true">◐</span><span className="showcase-sr-only">Tema</span>
+    <span aria-hidden="true">◐</span><span className="showcase-sr-only">Theme</span>
     <select id={id} value={theme} onChange={event => {
       const value = event.target.value
       setTheme(value)
@@ -37,31 +37,31 @@ export function ThemeSelect() {
       if (value !== "system") document.documentElement.classList.add(value)
       try { localStorage.setItem("zuno-theme", value) } catch { /* Theme still works when storage is unavailable. */ }
     }}>
-      <option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option>
+      <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
     </select>
   </label>
 }
 
 export function Showcase({ ui, component, query = "" }: { ui: DemoComponents; component?: string; query?: string }) {
-  const normalized = query.trim().toLocaleLowerCase("es")
-  const filtered = examples.filter(example => (!component || example.component === component) && (example.title + " " + example.description + " " + example.component).toLocaleLowerCase("es").includes(normalized))
-  return <section aria-label="Ejemplos de componentes">
-    <div className="showcase-section-heading"><h2>{component ? "Ejemplos de uso" : "Diseñados para encajar"}</h2><span aria-live="polite">{filtered.length} ejemplos · {component ? "1 componente" : componentNames.length + " componentes"}</span></div>
-    {filtered.length ? <div className="showcase-grid">{filtered.map(example => <ComponentPreview key={example.id} component={example.component} title={example.title} description={example.description} code={example.code} filename={example.id + ".tsx"} tabs={ui}>{example.render(ui)}</ComponentPreview>)}</div> : <div className="showcase-empty"><h2>No encontramos ejemplos</h2><p>Prueba buscar “button”, “field” o “layout”.</p></div>}
+  const normalized = query.trim().toLocaleLowerCase("en")
+  const filtered = examples.filter(example => (!component || example.component === component) && (example.title + " " + example.description + " " + example.component).toLocaleLowerCase("en").includes(normalized))
+  return <section aria-label="Component examples">
+    <div className="showcase-section-heading"><h2>{component ? "Examples" : "Designed to fit together"}</h2><span aria-live="polite">{filtered.length} examples · {component ? "1 component" : componentNames.length + " components"}</span></div>
+    {filtered.length ? <div className="showcase-grid">{filtered.map(example => <ComponentPreview key={example.id} component={example.component} title={example.title} description={example.description} code={example.code} filename={example.id + ".tsx"} tabs={ui}>{example.render(ui)}</ComponentPreview>)}</div> : <div className="showcase-empty"><h2>No examples found</h2><p>Try searching for “button”, “field” or “layout”.</p></div>}
   </section>
 }
 
 export function FixturePage({ ui, framework }: { ui: DemoComponents; framework: string }) {
   return <div className="showcase-app">
-    <a className="showcase-skip" href="#examples">Saltar a los ejemplos</a>
+    <a className="showcase-skip" href="#examples">Skip to examples</a>
     <header className="showcase-fixture-header"><a className="showcase-brand" href="#examples"><span className="showcase-logo" aria-hidden="true">z</span>zuno<span className="showcase-version">preview</span></a><ThemeSelect /></header>
     <main id="examples" className="showcase-fixture-main">
-      <div className="showcase-eyebrow"><span className="showcase-status-dot" />ENTORNO DE VERIFICACIÓN · {framework}</div>
-      <h1 className="showcase-title">El mismo diseño.<br /><span>En tu propio proyecto.</span></h1>
-      <p className="showcase-intro">Estos ejemplos usan los componentes instalados por la CLI. Comparten la presentación de la galería de ZUNO para comprobar estilos, estados e interacción.</p>
-      <div className="showcase-fixture-notice"><span aria-hidden="true">↳</span> Código local instalado · Base UI · Tailwind CSS v4</div>
+      <div className="showcase-eyebrow"><span className="showcase-status-dot" />VERIFICATION FIXTURE · {framework}</div>
+      <h1 className="showcase-title">The same design.<br /><span>In your own project.</span></h1>
+      <p className="showcase-intro">These examples use the components installed by the CLI. They share the ZUNO gallery layout to check styles, states and interaction.</p>
+      <div className="showcase-fixture-notice"><span aria-hidden="true">↳</span> Locally installed code · Base UI · Tailwind CSS v4</div>
       <Showcase ui={ui} />
-      <footer className="showcase-footer"><span>zuno / {framework}</span><span>Construido para probarlo de verdad.</span></footer>
+      <footer className="showcase-footer"><span>zuno / {framework}</span><span>Built to be tested for real.</span></footer>
     </main>
   </div>
 }
