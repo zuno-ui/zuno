@@ -1,5 +1,11 @@
 # zunoui
 
+## 0.1.0-alpha.3
+
+### Minor Changes
+
+- 55d4677: Add read-only `diff` and guarded `update` commands for copied components. Record source fingerprints in `zuno.lock.json` and refuse updates when local edits or missing baselines prevent safe replacement. Document the package, existing-theme setup and update workflow.
+
 ## 0.1.0-alpha.2
 
 ### Patch Changes
