@@ -11,7 +11,7 @@ export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
 export type DemoComponents = {
   Input: ComponentType<ComponentProps<"input">>
   Textarea: ComponentType<ComponentProps<"textarea">>
-  Button: ComponentType<ComponentProps<"button"> & { variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "link"; size?: "sm" | "default" | "lg" | "icon"; loading?: boolean }>
+  Button: ComponentType<ComponentProps<"button"> & { variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "link"; size?: "sm" | "default" | "lg" | "icon"; loading?: boolean; render?: ReactElement }>
   Form: ComponentType<{ children: ReactNode; className?: string; onSubmit?: ComponentProps<"form">["onSubmit"] }>
   Field: ComponentType<{ children: ReactNode; name?: string; invalid?: boolean; disabled?: boolean }>
   FieldLabel: ComponentType<{ children: ReactNode }>
@@ -184,7 +184,8 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
     examples: {
-      "button-variants": ({ Button }) => <div className="showcase-button-row"><Button>Save</Button><Button variant="secondary">Duplicate</Button><Button variant="outline">Cancel</Button><Button variant="ghost">Discard</Button><Button variant="destructive">Delete</Button><Button variant="link">Learn more</Button></div>,
+      "button-variants": ({ Button }) => <div className="showcase-button-row"><Button>Save</Button><Button variant="secondary">Duplicate</Button><Button variant="outline">Cancel</Button><Button variant="ghost">Discard</Button><Button variant="destructive">Delete</Button><Button variant="link">Show details</Button></div>,
+      "button-as-link": ({ Button }) => <Button render={<a href="/docs" />}>Read documentation</Button>,
       "button-sizes": ({ Button }) => <div className="showcase-button-row items-center"><Button size="sm">Small</Button><Button>Medium</Button><Button size="lg">Large</Button><Button size="icon" aria-label="Add"><span aria-hidden="true">+</span></Button></div>,
       "button-loading": ui => <ButtonLoadingExample ui={ui} />,
       "button-disabled": ({ Button }) => <div className="showcase-button-row"><Button disabled>Save</Button><Button variant="outline" disabled>No access</Button></div>,

@@ -53,7 +53,7 @@ Repeat with `--cwd fixtures/next-app` and run `bun run dev:fixture:next`. The Vi
 
 ## Tests
 
-`bun run test` builds the registry, packs the CLI once and serves the registry locally. It then creates four independent consumers (React + Vite and Next.js, each with npm and Bun) and runs `init`, `add`, idempotent re-runs and a production build in each. It also installs every published entry, checks bundle budgets, theme token parity and contrast, and rejects missing components, cycles, unsafe paths and overwrites of edited files.
+`bun run test` builds the registry, packs the CLI once and serves the registry locally. It then creates four independent consumers (React + Vite and Next.js, each with npm and Bun) and runs `init`, `add`, idempotent re-runs and a production build in each. It checks `diff` and guarded `update` with local edits and older installations, installs every published entry, checks bundle budgets, theme token parity and contrast, and rejects missing components, cycles, unsafe paths and overwrites of edited files.
 
 The suite needs Node 22+, Bun, network access to the npm registry and permission to start a local server. It validates installation and compilation; it does not replace manual keyboard, screen reader and hydration checks in a browser.
 

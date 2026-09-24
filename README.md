@@ -21,13 +21,13 @@ import { Button } from "@/components/ui/button"
 <Button>Create project</Button>
 ```
 
-Browse every component, its examples, API and accessibility notes at [zunoui.dev/components](https://zunoui.dev/components).
+Browse every component, its examples, API and accessibility notes at [zunoui.dev/components](https://zunoui.dev/components). For command options, safe updates and existing-theme setup, see the [CLI guide](packages/cli/README.md).
 
 ## What you get
 
 - 33 components: form controls, layout primitives, overlays and feedback, with light, dark and system themes.
 - Source code in your repository instead of a component package. Runtime dependencies are limited to `@base-ui/react`, `clsx` and `tailwind-merge`.
-- A CLI that works with npm, Bun, pnpm and Yarn, keeps your theme and existing configuration, and never overwrites components you have modified.
+- A CLI that works with npm, Bun, pnpm and Yarn, keeps your theme and existing configuration, and offers `diff` and guarded `update` commands for copied components.
 - A shadcn-style registry served at `https://zunoui.dev/r/{name}.json`.
 
 ## Repository
