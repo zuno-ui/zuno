@@ -1,0 +1,37 @@
+{
+  "name": "zuno-workspace",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "fixtures/*"
+  ],
+  "scripts": {
+    "changeset": "changeset",
+    "ci:version": "changeset version && bun install",
+    "dev": "bun run --cwd apps/docs dev",
+    "dev:fixture:vite": "bun run --cwd fixtures/react-vite dev",
+    "dev:fixture:next": "bun run --cwd fixtures/next-app dev --port 3001",
+    "build:docs": "npm run build:registry && bun run --cwd apps/docs build",
+    "typecheck:docs": "bun run --cwd apps/docs typecheck",
+    "typecheck": "tsc --noEmit && tsc -p packages/cli/tsconfig.json --noEmit && tsc -p packages/showcase/tsconfig.json --noEmit",
+    "build:cli": "tsc -p packages/cli/tsconfig.json",
+    "build:registry": "node scripts/build-registry.mjs",
+    "measure:bundle": "node scripts/measure-bundle.mjs",
+    "registry:serve": "node scripts/serve-registry.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "build": "npm run typecheck && npm run build:cli && npm run build:registry"
+  },
+  "devDependencies": {
+    "@base-ui/react": "1.8.0",
+    "@changesets/cli": "2.31.1",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "clsx": "2.1.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "3.3.1",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,68 @@
+/* ZUNO complementary tokens (roadmap §6.1, §8.5).
+   Roles ZUNO adds on top of the shadcn semantic set: state surfaces, the solid
+   destructive surface and motion. They live in their own entry so a project that
+   already has a theme can install them without adopting the full Neutral preset.
+
+   The .dark and system blocks assume the `.dark` class convention used by the
+   preset and by the shadcn dark-mode guides. A project that toggles dark mode by
+   another mechanism must scope these roles the same way it scopes its own. */
+
+:root {
+  --zuno-duration-fast: 120ms;
+  --zuno-duration-normal: 180ms;
+  --zuno-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --zuno-destructive-solid: #b91c1c;
+  --zuno-destructive-solid-foreground: #ffffff;
+  --zuno-success: #15803d;
+  --zuno-success-surface: #f0fdf4;
+  --zuno-warning: #92400e;
+  --zuno-warning-surface: #fffbeb;
+  --zuno-info: #1d4ed8;
+  --zuno-info-surface: #eff6ff;
+  --zuno-error: #b91c1c;
+  --zuno-error-surface: #fef2f2;
+}
+.dark {
+  --zuno-destructive-solid: #dc2626;
+  --zuno-destructive-solid-foreground: #ffffff;
+  --zuno-success: #86efac;
+  --zuno-success-surface: #10251a;
+  --zuno-warning: #fcd34d;
+  --zuno-warning-surface: #2b2110;
+  --zuno-info: #93c5fd;
+  --zuno-info-surface: #142238;
+  --zuno-error: #fca5a5;
+  --zuno-error-surface: #2b1416;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not(.dark) {
+    --zuno-destructive-solid: #dc2626;
+    --zuno-destructive-solid-foreground: #ffffff;
+    --zuno-success: #86efac;
+    --zuno-success-surface: #10251a;
+    --zuno-warning: #fcd34d;
+    --zuno-warning-surface: #2b2110;
+    --zuno-info: #93c5fd;
+    --zuno-info-surface: #142238;
+    --zuno-error: #fca5a5;
+    --zuno-error-surface: #2b1416;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --zuno-duration-fast: 0ms;
+    --zuno-duration-normal: 0ms;
+  }
+}
+@theme inline {
+  --color-zuno-destructive-solid: var(--zuno-destructive-solid);
+  --color-zuno-destructive-solid-foreground: var(--zuno-destructive-solid-foreground);
+  --color-zuno-success: var(--zuno-success);
+  --color-zuno-success-surface: var(--zuno-success-surface);
+  --color-zuno-warning: var(--zuno-warning);
+  --color-zuno-warning-surface: var(--zuno-warning-surface);
+  --color-zuno-info: var(--zuno-info);
+  --color-zuno-info-surface: var(--zuno-info-surface);
+  --color-zuno-error: var(--zuno-error);
+  --color-zuno-error-surface: var(--zuno-error-surface);
+}

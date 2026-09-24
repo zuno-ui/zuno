@@ -1,0 +1,23 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>
+  rect { fill: #f0f0ed; }
+  stop:nth-child(1) { stop-color: #575750; }
+  stop:nth-child(2) { stop-color: #343430; }
+  stop:nth-child(3) { stop-color: #1c1c1a; }
+  @media (prefers-color-scheme: dark) {
+    rect { fill: #252523; }
+    stop:nth-child(1) { stop-color: #f5f5f3; }
+    stop:nth-child(2) { stop-color: #dcdfe5; }
+    stop:nth-child(3) { stop-color: #a2a8b4; }
+  }
+</style>
+<rect width="240" height="240" rx="56.4" fill="#f0f0ed"/>
+<path d="M177 47.8864C184.804 47.8864 191.814 52.6529 194.676 59.9047C197.537 67.1564 195.669 75.4185 189.964 80.7371L111.203 154.159H177C187.493 154.159 196 162.656 196 173.136C196 183.617 187.493 192.114 177 192.114H63.0004C55.1963 192.114 48.1862 187.347 45.3244 180.095C42.4626 172.844 44.3311 164.581 50.0363 159.263L128.797 85.8409H63.0004C52.507 85.8409 44.0005 77.3445 44.0005 66.8636C44.0005 56.3828 52.507 47.8864 63.0004 47.8864H177Z" fill="url(#paint0_linear_2_21)"/>
+<defs>
+<linearGradient id="paint0_linear_2_21" x1="44" y1="47.8864" x2="188.029" y2="199.677" gradientUnits="userSpaceOnUse">
+<stop stop-color="#575750"/>
+<stop offset="0.55" stop-color="#343430"/>
+<stop offset="1" stop-color="#1c1c1a"/>
+</linearGradient>
+</defs>
+</svg>

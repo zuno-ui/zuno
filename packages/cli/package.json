@@ -1,0 +1,35 @@
+{
+  "name": "zunoui",
+  "version": "0.1.0-alpha.0",
+  "description": "Install editable ZUNO components powered by Base UI",
+  "license": "MIT",
+  "homepage": "https://zunoui.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zuno-ui/zuno.git",
+    "directory": "packages/cli"
+  },
+  "type": "module",
+  "bin": {
+    "zunoui": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "semver": "^7.8.5"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.8.0"
+  }
+}

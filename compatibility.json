@@ -1,0 +1,48 @@
+{
+  "$comment": "Inventario interno de cobertura P0 de ZUNO para la fase F1 (roadmap §8.2, §10.5, §16.2). No es un formato oficial de shadcn. Estados: planned | preview | stable. 'kind' declara el origen de cada familia: base-ui | html-css | composition.",
+  "updated": "2026-09-10",
+  "phase": "F1",
+  "target": { "official": 22, "own": 11, "total": 33 },
+  "legend": {
+    "planned": "Comprometido en F1; aún sin implementar.",
+    "preview": "Implementado e instalable; falta DoD completo (docs, medición de bundle o revisión manual de accesibilidad).",
+    "stable": "Cumple la Definition of Done §15.3: anatomía/API, Light/Dark, estados, pruebas, docs, ejemplo real, manifest válido, presupuesto medido y procedencia."
+  },
+  "official": [
+    { "id": "S-02", "name": "alert", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-03", "name": "alert-dialog", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-06", "name": "avatar", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-07", "name": "badge", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-10", "name": "button", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
+    { "id": "S-13", "name": "card", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-16", "name": "checkbox", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-23", "name": "dialog", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-26", "name": "dropdown-menu", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-27", "name": "empty", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-28", "name": "field", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
+    { "id": "S-30", "name": "input", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
+    { "id": "S-35", "name": "label", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-49", "name": "select", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-50", "name": "separator", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-53", "name": "skeleton", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-55", "name": "spinner", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-56", "name": "switch", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-58", "name": "tabs", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-59", "name": "textarea", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
+    { "id": "S-60", "name": "toast", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
+    { "id": "S-63", "name": "tooltip", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" }
+  ],
+  "own": [
+    { "id": "K-01", "name": "container", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-02", "name": "stack", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-03", "name": "cluster", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-04", "name": "responsive-grid", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-05", "name": "page-header", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-08", "name": "form-section", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-09", "name": "password-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-10", "name": "search-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-35", "name": "status-badge", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-37", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
+  ]
+}

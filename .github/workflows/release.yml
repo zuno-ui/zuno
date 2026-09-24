@@ -1,0 +1,123 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://zunoui.dev
+
+jobs:
+  validate:
+    if: github.repository == 'zuno-ui/zuno'
+    uses: ./.github/workflows/ci.yml
+
+  deploy-web:
+    name: Deploy web + registry
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: zuno
+      url: ${{ env.SITE_URL }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: bun run build:docs
+      - name: Install deploy SSH credentials
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_DEPLOY_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ vars.VPS_SSH_KNOWN_HOSTS }}
+        run: |
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$SSH_KNOWN_HOSTS"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/zuno-web-deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/zuno-web-deploy ~/.ssh/known_hosts
+      - name: Upload static release and switch current
+        env:
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          APP: /srv/apps/zuno-web
+          RELEASE: /srv/apps/zuno-web/releases/${{ github.sha }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/zuno-web-deploy -o IdentitiesOnly=yes"
+          $SSH "deploy@$VPS_HOST" "mkdir -p '$RELEASE'"
+          rsync -az --delete -e "$SSH" apps/docs/out/ "deploy@$VPS_HOST:$RELEASE/"
+          $SSH "deploy@$VPS_HOST" "ln -sfn '$RELEASE' '$APP/current.next' && mv -Tf '$APP/current.next' '$APP/current' && ls -1dt '$APP'/releases/* | tail -n +6 | xargs -r rm -rf"
+      - name: Smoke test the public registry
+        run: curl -fsS "$SITE_URL/r/button.json" | node -e 'const i=JSON.parse(require("fs").readFileSync(0));if(i.name!=="button"||!i.files?.[0]?.content)process.exit(1)'
+
+  version:
+    name: Version PR
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      pending: ${{ steps.changesets.outputs.hasChangesets }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Create a scoped GitHub App token when configured
+        id: app-token
+        if: vars.RELEASE_APP_ID != ''
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: zuno
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Create or update the version PR (never publishes)
+        id: changesets
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
+        with:
+          github-token: ${{ steps.app-token.outputs.token || github.token }}
+          version: bun run ci:version
+          title: 'chore: release zunoui'
+          commit: 'chore: release zunoui'
+          commitMode: github-api
+          createGithubReleases: false
+
+  publish-npm:
+    name: Publish zunoui
+    needs: [deploy-web, version]
+    if: needs.version.outputs.pending == 'false' && vars.ENABLE_NPM_PUBLISH == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: ./.github/actions/setup
+      - name: Publish with npm Trusted Publishing (OIDC)
+        working-directory: packages/cli
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          if npm view "zunoui@$version" version >/dev/null 2>&1; then
+            echo "zunoui@$version is already on npm, nothing to publish." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          case "$version" in *-*) tag="${version#*-}"; tag="${tag%%.*}" ;; *) tag=latest ;; esac
+          npm publish --access public --tag "$tag"
+          git tag "zunoui@$version" && git push origin "zunoui@$version"
+          echo "Published zunoui@$version with dist-tag $tag." >> "$GITHUB_STEP_SUMMARY"

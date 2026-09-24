@@ -1,0 +1,25 @@
+{
+  "name": "@zuno/showcase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./meta": "./src/catalog-meta.ts",
+    "./styles.css": "./src/styles.css",
+    "./theme-script": "./src/theme-script.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.8.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "shiki": "^4.4.3"
+  }
+}

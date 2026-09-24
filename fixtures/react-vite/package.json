@@ -1,0 +1,26 @@
+{
+  "name": "zuno-fixture-react-vite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@zuno/showcase": "workspace:*",
+    "@base-ui/react": "1.8.0",
+    "clsx": "2.1.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
+    "vite": "8.2.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}
