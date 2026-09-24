@@ -17,7 +17,7 @@ test("packed CLI: framework/manager matrix, repeatability and rejected writes", 
   const cli = join(temp, "node_modules/zunoui/dist/index.js")
   const project = join(temp, "consumer")
   await mkdir(join(project, "src"), { recursive: true })
-  await writeFile(join(project, "package.json"), JSON.stringify({ name: "zuno-consumer", private: true, dependencies: { react: "19.2.8", "react-dom": "19.2.8" }, devDependencies: { vite: "8.2.2", tailwindcss: "4.3.3" } }))
+  await writeFile(join(project, "package.json"), JSON.stringify({ name: "zuno-consumer", private: true, dependencies: { react: "19.2.8", "react-dom": "19.2.8" }, devDependencies: { vite: "8.2.2", tailwindcss: "^4" } }))
   await writeFile(join(project, "tsconfig.json"), '{"compilerOptions":{"paths":{"@/*":["./src/*"]}}}')
   await writeFile(join(project, "src/index.css"), '@import "tailwindcss";\n')
   const requested = []
@@ -157,9 +157,10 @@ export default function Demo() {
     // declarations, transitive @zuno/* resolution and file paths in one pass.
     const cwd = join(temp, "all-entries")
     await mkdir(join(cwd, "src"), { recursive: true })
-    // Declaring these with satisfying versions keeps the manager out of the loop.
+    // Declaring these with satisfying versions keeps the manager out of the loop. With no node_modules the
+    // declared ranges decide: newer compatible ranges (as in a hoisted monorepo) must be accepted.
     await writeFile(join(cwd, "package.json"), JSON.stringify({ name: "zuno-entries", private: true,
-      dependencies: { react: "19.2.8", "react-dom": "19.2.8", "@base-ui/react": "1.8.0", clsx: "2.1.1", "tailwind-merge": "3.3.1" },
+      dependencies: { react: "19.2.8", "react-dom": "19.2.8", "@base-ui/react": "1.8.0", clsx: "^2.1.1", "tailwind-merge": "^3.6.0" },
       devDependencies: { vite: "8.2.2", tailwindcss: "4.3.3" } }))
     await writeFile(join(cwd, "tsconfig.json"), '{"compilerOptions":{"paths":{"@/*":["./src/*"]}}}')
     await writeFile(join(cwd, "src/index.css"), '@import "tailwindcss";\n')
