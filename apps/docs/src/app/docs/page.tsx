@@ -11,7 +11,7 @@ export default function DocsPage() {
   <p>Node.js 22 or later and a React project with Next.js or Vite, TypeScript and Tailwind CSS v4 already configured. The <code>@/*</code> alias must point to <code>./src/*</code> or <code>./*</code> in <code>tsconfig.json</code>. npm, Bun, pnpm and Yarn are supported.</p>
   <h2 id="install">2. Install</h2>
   <p>From the root of your project:</p>
-  <CodeBlock language="bash" filename="Terminal" code={"npx zunoui@alpha init\nnpx zunoui@alpha add button"} />
+  <CodeBlock language="bash" filename="Terminal" code={"npx zunoui@latest init\nnpx zunoui@latest add button"} />
   <p><code>init</code> writes <code>components.json</code>, the ZUNO theme and the <code>cn</code> utility. <code>add</code> copies a component and its dependencies. The CLI detects your package manager from the lockfile; if there are several, pass <code>--pm npm|bun|pnpm|yarn</code>.</p>
   <h2 id="use">3. Use your code</h2><CodeBlock filename="example.tsx" code={'import { Button } from "@/components/ui/button"\n\n<Button>Create project</Button>'} />
   <p>Components use <code>@base-ui/react</code> under the hood. To show a form&apos;s validation errors, compose Field inside <code>Form</code> from <code>@base-ui/react/form</code>; try it in the <Link href="/components/field">Field examples</Link>. Every component page lists its install command, dependencies, API and accessibility notes. Browse them all in the <Link href="/components">gallery</Link>.</p>

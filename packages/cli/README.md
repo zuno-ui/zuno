@@ -11,9 +11,9 @@ CLI to install editable ZUNO React components built on Base UI.
 ## Usage
 
 ```sh
-npx zunoui@alpha init
-npx zunoui@alpha add button
-npx zunoui@alpha add field
+npx zunoui@latest init
+npx zunoui@latest add button
+npx zunoui@latest add field
 ```
 
 `init` sets up ZUNO in your project and `add` copies a component's source locally so you can edit it. npm, Bun, pnpm and Yarn are supported; pass `--pm` when the lockfile does not identify a single package manager.
@@ -32,7 +32,7 @@ Existing themes must provide the semantic tokens the components read; they are n
 
 ## Status
 
-This is an alpha release, published under the `alpha` dist-tag. The API, the available components and the configuration may change before `1.0.0`.
+This is an alpha release. The API, the available components and the configuration may change before `1.0.0`.
 
 ## License
 

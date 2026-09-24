@@ -117,7 +117,7 @@ jobs:
             echo "zunoui@$version is already on npm, nothing to publish." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          case "$version" in *-*) tag="${version#*-}"; tag="${tag%%.*}" ;; *) tag=latest ;; esac
-          npm publish --access public --tag "$tag"
+          # During the alpha every version goes to latest; npm requires an explicit tag for prereleases.
+          npm publish --access public --tag latest
           git tag "zunoui@$version" && git push origin "zunoui@$version"
-          echo "Published zunoui@$version with dist-tag $tag." >> "$GITHUB_STEP_SUMMARY"
+          echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
