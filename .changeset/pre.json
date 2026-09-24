@@ -6,6 +6,7 @@
     "@zuno/showcase": "0.1.0"
   },
   "changesets": [
-    "cli-messages"
+    "cli-messages",
+    "tailwind-range"
   ]
 }
