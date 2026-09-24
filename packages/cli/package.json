@@ -9,6 +9,19 @@
     "url": "git+https://github.com/zuno-ui/zuno.git",
     "directory": "packages/cli"
   },
+  "bugs": {
+    "url": "https://github.com/zuno-ui/zuno/issues"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "base-ui",
+    "tailwindcss",
+    "shadcn",
+    "registry",
+    "cli",
+    "ui"
+  ],
   "type": "module",
   "bin": {
     "zunoui": "dist/index.js"

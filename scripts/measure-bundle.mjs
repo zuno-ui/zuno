@@ -1,4 +1,4 @@
-// Bundle budget measurement (roadmap §9.3/§9.4).
+// Bundle budget measurement.
 // Builds a minimal production app with the real fixture toolchain (Vite + @tailwindcss/vite),
 // once as a baseline and once with the target component, and reports TWO gzip figures per entry:
 //   - incremental: cost over a shared base that already has Base UI present.
@@ -25,7 +25,7 @@ const alias = [
 const BASE_EXTERNAL = [/^react(\/|$)/, /^react-dom(\/|$)/, /^@base-ui\/react(\/|$)/, "clsx", "tailwind-merge"]
 const FIRST_EXTERNAL = [/^react(\/|$)/, /^react-dom(\/|$)/]
 const KB = 1024
-// Roadmap §9.3 caps a *simple* component's incremental CSS at 1 kB; interactive Base UI
+// The budget caps a *simple* component's incremental CSS at 1 kB; interactive Base UI
 // components carry more states and variants, so they get a wider CSS allowance.
 const budgetFor = kind => kind === "base-ui" ? { js: 5 * KB, css: 1.5 * KB } : { js: 2 * KB, css: 1 * KB }
 

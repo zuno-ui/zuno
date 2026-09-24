@@ -1,12 +1,12 @@
 {
-  "$comment": "Inventario interno de cobertura P0 de ZUNO para la fase F1 (roadmap §8.2, §10.5, §16.2). No es un formato oficial de shadcn. Estados: planned | preview | stable. 'kind' declara el origen de cada familia: base-ui | html-css | composition.",
+  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition.",
   "updated": "2026-09-10",
   "phase": "F1",
   "target": { "official": 22, "own": 11, "total": 33 },
   "legend": {
-    "planned": "Comprometido en F1; aún sin implementar.",
-    "preview": "Implementado e instalable; falta DoD completo (docs, medición de bundle o revisión manual de accesibilidad).",
-    "stable": "Cumple la Definition of Done §15.3: anatomía/API, Light/Dark, estados, pruebas, docs, ejemplo real, manifest válido, presupuesto medido y procedencia."
+    "planned": "Committed for F1; not implemented yet.",
+    "preview": "Implemented and installable; the full Definition of Done is still missing (docs, bundle measurement or a manual accessibility review).",
+    "stable": "Meets the Definition of Done: anatomy/API, Light/Dark, states, tests, docs, a real example, a valid manifest, a measured budget and provenance."
   },
   "official": [
     { "id": "S-02", "name": "alert", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },

@@ -8,7 +8,7 @@ type CopyButtonProps = Omit<ComponentProps<typeof Button>, "value"> & {
   label?: string
 }
 
-export function CopyButton({ value, label = "Copiar", children, ...props }: CopyButtonProps) {
+export function CopyButton({ value, label = "Copy", children, ...props }: CopyButtonProps) {
   const [state, setState] = useState<"idle" | "copied" | "error">("idle")
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
@@ -30,7 +30,7 @@ export function CopyButton({ value, label = "Copiar", children, ...props }: Copy
           ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
           : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 012-2h10" /></svg>}
       {children}
-      <span role="status" className="sr-only">{state === "copied" ? "Copiado" : state === "error" ? "No se pudo copiar" : ""}</span>
+      <span role="status" className="sr-only">{state === "copied" ? "Copied" : state === "error" ? "Could not copy" : ""}</span>
     </Button>
   )
 }

@@ -6,7 +6,7 @@ import type { DemoComponents } from "./catalog"
 
 // The per-example view switch dogfoods ZUNO's own Tabs component (segmented variant), passed in from the
 // `ui` bag so this package stays decoupled from the registry. The detail page's top switch
-// (Vista previa / Uso / Código fuente) dogfoods the same component directly in gallery.tsx.
+// (Preview / Usage / Source) dogfoods the same component directly in gallery.tsx.
 type TabsBag = Pick<DemoComponents, "Tabs" | "TabsList" | "TabsTab" | "TabsPanel">
 
 export type ComponentPreviewProps = {
@@ -25,10 +25,10 @@ export function ComponentPreview({ title, description, component, code, filename
   const { Tabs, TabsList, TabsTab, TabsPanel } = tabs
   return <article className="showcase-card" aria-labelledby={id}>
     <Tabs defaultValue="preview" variant="segmented">
-      <div className="showcase-card-toolbar"><span className="showcase-component-label">{component ?? "Ejemplo"}</span>
-        <TabsList aria-label={"Vista de " + title}>
+      <div className="showcase-card-toolbar"><span className="showcase-component-label">{component ?? "Example"}</span>
+        <TabsList aria-label={title + " view"}>
           <TabsTab value="preview">Preview</TabsTab>
-          <TabsTab value="code">Código</TabsTab>
+          <TabsTab value="code">Code</TabsTab>
         </TabsList>
       </div>
       <TabsPanel value="preview" keepMounted className="zuno-preview-panel"><div className="showcase-preview">{children}</div></TabsPanel>

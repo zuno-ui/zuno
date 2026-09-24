@@ -2,12 +2,12 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 
-// The 7 Base UI overlays (roadmap §16.2). Each renders outside the local tree, so §6.6 requires the
-// surface to inherit the active theme through the portal, and §15.2 requires the composition demos.
+// The 7 Base UI overlays. Each renders outside the local tree, so its surface must inherit the
+// active theme through the portal, and the catalog must include the composition demos.
 const OVERLAYS = ["alert-dialog", "avatar", "dialog", "dropdown-menu", "select", "toast", "tooltip"]
 const read = name => readFile(`registry/ui/${name}.tsx`, "utf8")
 
-test("§6.6 portals: overlay surfaces use semantic theme tokens, not hard-coded colors", async t => {
+test("portals: overlay surfaces use semantic theme tokens, not hard-coded colors", async t => {
   for (const name of OVERLAYS) {
     const source = await read(name)
     // No literal hex colors on any overlay: a menu that hard-codes light colors would open light
@@ -20,7 +20,7 @@ test("§6.6 portals: overlay surfaces use semantic theme tokens, not hard-coded 
   }
 })
 
-test("§6.6 portals: portalled overlays mount through a Base UI Portal", async () => {
+test("portals: portalled overlays mount through a Base UI Portal", async () => {
   // Avatar renders in place; the other six escape the local tree and must use a portal.
   for (const name of OVERLAYS.filter(n => n !== "avatar")) {
     const source = await read(name)
@@ -28,7 +28,7 @@ test("§6.6 portals: portalled overlays mount through a Base UI Portal", async (
   }
 })
 
-test("§15.2 composition: mandatory overlay compositions exist in the catalog", async () => {
+test("composition: mandatory overlay compositions exist in the catalog", async () => {
   const meta = await readFile("packages/showcase/src/catalog-meta.ts", "utf8")
   const renderers = await readFile("packages/showcase/src/catalog.tsx", "utf8")
   // Select inside Dialog · Dropdown Menu inside a table · Tooltip on controls with different states.

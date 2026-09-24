@@ -1,40 +1,39 @@
 # zunoui
 
-CLI para instalar componentes React editables de ZUNO sobre Base UI.
+CLI to install editable ZUNO React components built on Base UI.
 
-## Requisitos
+## Requirements
 
-- Node.js 22 o superior
-- Un proyecto React con Tailwind CSS v4
-- Alias `@/*` configurado en `tsconfig.json`
+- Node.js 22 or later
+- A React project with Next.js or Vite, TypeScript and Tailwind CSS v4
+- An `@/*` alias to `./src/*` or `./*` in `tsconfig.json`
 
-## Uso
+## Usage
 
 ```sh
-npx zunoui@latest init
-npx zunoui@latest add button
-npx zunoui@latest add field
+npx zunoui@alpha init
+npx zunoui@alpha add button
+npx zunoui@alpha add field
 ```
 
-`init` configura ZUNO en el proyecto y `add` copia el código del componente
-localmente para que puedas editarlo.
+`init` sets up ZUNO in your project and `add` copies a component's source locally so you can edit it. npm, Bun, pnpm and Yarn are supported; pass `--pm` when the lockfile does not identify a single package manager.
 
-La versión alpha soporta proyectos Next.js y Vite con TypeScript, gestores npm,
-Bun, pnpm o Yarn, y los componentes `button` y `field`.
+```text
+zunoui init | add <name> [--cwd path] [--registry URL/{name}.json] [--pm npm|bun|pnpm|yarn] [--css path]
+```
 
-## Proyectos existentes
+Browse the available components at [zunoui.dev/components](https://zunoui.dev/components).
 
-`init` conserva el tema, los campos de `components.json` y otros registries. Reutiliza la utilidad configurada (debe exportar `cn`) y las dependencias instaladas compatibles. No sobrescribe componentes modificados. Puedes configurar `aliases.ui` como `@/components/zuno` para separar componentes.
+## Existing projects
 
-Se requiere `@/*` explícito a `./src/*` o `./*`. Los temas existentes deben proporcionar los tokens semánticos de los componentes; no se reemplazan ni se completan automáticamente. Los conflictos de registry, rutas y versiones se informan antes de copiar archivos.
+`init` keeps your theme, your `components.json` fields and other registries. It reuses your configured utility (it must export `cn`) and compatible installed dependencies. It never overwrites components you have modified. Set `aliases.ui` to `@/components/zuno` to keep ZUNO components in their own folder.
 
-## Estado
+Existing themes must provide the semantic tokens the components read; they are not replaced or filled in automatically. Registry, path and version conflicts are reported before any file is written.
 
-Estos comandos son la interfaz pública prevista. La versión del código es alpha; `@latest` solo funcionará cuando una versión esté publicada con ese tag en npm. Publicar con el tag `alpha` no actualiza `latest` automáticamente.
+## Status
 
-Esta es una versión alpha. La API, los componentes disponibles y la
-configuración pueden cambiar antes de `1.0.0`.
+This is an alpha release, published under the `alpha` dist-tag. The API, the available components and the configuration may change before `1.0.0`.
 
-## Licencia
+## License
 
-MIT. Consulta [LICENSE](./LICENSE).
+MIT. See [LICENSE](./LICENSE).

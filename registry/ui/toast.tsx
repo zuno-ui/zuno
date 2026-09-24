@@ -41,7 +41,7 @@ function ToastList() {
         <BaseToast.Description className="text-sm text-muted-foreground" />
       </div>
       <BaseToast.Close
-        aria-label="Cerrar"
+        aria-label="Close"
         className="shrink-0 rounded-md p-0.5 text-muted-foreground outline-none transition-colors duration-(--zuno-duration-fast) hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
       >
         <svg viewBox="0 0 16 16" fill="none" className="size-4" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>

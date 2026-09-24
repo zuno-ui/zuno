@@ -1,0 +1,26 @@
+name: Component or feature proposal
+description: Propose a new component or a change to an existing one or the CLI.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Use case
+      description: What are you building, and what can't you do with ZUNO today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API or behavior
+      description: A short usage example, the states it needs and its keyboard and screen reader behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Can existing components, a Base UI primitive or your own composition solve this? Why not?
+    validations:
+      required: true

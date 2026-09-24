@@ -5,7 +5,7 @@ type SpinnerProps = ComponentProps<"svg"> & {
   label?: string
 }
 
-export function Spinner({ className, label = "Cargando", ...props }: SpinnerProps) {
+export function Spinner({ className, label = "Loading", ...props }: SpinnerProps) {
   return (
     <svg role="status" aria-label={label} viewBox="0 0 24 24" fill="none" className={cn("size-4 animate-spin text-current motion-reduce:animate-none", className)} {...props}>
       <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/zuno-ui/zuno/blob/main/SECURITY.md
+    about: Read the private reporting instructions before sharing vulnerability details.
+  - name: Documentation
+    url: https://zunoui.dev/docs
+    about: Installation, components and accessibility notes.

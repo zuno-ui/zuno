@@ -58,7 +58,7 @@ export function DialogContent({ className, children, size = "default", showClose
         {children}
         {showClose && (
           <BaseDialog.Close
-            aria-label="Cerrar"
+            aria-label="Close"
             className="absolute right-4 top-4 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-(--zuno-duration-fast) hover:bg-muted hover:text-foreground motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <svg viewBox="0 0 24 24" fill="none" className="size-4" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
