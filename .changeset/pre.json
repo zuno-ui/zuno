@@ -5,9 +5,5 @@
     "zunoui": "0.1.0-alpha.0",
     "@zuno/showcase": "0.1.0"
   },
-  "changesets": [
-    "cli-messages",
-    "safe-component-updates",
-    "tailwind-range"
-  ]
+  "changesets": []
 }
