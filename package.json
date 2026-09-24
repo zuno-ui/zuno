@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "changeset": "changeset",
-    "ci:version": "changeset version && bun install",
+    "ci:version": "changeset version && node scripts/prune-changesets.mjs && bun install",
     "dev": "bun run --cwd apps/docs dev",
     "dev:fixture:vite": "bun run --cwd fixtures/react-vite dev",
     "dev:fixture:next": "bun run --cwd fixtures/next-app dev --port 3001",

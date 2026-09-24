@@ -28,6 +28,9 @@ When a component file already exists, the conflict error now suggests setting `a
 
 1. On every push to `main`, the release workflow opens or updates a "chore: release zunoui" PR that applies all pending changesets: it bumps the version and writes `packages/cli/CHANGELOG.md`.
 2. Merging that PR publishes the new version to npm after the website and registry deploy succeeds, then pushes its Git tag and creates a GitHub Release with that version's changelog notes. A rerun completes a missing tag or Release without republishing the same npm version.
-3. The repository is in pre-release mode (`pre.json`), so versions look like `0.1.0-alpha.1`. During the alpha they publish under the `latest` dist-tag, so `npx zunoui` always gets the newest one. Run `bunx changeset pre exit` when it is time for a stable release.
+3. The repository is in pre-release mode (`pre.json`), so versions look like `0.1.0-alpha.1`. During the alpha they publish under the `latest` dist-tag, so `npx zunoui` always gets the newest one.
+4. Changesets keeps applied files in pre-release mode; `scripts/prune-changesets.mjs` removes them in the release PR, so `.changeset/` only holds pending changes. The history lives in `packages/cli/CHANGELOG.md`, the `zunoui@x.y.z` Git tags and the GitHub Releases.
+
+When it is time for a stable release, run `bunx changeset pre exit` and add a changeset for it. The removed files do not matter: the version is computed from the current one, so `0.1.0-alpha.N` becomes `0.1.0`.
 
 Check what is pending with `bunx changeset status`. More detail in the [Changesets documentation](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).
