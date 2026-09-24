@@ -118,9 +118,29 @@ jobs:
             echo "zunoui@$version is already on npm." >> "$GITHUB_STEP_SUMMARY"
           else
             # During the alpha every version goes to latest; npm requires an explicit tag for prereleases.
-            npm publish --access public --tag latest
-            echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
+            # A re-run can start before npm shows a version it has just accepted: treat that conflict as published.
+            set -o pipefail
+            log="$RUNNER_TEMP/npm-publish.log"
+            if npm publish --access public --tag latest 2>&1 | tee "$log"; then
+              echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
+            elif grep -q "previously published" "$log"; then
+              echo "zunoui@$version was already published; npm had not shown it yet." >> "$GITHUB_STEP_SUMMARY"
+            else
+              exit 1
+            fi
           fi
+          # npm can take a while to serve a new version. Wait for it so the summary reflects what users get.
+          for attempt in $(seq 1 18); do
+            if npm view "zunoui@$version" version >/dev/null 2>&1; then
+              echo "zunoui@$version is available on npm." >> "$GITHUB_STEP_SUMMARY"
+              break
+            fi
+            if [ "$attempt" = 18 ]; then
+              echo "::warning::zunoui@$version was accepted but npm is not serving it yet after 3 minutes."
+              break
+            fi
+            sleep 10
+          done
           tag="zunoui@$version"
           if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
             test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)"
