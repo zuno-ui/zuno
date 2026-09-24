@@ -1,6 +1,7 @@
 "use client"
 
 import { Button as BaseButton } from "@base-ui/react/button"
+import { cloneElement, isValidElement, type HTMLAttributes, type MouseEvent } from "react"
 import { cn } from "@/lib/utils"
 
 type ButtonProps = BaseButton.Props & {
@@ -24,19 +25,15 @@ const sizes: Record<NonNullable<ButtonProps["size"]>, string> = {
   icon: "size-9 p-0",
 }
 
-export function Button({ className, variant = "default", size = "default", loading = false, disabled, children, ...props }: ButtonProps) {
-  return (
-    <BaseButton
-      disabled={disabled || loading}
-      aria-busy={loading || undefined}
-      className={cn(
-        "relative inline-flex items-center justify-center gap-2 rounded-lg border text-sm font-medium transition-colors duration-(--zuno-duration-fast) motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:border-ring focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      {...props}
-    >
+export function Button({ className, variant = "default", size = "default", loading = false, disabled, nativeButton, render, children, ...props }: ButtonProps) {
+  const classNames = cn(
+    "relative inline-flex items-center justify-center gap-2 rounded-lg border text-sm font-medium transition-colors duration-(--zuno-duration-fast) motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:border-ring focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
+    variants[variant],
+    sizes[size],
+    className
+  )
+  const content = (
+    <>
       {loading && (
         <span className="absolute inset-0 flex items-center justify-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true">
@@ -45,8 +42,36 @@ export function Button({ className, variant = "default", size = "default", loadi
           </svg>
         </span>
       )}
-      {/* Keep the label in flow so the button preserves its width; hide it under the spinner while loading. */}
       <span className={cn("inline-flex items-center gap-2", loading && "invisible")}>{children}</span>
+    </>
+  )
+
+  // A link needs link semantics; Base UI's Button would give it role="button".
+  if (isValidElement(render) && render.type !== "button" && (render.props as { href?: unknown }).href != null) {
+    const isDisabled = disabled || loading
+    return cloneElement(render, {
+      ...props,
+      className: cn(classNames, (render.props as { className?: string }).className, isDisabled && "pointer-events-none opacity-50"),
+      ...(loading ? { "aria-busy": true } : {}),
+      ...(isDisabled ? {
+        "aria-disabled": true,
+        tabIndex: -1,
+        onClick: (event: MouseEvent<HTMLElement>) => event.preventDefault(),
+      } : {}),
+      children: content,
+    } as HTMLAttributes<HTMLElement>)
+  }
+
+  return (
+    <BaseButton
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={classNames}
+      nativeButton={nativeButton}
+      render={render}
+      {...props}
+    >
+      {content}
     </BaseButton>
   )
 }

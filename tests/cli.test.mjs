@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { mkdtemp, readFile, writeFile, mkdir, symlink } from "node:fs/promises"
+import { mkdtemp, readFile, writeFile, mkdir, symlink, unlink } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { createServer } from "node:http"
@@ -21,6 +21,7 @@ test("packed CLI: framework/manager matrix, repeatability and rejected writes", 
   await writeFile(join(project, "tsconfig.json"), '{"compilerOptions":{"paths":{"@/*":["./src/*"]}}}')
   await writeFile(join(project, "src/index.css"), '@import "tailwindcss";\n')
   const requested = []
+  const overrides = new Map()
   const server = createServer(async (req, res) => {
     requested.push(req.url)
     try {
@@ -29,11 +30,14 @@ test("packed CLI: framework/manager matrix, repeatability and rejected writes", 
       if (name === "escape") {
         res.end(JSON.stringify({ name, files: [{ path: "../../escaped.ts", type: "registry:ui", content: "bad" }] })); return
       }
+      if (name === "mismatch") {
+        res.end(JSON.stringify({ name, files: [{ path: "registry/ui/mismatch.tsx", type: "registry:lib", content: "bad" }] })); return
+      }
       if (name === "cycle") {
         res.end(JSON.stringify({ name, registryDependencies: ["@zuno/cycle"], files: [{ path: "registry/ui/cycle.tsx", type: "registry:ui", content: "bad" }] })); return
       }
       res.setHeader("content-type", "application/json")
-      res.end(await readFile(resolve("apps/docs/public/r", name + ".json")))
+      res.end(overrides.has(name) ? JSON.stringify(overrides.get(name)) : await readFile(resolve("apps/docs/public/r", name + ".json")))
     } catch { res.writeHead(404).end() }
   })
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve))
@@ -174,6 +178,69 @@ export default function Demo() {
     assert.match(await readFile(join(cwd, "src/components/ui/icon.tsx"), "utf8"), /export function Icon/)
     assert.match(await readFile(join(cwd, "src/components/status-badge.tsx"), "utf8"), /export function StatusBadge/)
   })
+  await t.test("diff previews and update protects local edits and legacy installs", async () => {
+    const cwd = join(temp, "updates")
+    await mkdir(join(cwd, "src"), { recursive: true })
+    await writeFile(join(cwd, "package.json"), JSON.stringify({ name: "zuno-updates", private: true,
+      dependencies: { react: "19.2.8", vite: "8.2.2", tailwindcss: "4.3.3", "@base-ui/react": "1.8.0", clsx: "2.1.1", "tailwind-merge": "3.3.1" } }))
+    await writeFile(join(cwd, "tsconfig.json"), '{"compilerOptions":{"paths":{"@/*":["./src/*"]}}}')
+    await writeFile(join(cwd, "src/index.css"), '@import "tailwindcss";\n')
+    const invoke = (...args) => exec("node", [cli, ...args, "--cwd", cwd, "--pm", "npm"])
+    await invoke("init", "--registry", registry)
+    await invoke("add", "button")
+    const buttonPath = join(cwd, "src/components/ui/button.tsx")
+    const lockPath = join(cwd, "zuno.lock.json")
+    const original = await readFile(buttonPath, "utf8")
+    const manifest = JSON.parse(await readFile("apps/docs/public/r/button.json", "utf8"))
+    manifest.files[0].content = manifest.files[0].content.replace("hover:bg-primary/90", "hover:bg-primary/80")
+    assert.notEqual(manifest.files[0].content, original)
+    overrides.set("button", manifest)
+    const lockBefore = await readFile(lockPath, "utf8")
+    const cssPath = join(cwd, "src/index.css")
+    await writeFile(cssPath, '@import "tailwindcss";\n')
+    const cssBefore = await readFile(cssPath, "utf8")
+    const packagePath = join(cwd, "package.json")
+    const packageBefore = await readFile(packagePath, "utf8")
+    const packageWithoutClsx = JSON.parse(packageBefore)
+    delete packageWithoutClsx.dependencies.clsx
+    await writeFile(packagePath, JSON.stringify(packageWithoutClsx))
+    const preview = await invoke("diff", "button")
+    assert.match(preview.stdout, /Would install: clsx@2\.1\.1/)
+    assert.equal(await readFile(packagePath, "utf8"), JSON.stringify(packageWithoutClsx))
+    await writeFile(packagePath, packageBefore)
+    assert.match(preview.stdout, /update available: src\/components\/ui\/button\.tsx/)
+    assert.match(preview.stdout, /--- src\/components\/ui\/button\.tsx/)
+    assert.equal(await readFile(buttonPath, "utf8"), original)
+    assert.equal(await readFile(lockPath, "utf8"), lockBefore)
+    assert.equal(await readFile(join(cwd, "src/index.css"), "utf8"), cssBefore)
+    await invoke("update", "button")
+    assert.match(await readFile(buttonPath, "utf8"), /hover:bg-primary\/80/)
+    assert.notEqual(await readFile(lockPath, "utf8"), lockBefore)
+    assert.equal(await readFile(cssPath, "utf8"), cssBefore)
+    assert.match((await invoke("diff", "button")).stdout, /No updates available/)
+    const updated = await readFile(buttonPath, "utf8")
+    await unlink(buttonPath)
+    await assert.rejects(invoke("update", "button"), /Locally deleted/)
+    await writeFile(buttonPath, updated)
+    const customized = updated + "// local edit\n"
+    await writeFile(buttonPath, customized)
+    manifest.files[0].content = manifest.files[0].content.replace("hover:bg-primary/80", "hover:bg-primary/70")
+    manifest.files.push({ path: "registry/ui/button-extra.tsx", type: "registry:ui", content: "export const extra = true\n" })
+    assert.match((await invoke("diff", "button")).stdout, /local edits:/)
+    await assert.rejects(invoke("update", "button"), /Locally modified/)
+    assert.equal(await readFile(buttonPath, "utf8"), customized)
+    await assert.rejects(readFile(join(cwd, "src/components/ui/button-extra.tsx")), { code: "ENOENT" })
+    await unlink(lockPath)
+    await writeFile(buttonPath, original)
+    assert.match((await invoke("diff", "button")).stdout, /no baseline:/)
+    await assert.rejects(invoke("update", "button"), /No baseline/)
+    assert.equal(await readFile(buttonPath, "utf8"), original)
+    await writeFile(buttonPath, manifest.files[0].content)
+    await invoke("add", "button")
+    assert.match(await readFile(lockPath, "utf8"), /src\/components\/ui\/button\.tsx/)
+    assert.match((await invoke("diff", "button")).stdout, /No updates available/)
+    overrides.delete("button")
+  })
   const run = (runtime, ...args) => exec(runtime, [cli, ...args, "--cwd", project, "--pm", "npm"], { timeout: 120000 })
   await run("node", "init", "--registry", registry)
   await run("node", "add", "button")
@@ -187,6 +254,7 @@ export default function Demo() {
   assert.match((await run("bun", "add", "button")).stdout, /No changes/)
   await assert.rejects(run("node", "add", "missing"), /Registry 404/)
   await assert.rejects(run("node", "add", "escape"), /Unsupported manifest path/)
+  await assert.rejects(run("node", "update", "mismatch"), /Manifest path\/type mismatch/)
   await assert.rejects(run("node", "add", "cycle"), /Circular dependency/)
   const button = join(project, "src/components/ui/button.tsx")
   await writeFile(button, "// user customization\n")

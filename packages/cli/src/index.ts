@@ -3,10 +3,13 @@ import { readFile, writeFile, mkdir, lstat } from "node:fs/promises"
 import { resolve, dirname, relative, isAbsolute } from "node:path"
 import { parseArgs } from "node:util"
 import { spawnSync } from "node:child_process"
+import { createHash } from "node:crypto"
 import { satisfies, validRange, subset } from "semver"
 
 type Config = { style: string; rsc: boolean; tsx: boolean; tailwind: { config: string; css: string; baseColor: string; cssVariables: boolean }; aliases: { components: string; ui: string; utils: string; lib: string; hooks: string }; registries: Record<string, string> }
 type Item = { name: string; dependencies?: string[]; registryDependencies?: string[]; files: { path: string; type: string; content: string }[] }
+type Lock = { version: 1; files: Record<string, string> }
+type Mode = "add" | "diff" | "update"
 const { values, positionals } = parseArgs({ allowPositionals: true, options: {
   cwd: { type: "string" }, registry: { type: "string" }, css: { type: "string" }, pm: { type: "string" }, help: { type: "boolean", short: "h" }
 } })
@@ -64,59 +67,120 @@ async function aliasPath(alias: string) {
   if (!match || !alias.startsWith("@/")) throw new Error("A @/* → ./* or ./src/* alias is required in tsconfig.json")
   return (match[2] ?? "") + alias.slice(2)
 }
-async function apply(items: Map<string, Item>, config: Config, extra = new Map<string, string>()) {
+const hash = (content: string) => createHash("sha256").update(content).digest("hex")
+const key = (target: string) => relative(root, target).replaceAll("\\", "/")
+async function readLock(): Promise<Lock> {
+  const path = await safe("zuno.lock.json")
+  if (!await exists(path)) return { version: 1, files: {} }
+  const lock = await json(path)
+  if (lock?.version !== 1 || !lock.files || typeof lock.files !== "object" || Array.isArray(lock.files) ||
+      Object.values(lock.files).some(value => typeof value !== "string" || !/^[a-f0-9]{64}$/.test(value))) {
+    throw new Error("Invalid zuno.lock.json")
+  }
+  return lock as Lock
+}
+function printDiff(path: string, previous: string | undefined, next: string) {
+  const before = previous === undefined ? [] : previous.split("\n")
+  const after = next.split("\n")
+  let start = 0
+  while (start < before.length && start < after.length && before[start] === after[start]) start++
+  let oldEnd = before.length, newEnd = after.length
+  while (oldEnd > start && newEnd > start && before[oldEnd - 1] === after[newEnd - 1]) { oldEnd--; newEnd-- }
+  console.log(`--- ${previous === undefined ? "/dev/null" : path}\n+++ registry/${path}\n@@ -${start + 1},${oldEnd - start} +${start + 1},${newEnd - start} @@`)
+  for (const line of before.slice(start, oldEnd)) console.log(`-${line}`)
+  for (const line of after.slice(start, newEnd)) console.log(`+${line}`)
+}
+async function dependencyStatus(deps: Set<string>) {
+  const pkg = await json(resolve(root, "package.json"))
+  const existing = { ...pkg.devDependencies, ...pkg.dependencies }
+  const missing: string[] = [], incompatible: string[] = []
+  for (const dep of deps) {
+    const split = dep.lastIndexOf("@"), name = dep.slice(0, split), version = dep.slice(split + 1)
+    if (!existing[name]) { missing.push(dep); continue }
+    const range = existing[name]
+    const installedPath = resolve(root, "node_modules", name, "package.json")
+    const installed = await exists(installedPath) ? (await json(installedPath)).version : undefined
+    // A hoisted install may have no local node_modules entry; the declared range decides then.
+    const accepted = "^" + version
+    if (!(validRange(range) && (installed ? satisfies(installed, range) && satisfies(installed, accepted) : subset(range, accepted)))) {
+      incompatible.push(`Check the ${name} version: current ${range}${installed ? " (installed " + installed + ")" : ""}, required ${accepted}`)
+    }
+  }
+  return { missing, incompatible }
+}
+async function apply(items: Map<string, Item>, config: Config, extra = new Map<string, string>(), mode: Mode = "add") {
+  const lock = await readLock()
   const cssPath = await safe(config.tailwind.css)
-  // Scan the components root so both registry:ui (components/ui) and registry:component (components) are covered.
-  const uiPath = await safe(await aliasPath(config.aliases.components))
-  const sourcePath = relative(dirname(cssPath), uiPath).replaceAll("\\", "/")
-  const source = `@source "./${sourcePath}";`
-  const css = extra.get(config.tailwind.css) ?? await readFile(cssPath, "utf8")
-  if (!css.includes(source)) extra.set(config.tailwind.css, css + "\n" + source + "\n")
+  if (mode === "add") {
+    // Scan the components root so both registry:ui and registry:component are covered.
+    const uiPath = await safe(await aliasPath(config.aliases.components))
+    const sourcePath = relative(dirname(cssPath), uiPath).replaceAll("\\", "/")
+    const source = `@source "./${sourcePath}";`
+    const css = extra.get(config.tailwind.css) ?? await readFile(cssPath, "utf8")
+    if (!css.includes(source)) extra.set(config.tailwind.css, css + "\n" + source + "\n")
+  }
   const planned = new Map(extra)
+  const registryFiles = new Set<string>()
   const deps = new Set<string>()
   for (const item of items.values()) {
     for (const dep of item.dependencies ?? []) deps.add(dep)
     for (const file of item.files) {
       if (!/^registry\/(ui|components|lib|styles)\/[a-z0-9-]+\.(tsx?|css)$/.test(file.path)) throw new Error(`Unsupported manifest path: ${file.path}`)
+      const folder = file.type === "registry:ui" ? "ui" : file.type === "registry:component" ? "components" : file.type === "registry:lib" ? "lib" : "styles"
+      if (!file.path.startsWith(`registry/${folder}/`)) throw new Error(`Manifest path/type mismatch: ${file.path}`)
       const filename = file.path.split("/").at(-1)!
       const target = file.type === "registry:ui" ? await aliasPath(config.aliases.ui) + "/" + filename : file.type === "registry:component" ? await aliasPath(config.aliases.components) + "/" + filename : file.type === "registry:lib" ? await aliasPath(config.aliases.utils) + ".ts" : dirname(config.tailwind.css) + "/" + filename
-      // An existing configured utility belongs to the consumer, including its cn implementation.
-      if (file.type === "registry:lib" && await exists(await safe(target))) continue
+      const destination = await safe(target)
+      // A consumer-owned utility stays untouched. A utility copied by ZUNO has a lock entry.
+      if (file.type === "registry:lib" && await exists(destination) && (mode === "add" || !lock.files[key(destination)])) continue
       const content = file.content.replaceAll("@/lib/utils", config.aliases.utils).replaceAll("@/components/ui/", config.aliases.ui + "/")
       if (planned.has(target) && planned.get(target) !== content) throw new Error(`Conflicting files: ${target}`)
       planned.set(target, content)
+      registryFiles.add(target)
     }
+  }
+  if (mode === "diff") {
+    let differences = 0
+    for (const path of registryFiles) {
+      const target = await safe(path)
+      const previous = await exists(target) ? await readFile(target, "utf8") : undefined
+      const next = planned.get(path)!
+      if (previous === next) { console.log(`Up to date: ${key(target)}`); continue }
+      differences++
+      const baseline = lock.files[key(target)]
+      const status = previous === undefined ? baseline ? "deleted locally" : "new file" : !baseline ? "no baseline" : hash(previous) === baseline ? "update available" : "local edits"
+      console.log(`${status}: ${key(target)}`)
+      printDiff(key(target), previous, next)
+    }
+    const { missing, incompatible } = await dependencyStatus(deps)
+    for (const dep of missing) console.log(`Would install: ${dep}`)
+    for (const dep of incompatible) console.log(`Incompatible dependency: ${dep}`)
+    if (!differences && !missing.length && !incompatible.length) console.log("No updates available.")
+    return
   }
   const changes = new Map<string, string>()
   for (const [path, content] of planned) {
     const target = await safe(path)
+    const tracked = registryFiles.has(path) ? lock.files[key(target)] : undefined
     if (await exists(target)) {
       const old = await readFile(target, "utf8")
       if (old === content) continue
       if (!extra.has(path)) {
-        const hint = path.startsWith(await aliasPath(config.aliases.ui) + "/") ? `, or set "aliases.ui" to "@/components/zuno" in components.json to install ZUNO alongside it` : ""
-        throw new Error(`Conflict: ${path}. Keep or move your file${hint}.`)
+        if (mode === "update") {
+          if (!tracked) throw new Error(`No baseline for ${key(target)}. Run zunoui diff <name>, review the file, then copy it manually and run zunoui add <name> to track it.`)
+          if (hash(old) !== tracked) throw new Error(`Locally modified: ${key(target)}. Run zunoui diff <name> and merge the changes manually.`)
+        } else {
+          const hint = path.startsWith(await aliasPath(config.aliases.ui) + "/") ? `, or set "aliases.ui" to "@/components/zuno" in components.json to install ZUNO alongside it` : ""
+          throw new Error(`Conflict: ${path}. Keep or move your file${hint}.`)
+        }
       }
+    } else if (mode === "update" && tracked) {
+      throw new Error(`Locally deleted: ${key(target)}. Restore it or review with zunoui diff <name> before updating.`)
     }
     changes.set(target, content)
   }
-  const pkg = await json(resolve(root, "package.json"))
-  const existing = { ...pkg.devDependencies, ...pkg.dependencies }
-  const missing: string[] = []
-  for (const dep of deps) {
-    const split = dep.lastIndexOf("@"), name = dep.slice(0, split), version = dep.slice(split + 1)
-    if (existing[name]) {
-      const range = existing[name]
-      const installedPath = resolve(root, "node_modules", name, "package.json")
-      const installed = await exists(installedPath) ? (await json(installedPath)).version : undefined
-      // The registry pins what a fresh install gets; an existing project may use any compatible release of it.
-      // Hoisted or isolated installs (e.g. Bun workspaces) may leave node_modules empty, so the declared range decides then.
-      const accepted = "^" + version
-      const compatible = validRange(range) && (installed ? satisfies(installed, range) && satisfies(installed, accepted) : subset(range, accepted))
-      if (!compatible) throw new Error(`Check the ${name} version: current ${range}${installed ? " (installed " + installed + ")" : ""}, required ${accepted}. Install a compatible version before continuing.`)
-    }
-    if (!existing[name]) missing.push(dep)
-  }
+  const { missing, incompatible } = await dependencyStatus(deps)
+  if (incompatible.length) throw new Error(`${incompatible[0]}. Install a compatible version before continuing.`)
   const pm = await manager()
   if (missing.length) {
     console.log(`Installing: ${missing.join(" ")}`)
@@ -126,14 +190,24 @@ async function apply(items: Map<string, Item>, config: Config, extra = new Map<s
   for (const [path, content] of changes) {
     await mkdir(dirname(path), { recursive: true })
     await writeFile(path, content)
-    console.log(`Wrote: ${relative(root, path)}`)
+    console.log(`Wrote: ${key(path)}`)
   }
-  if (!changes.size && !missing.length) console.log("No changes: already installed.")
+  let lockChanged = false
+  for (const path of registryFiles) {
+    const target = await safe(path)
+    const digest = hash(planned.get(path)!)
+    if (lock.files[key(target)] !== digest) { lock.files[key(target)] = digest; lockChanged = true }
+  }
+  if (lockChanged) {
+    await writeFile(await safe("zuno.lock.json"), JSON.stringify(lock, null, 2) + "\n")
+    console.log("Wrote: zuno.lock.json")
+  }
+  if (!changes.size && !missing.length && !lockChanged) console.log("No changes: already installed.")
 }
 async function main() {
-  if (values.help || !positionals.length) { console.log("zunoui init | add <name> [--cwd path] [--registry URL/{name}.json] [--pm npm|bun|pnpm|yarn] [--css path]"); return }
+  if (values.help || !positionals.length) { console.log("zunoui init | add <name> | diff <name> | update <name> [--cwd path] [--registry URL/{name}.json] [--pm npm|bun|pnpm|yarn] [--css path]"); return }
   const [command, name] = positionals
-  if (!["init", "add"].includes(command) || (command === "add" ? positionals.length !== 2 : positionals.length !== 1)) throw new Error("Usage: zunoui init | zunoui add <name>")
+  if (!["init", "add", "diff", "update"].includes(command) || (command === "init" ? positionals.length !== 1 : positionals.length !== 2)) throw new Error("Usage: zunoui init | zunoui add|diff|update <name>")
   const configFile = await safe("components.json")
   if (command === "init") {
     const previous = await exists(configFile) ? await json(configFile) : {}
@@ -181,8 +255,8 @@ async function main() {
     const config = await json(configFile) as Config
     if (!config.aliases?.ui || !config.aliases.utils || !config.tailwind?.css || !config.registries?.["@zuno"]) throw new Error("Incomplete ZUNO configuration")
     if (values.registry && values.registry !== config.registries["@zuno"]) throw new Error("The registry differs from components.json")
-    await apply(await load(name, config.registries["@zuno"]), config)
-    console.log(`Import from ${config.aliases.ui}/${name}`)
+    await apply(await load(name, config.registries["@zuno"]), config, new Map(), command as Mode)
+    if (command === "add") console.log(`Import from ${config.aliases.ui}/${name}`)
   }
 }
 main().catch(error => { console.error(`ZUNO: ${error.message}`); process.exitCode = 1 })

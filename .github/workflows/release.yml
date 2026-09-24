@@ -110,14 +110,47 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: ./.github/actions/setup
       - name: Publish with npm Trusted Publishing (OIDC)
+        id: publish
         working-directory: packages/cli
         run: |
           version=$(node -p 'require("./package.json").version')
           if npm view "zunoui@$version" version >/dev/null 2>&1; then
-            echo "zunoui@$version is already on npm, nothing to publish." >> "$GITHUB_STEP_SUMMARY"
+            echo "zunoui@$version is already on npm." >> "$GITHUB_STEP_SUMMARY"
+          else
+            # During the alpha every version goes to latest; npm requires an explicit tag for prereleases.
+            npm publish --access public --tag latest
+            echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          tag="zunoui@$version"
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)"
+          else
+            git tag "$tag"
+          fi
+          git push origin "$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release from changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.publish.outputs.tag }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "GitHub Release $tag already exists." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          # During the alpha every version goes to latest; npm requires an explicit tag for prereleases.
-          npm publish --access public --tag latest
-          git tag "zunoui@$version" && git push origin "zunoui@$version"
-          echo "Published zunoui@$version with dist-tag latest." >> "$GITHUB_STEP_SUMMARY"
+          version="${{ steps.publish.outputs.version }}"
+          notes="$RUNNER_TEMP/zunoui-release-notes.md"
+          awk -v version="$version" '
+            $0 == "## " version { in_version=1; next }
+            in_version && /^## / { exit }
+            in_version { print }
+          ' packages/cli/CHANGELOG.md > "$notes"
+          if [ ! -s "$notes" ]; then
+            echo "::error::No changelog notes for $version"
+            exit 1
+          fi
+          flags=()
+          if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$tag" --verify-tag --title "$tag" --notes-file "$notes" "${flags[@]}"
+          echo "Created GitHub Release $tag." >> "$GITHUB_STEP_SUMMARY"
