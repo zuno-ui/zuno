@@ -83,7 +83,7 @@ Use a Conventional Commit title, for example `fix(dialog): return focus to the t
 The website and registry deploy on every push to `main`. The CLI is released with [Changesets](https://github.com/changesets/changesets):
 
 - For a change to `packages/cli`, run `bun run changeset`, pick the SemVer impact and commit the generated file with your PR. Changes to `registry/` or the docs deploy with the website and do not need a changeset.
-- Automation opens a "chore: release zunoui" PR with the version bump and changelog. Merging it publishes to npm from GitHub Actions with Trusted Publishing, only after the registry deploy succeeds.
+- Automation opens a "chore: release zunoui" PR with the version bump and changelog. Merging it publishes to npm from GitHub Actions with Trusted Publishing, only after the registry deploy succeeds; it then tags the commit and creates a GitHub Release with that version's changelog notes.
 - The repository is in `alpha` pre-release mode (`.changeset/pre.json`), so versions are numbered `0.1.0-alpha.N`; during the alpha they publish under the `latest` dist-tag. See the [Changesets guide](.changeset/README.md) for details.
 - The public URL lives in `registry.json` (`homepage`) and in the CLI's default endpoint; `tests/site.test.mjs` keeps them in sync.
 
