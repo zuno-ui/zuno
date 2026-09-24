@@ -141,13 +141,15 @@ jobs:
             fi
             sleep 10
           done
+          # The tag marks the commit that released this version. Later pushes without a changeset keep the
+          # same version, so an existing tag is left where it is; it is only created when still missing.
           tag="zunoui@$version"
-          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-            test "$(git rev-list -n 1 "$tag")" = "$(git rev-parse HEAD)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "Tag $tag already exists." >> "$GITHUB_STEP_SUMMARY"
           else
             git tag "$tag"
+            git push origin "$tag"
           fi
-          git push origin "$tag"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Create GitHub Release from changelog
