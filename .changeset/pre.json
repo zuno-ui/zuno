@@ -7,6 +7,7 @@
   },
   "changesets": [
     "cli-messages",
+    "safe-component-updates",
     "tailwind-range"
   ]
 }
