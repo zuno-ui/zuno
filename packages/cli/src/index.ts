@@ -109,8 +109,11 @@ async function apply(items: Map<string, Item>, config: Config, extra = new Map<s
       const range = existing[name]
       const installedPath = resolve(root, "node_modules", name, "package.json")
       const installed = await exists(installedPath) ? (await json(installedPath)).version : undefined
-      const compatible = validRange(range) && (installed ? satisfies(installed, range) && satisfies(installed, version) : subset(range, version))
-      if (!compatible) throw new Error(`Check the ${name} version: current ${range}${installed ? " (installed " + installed + ")" : ""}, required ${version}. Install a compatible version before continuing.`)
+      // The registry pins what a fresh install gets; an existing project may use any compatible release of it.
+      // Hoisted or isolated installs (e.g. Bun workspaces) may leave node_modules empty, so the declared range decides then.
+      const accepted = "^" + version
+      const compatible = validRange(range) && (installed ? satisfies(installed, range) && satisfies(installed, accepted) : subset(range, accepted))
+      if (!compatible) throw new Error(`Check the ${name} version: current ${range}${installed ? " (installed " + installed + ")" : ""}, required ${accepted}. Install a compatible version before continuing.`)
     }
     if (!existing[name]) missing.push(dep)
   }
@@ -144,7 +147,7 @@ async function main() {
     if (values.css && previous.tailwind?.css && values.css !== previous.tailwind.css) throw new Error("--css differs from components.json")
     const pkg = await json(resolve(root, "package.json"))
     const dependencies = { ...pkg.devDependencies, ...pkg.dependencies }
-    if (!dependencies.react || (!dependencies.next && !dependencies.vite) || !dependencies.tailwindcss?.match(/[~^]?4\./)) throw new Error("React, Vite or Next.js and Tailwind CSS v4 must be configured")
+    if (!dependencies.react || (!dependencies.next && !dependencies.vite) || !(validRange(dependencies.tailwindcss) && subset(dependencies.tailwindcss, "^4.0.0"))) throw new Error("React, Vite or Next.js and Tailwind CSS v4 must be configured")
     const css = values.css ?? previous.tailwind?.css ?? (dependencies.next ? "src/app/globals.css" : "src/index.css")
     const cssPath = await safe(css)
     const original = await readFile(cssPath, "utf8")
