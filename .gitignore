@@ -8,6 +8,9 @@ fixtures/*/src/components/
 fixtures/*/src/lib/
 fixtures/*/src/zuno.css
 fixtures/*/src/app/zuno.css
+fixtures/*/src/zuno-tokens.css
+fixtures/*/src/app/zuno-tokens.css
+fixtures/*/zuno.lock.json
 fixtures/*/next-env.d.ts
 *.tgz
 apps/docs/next-env.d.ts

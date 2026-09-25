@@ -39,6 +39,14 @@ export type DemoComponents = {
   EmptyTitle: ComponentType<ComponentProps<"h3">>
   EmptyDescription: ComponentType<ComponentProps<"p">>
   EmptyActions: ComponentType<ComponentProps<"div">>
+  Table: ComponentType<ComponentProps<"table"> & { density?: "comfortable" | "compact"; containerProps?: ComponentProps<"div"> }>
+  TableHeader: ComponentType<ComponentProps<"thead">>
+  TableBody: ComponentType<ComponentProps<"tbody">>
+  TableFooter: ComponentType<ComponentProps<"tfoot">>
+  TableRow: ComponentType<ComponentProps<"tr"> & { "data-state"?: string }>
+  TableHead: ComponentType<ComponentProps<"th">>
+  TableCell: ComponentType<ComponentProps<"td">>
+  TableCaption: ComponentType<ComponentProps<"caption">>
   Alert: ComponentType<ComponentProps<"div"> & { variant?: "default" | "success" | "warning" | "info" | "destructive" }>
   AlertContent: ComponentType<ComponentProps<"div">>
   AlertTitle: ComponentType<ComponentProps<"div">>
@@ -160,6 +168,32 @@ function SearchExample({ ui }: { ui: DemoComponents }) {
   const { SearchInput } = ui
   const [query, setQuery] = useState("Project")
   return <div className="showcase-example-form"><SearchInput value={query} onChange={event => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search projects…" aria-label="Search projects" /></div>
+}
+
+const tableProjects = [
+  { name: "Redesign 2026", status: "success", label: "On track", budget: "$12,400" },
+  { name: "Mobile app", status: "warning", label: "At risk", budget: "$18,250" },
+  { name: "Docs migration", status: "neutral", label: "Paused", budget: "$1,000" },
+] as const
+
+function TableProjects({ ui, caption }: { ui: DemoComponents; caption?: boolean }) {
+  const { Table, TableCaption, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, StatusBadge } = ui
+  return <Table className="min-w-[28rem]" containerProps={{ className: "max-w-xl", tabIndex: 0, role: "region", "aria-label": "Active projects" }}>
+    {caption && <TableCaption>Active projects this quarter.</TableCaption>}
+    <TableHeader><TableRow><TableHead>Project</TableHead><TableHead>Status</TableHead><TableHead className="text-end">Budget</TableHead></TableRow></TableHeader>
+    <TableBody>{tableProjects.map(project => <TableRow key={project.name}><TableCell className="font-medium">{project.name}</TableCell><TableCell><StatusBadge status={project.status}>{project.label}</StatusBadge></TableCell><TableCell className="text-end tabular-nums">{project.budget}</TableCell></TableRow>)}</TableBody>
+    {caption && <TableFooter><TableRow><TableCell colSpan={2}>Total</TableCell><TableCell className="text-end tabular-nums">$31,650</TableCell></TableRow></TableFooter>}
+  </Table>
+}
+
+function TableSelectionExample({ ui }: { ui: DemoComponents }) {
+  const { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Checkbox } = ui
+  const rows = tableProjects.map(project => project.name as string)
+  const [selected, setSelected] = useState<string[]>(["Mobile app"])
+  return <Table containerProps={{ className: "max-w-md" }}>
+    <TableHeader><TableRow><TableHead><Checkbox aria-label="Select all" checked={selected.length === rows.length} indeterminate={selected.length > 0 && selected.length < rows.length} onCheckedChange={all => setSelected(all ? rows : [])} /></TableHead><TableHead>Project</TableHead></TableRow></TableHeader>
+    <TableBody>{rows.map(name => <TableRow key={name} data-state={selected.includes(name) ? "selected" : undefined}><TableCell><Checkbox aria-label={"Select " + name} checked={selected.includes(name)} onCheckedChange={on => setSelected(on ? [...selected, name] : selected.filter(item => item !== name))} /></TableCell><TableCell>{name}</TableCell></TableRow>)}</TableBody>
+  </Table>
 }
 
 // Toast needs a provider ancestor and a hook; each demo is self-contained with its own provider + viewport.
@@ -290,6 +324,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "empty-basic": ({ Empty, EmptyMedia, EmptyTitle, EmptyDescription, EmptyActions, Button }) => <Empty className="w-full"><EmptyMedia aria-hidden="true">◍</EmptyMedia><EmptyTitle>No projects yet</EmptyTitle><EmptyDescription>Create your first project to start collaborating with your team.</EmptyDescription><EmptyActions><Button>Create project</Button><Button variant="outline">Import</Button></EmptyActions></Empty>,
     },
   },
+  table: {
+    preview: ui => <TableProjects ui={ui} />,
+    examples: {
+      "table-basic": ui => <TableProjects ui={ui} caption />,
+      "table-compact": ({ Table, TableHeader, TableBody, TableRow, TableHead, TableCell }) => <Table density="compact" containerProps={{ className: "max-w-xl rounded-lg border border-border" }}><TableHeader><TableRow><TableHead>Event</TableHead><TableHead>User</TableHead><TableHead className="text-end">Time</TableHead></TableRow></TableHeader><TableBody>{[["Project created", "Ana", "09:12"], ["Member invited", "Luis", "09:30"], ["Budget updated", "Ana", "10:05"], ["File uploaded", "Marta", "10:41"]].map(([name, user, time]) => <TableRow key={name + time}><TableCell>{name}</TableCell><TableCell className="text-muted-foreground">{user}</TableCell><TableCell className="text-end tabular-nums">{time}</TableCell></TableRow>)}</TableBody></Table>,
+      "table-selection": ui => <TableSelectionExample ui={ui} />,
+      "table-empty": ({ Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Empty, EmptyTitle, EmptyDescription }) => <Table containerProps={{ className: "max-w-xl" }}><TableHeader><TableRow><TableHead>Project</TableHead><TableHead>Owner</TableHead><TableHead className="text-end">Budget</TableHead></TableRow></TableHeader><TableBody><TableRow className="hover:bg-transparent"><TableCell colSpan={3}><Empty className="border-0"><EmptyTitle>No matching projects</EmptyTitle><EmptyDescription>Try a different search or clear the filters.</EmptyDescription></Empty></TableCell></TableRow></TableBody></Table>,
+    },
+  },
   alert: {
     preview: ({ Alert, AlertContent, AlertTitle, AlertDescription }) => <Alert variant="success" className="w-full"><AlertContent><AlertTitle>Changes saved</AlertTitle><AlertDescription>Your settings were updated successfully.</AlertDescription></AlertContent></Alert>,
     examples: {
@@ -401,7 +444,7 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, Button }) => <DropdownMenu><DropdownMenuTrigger render={<Button variant="outline">Options</Button>} /><DropdownMenuContent><DropdownMenuLabel>Project</DropdownMenuLabel><DropdownMenuItem>Edit</DropdownMenuItem><DropdownMenuItem>Duplicate</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem>Delete</DropdownMenuItem></DropdownMenuContent></DropdownMenu>,
     examples: {
       "dropdown-menu-basic": ({ DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, Button }) => <DropdownMenu><DropdownMenuTrigger render={<Button variant="outline">Options</Button>} /><DropdownMenuContent><DropdownMenuLabel>Project</DropdownMenuLabel><DropdownMenuItem>Edit</DropdownMenuItem><DropdownMenuItem>Duplicate</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem>Delete</DropdownMenuItem></DropdownMenuContent></DropdownMenu>,
-      "dropdown-menu-table": ({ DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, Button }) => <table className="w-full max-w-md text-sm"><tbody>{["Redesign 2026", "Mobile app"].map(name => <tr key={name} className="border-b border-border"><td className="py-2 text-foreground">{name}</td><td className="py-2 text-right"><DropdownMenu><DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label={"Actions for " + name}><span aria-hidden="true">⋯</span></Button>} /><DropdownMenuContent align="end"><DropdownMenuItem>Open</DropdownMenuItem><DropdownMenuItem>Rename</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem>Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu></td></tr>)}</tbody></table>,
+      "dropdown-menu-table": ({ DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, Button, Table, TableBody, TableRow, TableCell }) => <Table containerProps={{ className: "max-w-md" }}><TableBody>{["Redesign 2026", "Mobile app"].map(name => <TableRow key={name}><TableCell>{name}</TableCell><TableCell className="text-end"><DropdownMenu><DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label={"Actions for " + name}><span aria-hidden="true">⋯</span></Button>} /><DropdownMenuContent align="end"><DropdownMenuItem>Open</DropdownMenuItem><DropdownMenuItem>Rename</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem>Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu></TableCell></TableRow>)}</TableBody></Table>,
     },
   },
   select: {
