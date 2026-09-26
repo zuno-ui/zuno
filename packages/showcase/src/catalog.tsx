@@ -70,6 +70,8 @@ export type DemoComponents = {
   PasswordInput: ComponentType<ComponentProps<"input">>
   SearchInput: ComponentType<ComponentProps<"input"> & { loading?: boolean; onClear?: () => void }>
   CopyButton: ComponentType<ComponentProps<"button"> & { value: string; label?: string }>
+  RadioGroup: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: string; value?: string; onValueChange?: (value: unknown) => void; disabled?: boolean; name?: string; "aria-label"?: string; "aria-labelledby"?: string }>
+  RadioGroupItem: ComponentType<{ id?: string; value: string; disabled?: boolean; className?: string; "aria-describedby"?: string }>
   Checkbox: ComponentType<{ id?: string; className?: string; defaultChecked?: boolean; checked?: boolean; onCheckedChange?: (checked: boolean) => void; indeterminate?: boolean; disabled?: boolean; name?: string; value?: string; "aria-label"?: string }>
   Switch: ComponentType<{ id?: string; className?: string; defaultChecked?: boolean; checked?: boolean; onCheckedChange?: (checked: boolean) => void; disabled?: boolean; name?: string; "aria-label"?: string }>
   Tabs: ComponentType<{ children: ReactNode; className?: string; defaultValue?: string; value?: string; onValueChange?: (value: string) => void; variant?: "segmented" | "underline" | "ghost" | "solid"; shape?: "rounded" | "pill"; indicatorPosition?: "bottom" | "top" }>
@@ -283,6 +285,38 @@ function DatePickerLocale({ ui }: { ui: DemoComponents }) {
   return <div className="w-full max-w-xs"><DatePicker aria-label="Fecha de inicio" placeholder="Elige una fecha" locale={es} formatOptions={{ dateStyle: "full" }} /></div>
 }
 
+const radioPlans = [
+  { value: "free", label: "Free", description: "Up to 3 projects and community support." },
+  { value: "pro", label: "Pro", description: "Unlimited projects, history and priority support." },
+  { value: "team", label: "Team", description: "Everything in Pro plus roles and SSO." },
+]
+
+function RadioOption({ ui, id, value, label, disabled }: { ui: DemoComponents; id: string; value: string; label: string; disabled?: boolean }) {
+  const { RadioGroupItem, Label } = ui
+  return <div className="flex items-center gap-2"><RadioGroupItem id={id + value} value={value} disabled={disabled} /><Label htmlFor={id + value}>{label}</Label></div>
+}
+
+function RadioBasic({ ui }: { ui: DemoComponents }) {
+  const id = useId()
+  return <div className="grid gap-3"><p id={id + "label"} className="text-sm font-medium text-foreground">Notify me about</p><ui.RadioGroup aria-labelledby={id + "label"} defaultValue="mentions">{[["all", "All new messages"], ["mentions", "Direct messages and mentions"], ["none", "Nothing"]].map(([value, label]) => <RadioOption key={value} ui={ui} id={id} value={value} label={label} />)}</ui.RadioGroup></div>
+}
+
+function RadioDescriptions({ ui }: { ui: DemoComponents }) {
+  const { RadioGroup, RadioGroupItem, Label } = ui
+  const id = useId()
+  return <RadioGroup aria-label="Plan" defaultValue="pro" className="max-w-sm gap-4">{radioPlans.map(plan => <div key={plan.value} className="flex items-start gap-3"><RadioGroupItem id={id + plan.value} value={plan.value} aria-describedby={id + plan.value + "desc"} className="mt-0.5" /><div className="grid gap-1"><Label htmlFor={id + plan.value}>{plan.label}</Label><p id={id + plan.value + "desc"} className="text-sm text-muted-foreground">{plan.description}</p></div></div>)}</RadioGroup>
+}
+
+function RadioHorizontal({ ui }: { ui: DemoComponents }) {
+  const id = useId()
+  return <ui.RadioGroup aria-label="Density" defaultValue="comfortable" className="flex gap-6"><RadioOption ui={ui} id={id} value="comfortable" label="Comfortable" /><RadioOption ui={ui} id={id} value="compact" label="Compact" /></ui.RadioGroup>
+}
+
+function RadioStates({ ui }: { ui: DemoComponents }) {
+  const id = useId()
+  return <ui.RadioGroup aria-label="Shipping" defaultValue="standard"><RadioOption ui={ui} id={id} value="standard" label="Standard" /><RadioOption ui={ui} id={id} value="express" label="Express" /><RadioOption ui={ui} id={id} value="same-day" label="Same day (unavailable)" disabled /></ui.RadioGroup>
+}
+
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
 const comboboxZones: ComboboxZone[] = [{ value: "Americas", items: ["New York", "Mexico City", "São Paulo"] }, { value: "Europe", items: ["London", "Madrid", "Berlin"] }]
 const comboboxSkills = ["React", "TypeScript", "Node.js", "GraphQL", "Tailwind CSS", "Testing"]
@@ -474,6 +508,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
     examples: {
       "copy-button-basic": ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
+    },
+  },
+  "radio-group": {
+    preview: ui => <RadioBasic ui={ui} />,
+    examples: {
+      "radio-group-basic": ui => <RadioBasic ui={ui} />,
+      "radio-group-descriptions": ui => <RadioDescriptions ui={ui} />,
+      "radio-group-horizontal": ui => <RadioHorizontal ui={ui} />,
+      "radio-group-states": ui => <RadioStates ui={ui} />,
     },
   },
   checkbox: {

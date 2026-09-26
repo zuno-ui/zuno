@@ -26,6 +26,7 @@
     { "id": "S-30", "name": "input", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
     { "id": "S-35", "name": "label", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-43", "name": "popover", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-25" },
+    { "id": "S-46", "name": "radio-group", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-26" },
     { "id": "S-49", "name": "select", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
     { "id": "S-50", "name": "separator", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-53", "name": "skeleton", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
