@@ -11,6 +11,7 @@ export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
 // Pure metadata lives in catalog-meta.ts so Server Components can read it without a client boundary.
 
 type ComboboxZone = { value: string; items: string[] }
+type DatePickerDemoProps = { id?: string; placeholder?: string; disabled?: boolean; locale?: DayPickerProps["locale"]; formatOptions?: Intl.DateTimeFormatOptions; calendarProps?: Omit<DayPickerProps, "mode" | "selected" | "onSelect" | "required" | "locale">; className?: string; "aria-label"?: string; "aria-describedby"?: string; "aria-invalid"?: boolean }
 
 export type DemoComponents = {
   Input: ComponentType<ComponentProps<"input">>
@@ -83,6 +84,8 @@ export type DemoComponents = {
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
   Calendar: ComponentType<DayPickerProps>
+  DatePicker: ComponentType<DatePickerDemoProps & { value?: Date; defaultValue?: Date; onValueChange?: (date: Date | undefined) => void; name?: string }>
+  DateRangePicker: ComponentType<DatePickerDemoProps & { value?: DateRange; defaultValue?: DateRange; onValueChange?: (range: DateRange | undefined) => void }>
   Combobox: ComponentType<{ children?: ReactNode; items?: readonly string[] | readonly ComboboxZone[]; multiple?: boolean; defaultValue?: string | string[] | null }>
   ComboboxInput: ComponentType<{ id?: string; placeholder?: string; className?: string; showTrigger?: boolean; showClear?: boolean; "aria-label"?: string; "aria-invalid"?: boolean; disabled?: boolean }>
   ComboboxChips: ComponentType<{ children?: ReactNode; className?: string }>
@@ -244,6 +247,40 @@ function CalendarLocale({ ui }: { ui: DemoComponents }) {
   const { Calendar } = ui
   const [date, setDate] = useState<Date | undefined>()
   return <Calendar mode="single" selected={date} onSelect={setDate} locale={es} captionLayout="dropdown" startMonth={new Date(1950, 0)} endMonth={new Date(2030, 11)} />
+}
+
+function DatePickerBasic({ ui }: { ui: DemoComponents }) {
+  const { DatePicker, Label } = ui
+  const id = useId()
+  const [date, setDate] = useState<Date>()
+  return <div className="flex w-full max-w-xs flex-col gap-2"><Label htmlFor={id}>Due date</Label><DatePicker id={id} value={date} onValueChange={setDate} /></div>
+}
+
+function DatePickerRange({ ui }: { ui: DemoComponents }) {
+  const { DateRangePicker, Label } = ui
+  const id = useId()
+  const [range, setRange] = useState<DateRange>()
+  return <div className="flex w-full max-w-xs flex-col gap-2"><Label htmlFor={id}>Stay</Label><DateRangePicker id={id} value={range} onValueChange={setRange} /></div>
+}
+
+function DatePickerForm({ ui }: { ui: DemoComponents }) {
+  const { DatePicker, Label, Button } = ui
+  const id = useId()
+  const [today] = useState(() => new Date())
+  const [date, setDate] = useState<Date>()
+  const [error, setError] = useState(false)
+  const [sent, setSent] = useState<string>()
+  return <form noValidate className="flex w-full max-w-xs flex-col gap-2" onSubmit={event => { event.preventDefault(); const value = new FormData(event.currentTarget).get("delivery"); setError(!value); setSent(value ? String(value) : undefined) }}>
+    <Label htmlFor={id}>Delivery date</Label>
+    <DatePicker id={id} name="delivery" value={date} onValueChange={next => { setDate(next); if (next) setError(false) }} aria-invalid={error || undefined} aria-describedby={id + (error ? "-error" : "-help")} calendarProps={{ disabled: [{ before: today }, { dayOfWeek: [0, 6] }] }} />
+    {error ? <p id={id + "-error"} className="text-sm text-destructive">Choose a delivery date.</p> : <p id={id + "-help"} className="text-sm text-muted-foreground">Weekdays from today; sent as YYYY-MM-DD.</p>}
+    <div className="flex items-center gap-3 pt-1"><Button type="submit">Schedule</Button>{sent && <span className="text-sm text-muted-foreground" role="status">Sent: {sent}</span>}</div>
+  </form>
+}
+
+function DatePickerLocale({ ui }: { ui: DemoComponents }) {
+  const { DatePicker } = ui
+  return <div className="w-full max-w-xs"><DatePicker aria-label="Fecha de inicio" placeholder="Elige una fecha" locale={es} formatOptions={{ dateStyle: "full" }} /></div>
 }
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
@@ -488,6 +525,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "calendar-range": ui => <CalendarRange ui={ui} />,
       "calendar-disabled": ui => <CalendarDisabled ui={ui} />,
       "calendar-locale": ui => <CalendarLocale ui={ui} />,
+    },
+  },
+  "date-picker": {
+    preview: ui => <DatePickerBasic ui={ui} />,
+    examples: {
+      "date-picker-basic": ui => <DatePickerBasic ui={ui} />,
+      "date-picker-range": ui => <DatePickerRange ui={ui} />,
+      "date-picker-form": ui => <DatePickerForm ui={ui} />,
+      "date-picker-locale": ui => <DatePickerLocale ui={ui} />,
     },
   },
   combobox: {

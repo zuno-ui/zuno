@@ -530,6 +530,21 @@
       ]
     },
     {
+      "name": "date-picker",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/popover",
+        "@zuno/calendar"
+      ],
+      "files": [
+        {
+          "path": "registry/components/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "combobox",
       "type": "registry:ui",
       "dependencies": [
