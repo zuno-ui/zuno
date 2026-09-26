@@ -78,6 +78,13 @@ export type DemoComponents = {
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  Popover: ComponentType<{ children?: ReactNode; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
+  PopoverTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement; openOnHover?: boolean }>
+  PopoverContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "right" | "bottom" | "left"; align?: "start" | "center" | "end"; sideOffset?: number }>
+  PopoverHeader: ComponentType<ComponentProps<"div">>
+  PopoverTitle: ComponentType<{ children?: ReactNode; className?: string }>
+  PopoverDescription: ComponentType<{ children?: ReactNode; className?: string }>
+  PopoverClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   Dialog: ComponentType<{ children?: ReactNode; dismissible?: boolean }>
   DialogTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   DialogClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
@@ -416,6 +423,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "avatar-fallback": ({ Avatar, AvatarImage, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar><AvatarImage src="/missing-avatar.jpg" alt="Ana Ruiz" /><AvatarFallback>AR</AvatarFallback></Avatar><Avatar><AvatarImage src="/broken-avatar.jpg" alt="Luis Mora" /><AvatarFallback>LM</AvatarFallback></Avatar><Avatar><AvatarFallback>+3</AvatarFallback></Avatar></div>,
       "avatar-sizes": ({ Avatar, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar><Avatar><AvatarFallback>MD</AvatarFallback></Avatar><Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar></div>,
       "avatar-group": ({ Avatar, AvatarFallback }) => <div className="flex -space-x-2">{["AR", "LM", "TS", "+3"].map(initials => <Avatar key={initials} className="ring-2 ring-background"><AvatarFallback>{initials}</AvatarFallback></Avatar>)}</div>,
+    },
+  },
+  popover: {
+    preview: ({ Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle, PopoverDescription, Button }) => <Popover><PopoverTrigger render={<Button variant="outline">Share</Button>} /><PopoverContent><PopoverHeader><PopoverTitle>Share project</PopoverTitle><PopoverDescription>Anyone with the link can view it.</PopoverDescription></PopoverHeader></PopoverContent></Popover>,
+    examples: {
+      "popover-basic": ({ Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle, PopoverDescription, PopoverClose, Button, Input }) => <Popover><PopoverTrigger render={<Button variant="outline">Share</Button>} /><PopoverContent><PopoverHeader><PopoverTitle>Share project</PopoverTitle><PopoverDescription>Anyone with the link can view it.</PopoverDescription></PopoverHeader><div className="flex gap-2"><Input readOnly value="zuno.dev/p/redesign" aria-label="Project link" /><PopoverClose render={<Button>Done</Button>} /></div></PopoverContent></Popover>,
+      "popover-placement": ({ Popover, PopoverTrigger, PopoverContent, Button }) => <div className="showcase-button-row">{(["top", "right", "bottom", "left"] as const).map(side => <Popover key={side}><PopoverTrigger render={<Button variant="outline">{side}</Button>} /><PopoverContent side={side} className="w-auto">Opens on the {side}.</PopoverContent></Popover>)}</div>,
+      "popover-form": ({ Popover, PopoverTrigger, PopoverContent, PopoverClose, Button, Input, Label }) => <Popover><PopoverTrigger render={<Button variant="outline">Rename</Button>} /><PopoverContent align="start"><form onSubmit={event => event.preventDefault()} className="flex flex-col gap-3"><Label htmlFor="popover-project-name">Project name</Label><Input id="popover-project-name" defaultValue="Redesign 2026" /><div className="flex justify-end gap-2"><PopoverClose render={<Button variant="ghost" size="sm">Cancel</Button>} /><PopoverClose render={<Button size="sm" type="submit">Save</Button>} /></div></form></PopoverContent></Popover>,
     },
   },
   tooltip: {
