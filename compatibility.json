@@ -16,6 +16,7 @@
     { "id": "S-10", "name": "button", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
     { "id": "S-13", "name": "card", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-16", "name": "checkbox", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "S-18", "name": "combobox", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-25" },
     { "id": "S-23", "name": "dialog", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
     { "id": "S-26", "name": "dropdown-menu", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
     { "id": "S-27", "name": "empty", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },

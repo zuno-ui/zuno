@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
 export { meta, componentNames, metaByName } from "./catalog-meta"
 export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
 
 // Client render closures for the catalog, keyed by component name / example id.
 // Pure metadata lives in catalog-meta.ts so Server Components can read it without a client boundary.
+
+type ComboboxZone = { value: string; items: string[] }
 
 export type DemoComponents = {
   Input: ComponentType<ComponentProps<"input">>
@@ -78,6 +80,19 @@ export type DemoComponents = {
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  Combobox: ComponentType<{ children?: ReactNode; items?: readonly string[] | readonly ComboboxZone[]; multiple?: boolean; defaultValue?: string | string[] | null }>
+  ComboboxInput: ComponentType<{ id?: string; placeholder?: string; className?: string; showTrigger?: boolean; showClear?: boolean; "aria-label"?: string; "aria-invalid"?: boolean; disabled?: boolean }>
+  ComboboxChips: ComponentType<{ children?: ReactNode; className?: string }>
+  ComboboxChip: ComponentType<{ children?: ReactNode; className?: string }>
+  ComboboxChipsInput: ComponentType<{ placeholder?: string; className?: string; "aria-label"?: string }>
+  ComboboxValue: ComponentType<{ children?: ((value: string[]) => ReactNode) }>
+  ComboboxContent: ComponentType<{ children?: ReactNode; className?: string }>
+  ComboboxList: ComponentType<{ children?: ReactNode | ((item: string) => ReactNode) | ((group: ComboboxZone) => ReactNode); className?: string }>
+  ComboboxItem: ComponentType<{ children?: ReactNode; value: string; className?: string; disabled?: boolean }>
+  ComboboxEmpty: ComponentType<{ children?: ReactNode; className?: string }>
+  ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
+  ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
+  ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
   Popover: ComponentType<{ children?: ReactNode; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
   PopoverTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement; openOnHover?: boolean }>
   PopoverContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "right" | "bottom" | "left"; align?: "start" | "center" | "end"; sideOffset?: number }>
@@ -201,6 +216,19 @@ function TableSelectionExample({ ui }: { ui: DemoComponents }) {
     <TableHeader><TableRow><TableHead><Checkbox aria-label="Select all" checked={selected.length === rows.length} indeterminate={selected.length > 0 && selected.length < rows.length} onCheckedChange={all => setSelected(all ? rows : [])} /></TableHead><TableHead>Project</TableHead></TableRow></TableHeader>
     <TableBody>{rows.map(name => <TableRow key={name} data-state={selected.includes(name) ? "selected" : undefined}><TableCell><Checkbox aria-label={"Select " + name} checked={selected.includes(name)} onCheckedChange={on => setSelected(on ? [...selected, name] : selected.filter(item => item !== name))} /></TableCell><TableCell>{name}</TableCell></TableRow>)}</TableBody>
   </Table>
+}
+
+const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
+const comboboxZones: ComboboxZone[] = [{ value: "Americas", items: ["New York", "Mexico City", "São Paulo"] }, { value: "Europe", items: ["London", "Madrid", "Berlin"] }]
+const comboboxSkills = ["React", "TypeScript", "Node.js", "GraphQL", "Tailwind CSS", "Testing"]
+
+function ComboboxBasic({ ui }: { ui: DemoComponents }) {
+  const { Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem, Label } = ui
+  const id = useId()
+  return <div className="flex w-full max-w-xs flex-col gap-2">
+    <Label htmlFor={id}>Framework</Label>
+    <Combobox items={comboboxFrameworks}><ComboboxInput id={id} placeholder="Search a framework" showClear /><ComboboxContent><ComboboxEmpty>No framework found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox>
+  </div>
 }
 
 // Toast needs a provider ancestor and a hook; each demo is self-contained with its own provider + viewport.
@@ -423,6 +451,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "avatar-fallback": ({ Avatar, AvatarImage, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar><AvatarImage src="/missing-avatar.jpg" alt="Ana Ruiz" /><AvatarFallback>AR</AvatarFallback></Avatar><Avatar><AvatarImage src="/broken-avatar.jpg" alt="Luis Mora" /><AvatarFallback>LM</AvatarFallback></Avatar><Avatar><AvatarFallback>+3</AvatarFallback></Avatar></div>,
       "avatar-sizes": ({ Avatar, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar><Avatar><AvatarFallback>MD</AvatarFallback></Avatar><Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar></div>,
       "avatar-group": ({ Avatar, AvatarFallback }) => <div className="flex -space-x-2">{["AR", "LM", "TS", "+3"].map(initials => <Avatar key={initials} className="ring-2 ring-background"><AvatarFallback>{initials}</AvatarFallback></Avatar>)}</div>,
+    },
+  },
+  combobox: {
+    preview: ui => <ComboboxBasic ui={ui} />,
+    examples: {
+      "combobox-basic": ui => <ComboboxBasic ui={ui} />,
+      "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
+      "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
     },
   },
   popover: {
