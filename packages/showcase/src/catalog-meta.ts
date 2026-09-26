@@ -8,6 +8,8 @@ export type ComponentMeta = {
   description: string
   registryPath: string
   reference?: string
+  // Third-party engine behind an "integration" component (e.g. react-day-picker): its name and docs URL.
+  upstream?: { name: string; url: string }
   usage: string
   properties: [string, string, string, string][]
   states?: [string, string][]
@@ -337,6 +339,20 @@ export const meta: ComponentMeta[] = [
       { id: "avatar-fallback", title: "Image with fallback", description: "If the image fails to load, the initials are shown.", code: '<Avatar>\n  <AvatarImage src="/ana.jpg" alt="Ana Ruiz" />\n  <AvatarFallback>AR</AvatarFallback>\n</Avatar>\n<Avatar>\n  <AvatarImage src="/broken.jpg" alt="Luis Mora" />\n  <AvatarFallback>LM</AvatarFallback>\n</Avatar>' },
       { id: "avatar-sizes", title: "Sizes", description: "Three sizes: sm (32 px), default (40 px) and lg (48 px). The fallback font scales with the avatar.", code: '<Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar>\n<Avatar><AvatarFallback>MD</AvatarFallback></Avatar>\n<Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>' },
       { id: "avatar-group", title: "Stacked group", description: "Several overlapping avatars composed together.", code: '<div className="flex -space-x-2">\n  <Avatar className="ring-2 ring-background"><AvatarFallback>AR</AvatarFallback></Avatar>\n  <Avatar className="ring-2 ring-background"><AvatarFallback>LM</AvatarFallback></Avatar>\n  <Avatar className="ring-2 ring-background"><AvatarFallback>+3</AvatarFallback></Avatar>\n</div>' },
+    ],
+  },
+  {
+    name: "calendar", title: "Calendar", registryPath: "ui/calendar.tsx", upstream: { name: "react-day-picker", url: "https://daypicker.dev" },
+    description: "Date selection with clear navigation, localization and disabled days; built on react-day-picker.",
+    usage: 'import { Calendar } from "@/components/ui/calendar"\n\nconst [date, setDate] = useState<Date | undefined>()\n\n<Calendar mode="single" selected={date} onSelect={setDate} />',
+    properties: [["mode", '"single" | "multiple" | "range"', "—", "Selection mode; pair it with selected and onSelect."], ["selected / onSelect", "Date | Date[] | DateRange", "—", "Controlled selection; the type follows mode."], ["disabled", "Matcher | Matcher[]", "—", "Days that cannot be selected: dates, ranges, { before }, { after } or { dayOfWeek }."], ["startMonth / endMonth", "Date", "—", "Navigation limits; required context for captionLayout=\"dropdown\"."], ["numberOfMonths", "number", "1", "Months shown side by side (stacked on narrow screens)."], ["captionLayout", '"label" | "dropdown" | "dropdown-months" | "dropdown-years"', '"label"', "Month and year dropdowns for distant dates."], ["locale / weekStartsOn", "Locale / 0–6", "en-US", "date-fns locale from react-day-picker/locale; weekday names, labels and first day follow it."], ["timeZone", "string", "—", "IANA zone for \"today\" and the selected dates."], ["showOutsideDays", "boolean", "true with one month", "Shows the adjacent months' days, muted; off by default with numberOfMonths > 1 to avoid repeated days."], ["CalendarDayButton", "button", "—", "Exported day button; reuse it when you override components."]],
+    accessibility: ["The month is a grid: arrows move by day and week, Page Up/Down by month (Shift for year), Home/End to the week edges; focus is roving and lands on the selected day or today.", "Each day has a full accessible label (\"Today, Friday, September 25th, 2026, selected\") and the navigation buttons are named after the target month.", "Disabled days stay focusable for context but cannot be selected; today and the selection are marked with text weight and fill, not color alone.", "Localize with locale: month and weekday names, labels and the first day of the week come from the same source. Render it inside a labelled region or popover so users know what date they pick."],
+    states: [["Today", "Accent fill and semibold when not selected."], ["Selected", "Primary fill on the chosen day."], ["Range", "Start and end in primary, the days between in accent with a continuous band."], ["Outside", "Adjacent-month days are muted (showOutsideDays)."], ["Disabled", "Dimmed and not selectable; navigation stops at startMonth/endMonth."], ["Focus", "Visible outline on the focused day, managed by the grid's roving focus."]],
+    examples: [
+      { id: "calendar-single", title: "Single date", description: "Controlled selection; the footer reports the chosen date for screen readers too.", code: 'const [date, setDate] = useState<Date | undefined>(new Date())\n\n<Calendar\n  mode="single"\n  selected={date}\n  onSelect={setDate}\n  footer={date ? "Selected: " + date.toLocaleDateString() : "Pick a day."}\n/>' },
+      { id: "calendar-range", title: "Range across two months", description: "mode=\"range\" with two months side by side; they stack on narrow screens.", code: 'const [range, setRange] = useState<DateRange | undefined>()\n\n<Calendar mode="range" numberOfMonths={2} selected={range} onSelect={setRange} />' },
+      { id: "calendar-disabled", title: "Disabled days and limits", description: "Weekends and past days are disabled and navigation stays within three months.", code: 'const today = new Date()\n\n<Calendar\n  mode="single"\n  disabled={[{ before: today }, { dayOfWeek: [0, 6] }]}\n  startMonth={today}\n  endMonth={new Date(today.getFullYear(), today.getMonth() + 2)}\n/>' },
+      { id: "calendar-locale", title: "Localized with dropdowns", description: "Spanish locale (Monday first) and month/year dropdowns for distant dates.", code: 'import { es } from "react-day-picker/locale"\n\n<Calendar\n  mode="single"\n  locale={es}\n  captionLayout="dropdown"\n  startMonth={new Date(1950, 0)}\n  endMonth={new Date(2030, 11)}\n/>' },
     ],
   },
   {

@@ -1,6 +1,8 @@
 "use client"
 
 import { useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import type { DateRange, DayPickerProps } from "react-day-picker"
+import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
 export { meta, componentNames, metaByName } from "./catalog-meta"
 export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
@@ -80,6 +82,7 @@ export type DemoComponents = {
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  Calendar: ComponentType<DayPickerProps>
   Combobox: ComponentType<{ children?: ReactNode; items?: readonly string[] | readonly ComboboxZone[]; multiple?: boolean; defaultValue?: string | string[] | null }>
   ComboboxInput: ComponentType<{ id?: string; placeholder?: string; className?: string; showTrigger?: boolean; showClear?: boolean; "aria-label"?: string; "aria-invalid"?: boolean; disabled?: boolean }>
   ComboboxChips: ComponentType<{ children?: ReactNode; className?: string }>
@@ -216,6 +219,31 @@ function TableSelectionExample({ ui }: { ui: DemoComponents }) {
     <TableHeader><TableRow><TableHead><Checkbox aria-label="Select all" checked={selected.length === rows.length} indeterminate={selected.length > 0 && selected.length < rows.length} onCheckedChange={all => setSelected(all ? rows : [])} /></TableHead><TableHead>Project</TableHead></TableRow></TableHeader>
     <TableBody>{rows.map(name => <TableRow key={name} data-state={selected.includes(name) ? "selected" : undefined}><TableCell><Checkbox aria-label={"Select " + name} checked={selected.includes(name)} onCheckedChange={on => setSelected(on ? [...selected, name] : selected.filter(item => item !== name))} /></TableCell><TableCell>{name}</TableCell></TableRow>)}</TableBody>
   </Table>
+}
+
+function CalendarSingle({ ui }: { ui: DemoComponents }) {
+  const { Calendar } = ui
+  const [date, setDate] = useState<Date | undefined>(() => new Date())
+  return <Calendar mode="single" selected={date} onSelect={setDate} footer={<p className="pt-3 text-xs text-muted-foreground" aria-live="polite">{date ? "Selected: " + date.toLocaleDateString("en-US", { dateStyle: "long" }) : "Pick a day."}</p>} />
+}
+
+function CalendarRange({ ui }: { ui: DemoComponents }) {
+  const { Calendar } = ui
+  const [range, setRange] = useState<DateRange | undefined>()
+  return <Calendar mode="range" numberOfMonths={2} selected={range} onSelect={setRange} />
+}
+
+function CalendarDisabled({ ui }: { ui: DemoComponents }) {
+  const { Calendar } = ui
+  const [today] = useState(() => new Date())
+  const [date, setDate] = useState<Date | undefined>()
+  return <Calendar mode="single" selected={date} onSelect={setDate} disabled={[{ before: today }, { dayOfWeek: [0, 6] }]} startMonth={today} endMonth={new Date(today.getFullYear(), today.getMonth() + 2)} />
+}
+
+function CalendarLocale({ ui }: { ui: DemoComponents }) {
+  const { Calendar } = ui
+  const [date, setDate] = useState<Date | undefined>()
+  return <Calendar mode="single" selected={date} onSelect={setDate} locale={es} captionLayout="dropdown" startMonth={new Date(1950, 0)} endMonth={new Date(2030, 11)} />
 }
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
@@ -451,6 +479,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "avatar-fallback": ({ Avatar, AvatarImage, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar><AvatarImage src="/missing-avatar.jpg" alt="Ana Ruiz" /><AvatarFallback>AR</AvatarFallback></Avatar><Avatar><AvatarImage src="/broken-avatar.jpg" alt="Luis Mora" /><AvatarFallback>LM</AvatarFallback></Avatar><Avatar><AvatarFallback>+3</AvatarFallback></Avatar></div>,
       "avatar-sizes": ({ Avatar, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar><Avatar><AvatarFallback>MD</AvatarFallback></Avatar><Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar></div>,
       "avatar-group": ({ Avatar, AvatarFallback }) => <div className="flex -space-x-2">{["AR", "LM", "TS", "+3"].map(initials => <Avatar key={initials} className="ring-2 ring-background"><AvatarFallback>{initials}</AvatarFallback></Avatar>)}</div>,
+    },
+  },
+  calendar: {
+    preview: ui => <CalendarSingle ui={ui} />,
+    examples: {
+      "calendar-single": ui => <CalendarSingle ui={ui} />,
+      "calendar-range": ui => <CalendarRange ui={ui} />,
+      "calendar-disabled": ui => <CalendarDisabled ui={ui} />,
+      "calendar-locale": ui => <CalendarLocale ui={ui} />,
     },
   },
   combobox: {

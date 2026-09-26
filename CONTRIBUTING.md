@@ -63,7 +63,7 @@ A new component touches several places. Keep them in sync in the same PR:
 
 1. The source in `registry/ui/` (Base UI based) or `registry/components/` (compositions).
 2. Its entry in `registry.json`, with pinned npm dependencies and `@zuno/*` registry dependencies.
-3. Its status in `compatibility.json`.
+3. Its status and `kind` in `compatibility.json`. Budgets follow the kind: `base-ui` 5 kB JS / 1.5 kB CSS and `html-css` or `composition` 2 kB / 1 kB (incremental gzip). A component that wraps a third-party engine, such as Calendar on react-day-picker, uses `integration` and must declare its own `budget` and a `budgetNote` explaining the cost; add the engine as a pinned dependency, and set `upstream` in its catalog metadata so the docs link to the engine.
 4. Its metadata and examples in `packages/showcase/src/catalog-meta.ts` and the matching renderers in `packages/showcase/src/catalog.tsx`.
 5. The component in the `ui` object of `apps/docs/src/components/gallery.tsx` and both `fixtures/*/src/demo.tsx`, plus its type in `DemoComponents`.
 

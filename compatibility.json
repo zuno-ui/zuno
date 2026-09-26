@@ -1,5 +1,5 @@
 {
-  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition.",
+  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it.",
   "updated": "2026-09-10",
   "phase": "F1",
   "target": { "official": 22, "own": 11, "total": 33 },
@@ -14,6 +14,7 @@
     { "id": "S-06", "name": "avatar", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
     { "id": "S-07", "name": "badge", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-10", "name": "button", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
+    { "id": "S-12", "name": "calendar", "kind": "integration", "status": "stable", "reviewed": "2026-09-26", "budget": { "js": 26, "css": 1.5 }, "budgetNote": "react-day-picker 10 with date-fns and @date-fns/tz (~23.7 kB gzip). Base UI has no calendar primitive (mui/base-ui#1709); only apps that install calendar pay it." },
     { "id": "S-13", "name": "card", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-16", "name": "checkbox", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-18", "name": "combobox", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-25" },
