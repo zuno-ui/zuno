@@ -255,8 +255,11 @@ async function main() {
     const config = await json(configFile) as Config
     if (!config.aliases?.ui || !config.aliases.utils || !config.tailwind?.css || !config.registries?.["@zuno"]) throw new Error("Incomplete ZUNO configuration")
     if (values.registry && values.registry !== config.registries["@zuno"]) throw new Error("The registry differs from components.json")
-    await apply(await load(name, config.registries["@zuno"]), config, new Map(), command as Mode)
-    if (command === "add") console.log(`Import from ${config.aliases.ui}/${name}`)
+    const items = await load(name, config.registries["@zuno"])
+    await apply(items, config, new Map(), command as Mode)
+    // Compositions (registry:component) install under aliases.components, not aliases.ui.
+    const base = items.get(name)?.files[0]?.type === "registry:component" ? config.aliases.components ?? "@/components" : config.aliases.ui
+    if (command === "add") console.log(`Import from ${base}/${name}`)
   }
 }
 main().catch(error => { console.error(`ZUNO: ${error.message}`); process.exitCode = 1 })
