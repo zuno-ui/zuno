@@ -12,13 +12,15 @@ export const TooltipTrigger = BaseTooltip.Trigger
 // keeps the correct contrast in Light and Dark even though it mounts outside the local theme subtree.
 export function TooltipContent({
   className,
+  side,
+  align,
   sideOffset = 8,
   children,
   ...props
-}: BaseTooltip.Popup.Props & { sideOffset?: number }) {
+}: BaseTooltip.Popup.Props & { side?: BaseTooltip.Positioner.Props["side"]; align?: BaseTooltip.Positioner.Props["align"]; sideOffset?: number }) {
   return (
     <BaseTooltip.Portal>
-      <BaseTooltip.Positioner sideOffset={sideOffset} className="z-50">
+      <BaseTooltip.Positioner side={side} align={align} sideOffset={sideOffset} className="z-50">
         <BaseTooltip.Popup
           className={cn(
             "max-w-xs origin-[var(--transform-origin)] rounded-md bg-foreground px-2.5 py-1.5 text-xs text-background shadow-md",

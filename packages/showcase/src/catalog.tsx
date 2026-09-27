@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { Fragment, useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import type { DateRange, DayPickerProps } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
@@ -11,6 +11,8 @@ export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
 // Pure metadata lives in catalog-meta.ts so Server Components can read it without a client boundary.
 
 type ComboboxZone = { value: string; items: string[] }
+type CommandAction = { value: string; label: string; shortcut?: string; disabled?: boolean }
+type CommandSection = { value: string; items: CommandAction[] }
 type DatePickerDemoProps = { id?: string; placeholder?: string; disabled?: boolean; locale?: DayPickerProps["locale"]; formatOptions?: Intl.DateTimeFormatOptions; calendarProps?: Omit<DayPickerProps, "mode" | "selected" | "onSelect" | "required" | "locale">; className?: string; "aria-label"?: string; "aria-describedby"?: string; "aria-invalid"?: boolean }
 
 export type DemoComponents = {
@@ -49,6 +51,31 @@ export type DemoComponents = {
   breadcrumbLinkClass: string
   Kbd: ComponentType<ComponentProps<"kbd"> & { label?: string }>
   KbdGroup: ComponentType<ComponentProps<"kbd">>
+  NativeSelect: ComponentType<ComponentProps<"select">>
+  NativeSelectOption: ComponentType<ComponentProps<"option">>
+  NativeSelectOptGroup: ComponentType<ComponentProps<"optgroup">>
+  Item: ComponentType<ComponentProps<"div"> & { variant?: "default" | "outline" | "muted"; size?: "default" | "sm"; render?: ReactElement }>
+  ItemGroup: ComponentType<ComponentProps<"ul">>
+  ItemSeparator: ComponentType<ComponentProps<"li">>
+  ItemMedia: ComponentType<ComponentProps<"div"> & { variant?: "default" | "icon" | "image" }>
+  ItemContent: ComponentType<ComponentProps<"div">>
+  ItemTitle: ComponentType<ComponentProps<"div">>
+  ItemDescription: ComponentType<ComponentProps<"p">>
+  ItemActions: ComponentType<ComponentProps<"div">>
+  ItemHeader: ComponentType<ComponentProps<"div">>
+  ItemFooter: ComponentType<ComponentProps<"div">>
+  TypographyH1: ComponentType<ComponentProps<"h1">>
+  TypographyH2: ComponentType<ComponentProps<"h2">>
+  TypographyH3: ComponentType<ComponentProps<"h3">>
+  TypographyH4: ComponentType<ComponentProps<"h4">>
+  TypographyP: ComponentType<ComponentProps<"p">>
+  TypographyLead: ComponentType<ComponentProps<"p">>
+  TypographySmall: ComponentType<ComponentProps<"small">>
+  TypographyMuted: ComponentType<ComponentProps<"p">>
+  TypographyBlockquote: ComponentType<ComponentProps<"blockquote">>
+  TypographyInlineCode: ComponentType<ComponentProps<"code">>
+  TypographyList: ComponentType<ComponentProps<"ul"> & { ordered?: boolean }>
+  typography: Record<"h1" | "h2" | "h3" | "h4" | "p" | "lead" | "small" | "muted" | "caption" | "blockquote" | "code" | "list", string>
   Pagination: ComponentType<ComponentProps<"nav">>
   PaginationContent: ComponentType<ComponentProps<"ul">>
   PaginationItem: ComponentType<ComponentProps<"li">>
@@ -60,6 +87,8 @@ export type DemoComponents = {
   paginationRange: (page: number, total: number, siblings?: number) => (number | "ellipsis")[]
   ButtonGroup: ComponentType<ComponentProps<"div"> & { orientation?: "horizontal" | "vertical" }>
   ButtonGroupSeparator: ComponentType<ComponentProps<"div">>
+  AspectRatio: ComponentType<ComponentProps<"div"> & { ratio?: number }>
+  DirectionProvider: ComponentType<{ children?: ReactNode; direction?: "ltr" | "rtl" }>
   Empty: ComponentType<ComponentProps<"div">>
   EmptyMedia: ComponentType<ComponentProps<"div">>
   EmptyTitle: ComponentType<ComponentProps<"h3">>
@@ -105,7 +134,7 @@ export type DemoComponents = {
   TooltipProvider: ComponentType<{ children?: ReactNode }>
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
-  TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  TooltipContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end"; align?: "start" | "center" | "end"; sideOffset?: number }>
   Accordion: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: string[]; multiple?: boolean }>
   AccordionItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean }>
   AccordionTrigger: ComponentType<{ children?: ReactNode; className?: string; headingLevel?: 2 | 3 | 4 | 5 | 6 }>
@@ -129,6 +158,17 @@ export type DemoComponents = {
   ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
   ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
   ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
+  Command: ComponentType<{ children?: ReactNode; className?: string; items?: readonly CommandAction[] | readonly CommandSection[] }>
+  CommandInput: ComponentType<{ placeholder?: string; className?: string; "aria-label"?: string }>
+  CommandList: ComponentType<{ children?: ((item: CommandAction) => ReactNode) | ((group: CommandSection) => ReactNode); className?: string }>
+  CommandEmpty: ComponentType<{ children?: ReactNode; className?: string }>
+  CommandGroup: ComponentType<{ children?: ReactNode; items?: readonly CommandAction[] }>
+  CommandGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
+  CommandCollection: ComponentType<{ children: (item: CommandAction) => ReactNode }>
+  CommandItem: ComponentType<{ children?: ReactNode; value: CommandAction; className?: string; disabled?: boolean; onClick?: () => void }>
+  CommandSeparator: ComponentType<{ className?: string }>
+  CommandShortcut: ComponentType<ComponentProps<"span">>
+  CommandDialog: ComponentType<{ children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; title?: string; className?: string }>
   ScrollArea: ComponentType<{ children?: ReactNode; className?: string; orientation?: "vertical" | "horizontal" | "both"; "aria-label"?: string }>
   Slider: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: number | number[]; value?: number | number[]; min?: number; max?: number; step?: number; disabled?: boolean; format?: Intl.NumberFormatOptions; thumbLabels?: string[] }>
   SliderLabel: ComponentType<{ children?: ReactNode; className?: string }>
@@ -140,6 +180,12 @@ export type DemoComponents = {
   ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
   ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
   InputOTP: ComponentType<{ id?: string; className?: string; length: number; groups?: number[]; value?: string; defaultValue?: string; onValueChange?: (value: string) => void; onValueComplete?: (value: string) => void; validationType?: "numeric" | "alpha" | "alphanumeric" | "none"; normalizeValue?: (value: string) => string; invalid?: boolean; describedBy?: string; disabled?: boolean }>
+  InputGroup: ComponentType<ComponentProps<"div">>
+  InputGroupInput: ComponentType<ComponentProps<"input">>
+  InputGroupTextarea: ComponentType<Omit<ComponentProps<"textarea">, "onChange"> & { onValueChange?: (value: string) => void }>
+  InputGroupAddon: ComponentType<ComponentProps<"div"> & { align?: "inline-start" | "inline-end" | "block-start" | "block-end" }>
+  InputGroupText: ComponentType<ComponentProps<"span">>
+  InputGroupButton: ComponentType<ComponentProps<"button"> & { variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "link"; size?: "sm" | "default" | "lg" | "icon" }>
   NavigationMenu: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
   NavigationMenuList: ComponentType<{ children?: ReactNode; className?: string }>
   NavigationMenuItem: ComponentType<{ children?: ReactNode; className?: string }>
@@ -170,6 +216,23 @@ export type DemoComponents = {
   SheetFooter: ComponentType<ComponentProps<"div">>
   SheetTitle: ComponentType<{ children?: ReactNode; className?: string }>
   SheetDescription: ComponentType<{ children?: ReactNode; className?: string }>
+  SidebarProvider: ComponentType<ComponentProps<"div"> & { defaultOpen?: boolean; open?: boolean; onOpenChange?: (open: boolean) => void; shortcut?: string | false }>
+  Sidebar: ComponentType<ComponentProps<"nav"> & { side?: "start" | "end"; collapsible?: "offcanvas" | "icon" | "none" }>
+  SidebarTrigger: ComponentType<ComponentProps<"button">>
+  SidebarInset: ComponentType<ComponentProps<"main"> & { render?: ReactElement }>
+  SidebarHeader: ComponentType<ComponentProps<"div">>
+  SidebarContent: ComponentType<ComponentProps<"div">>
+  SidebarFooter: ComponentType<ComponentProps<"div">>
+  SidebarSeparator: ComponentType<ComponentProps<"div">>
+  SidebarGroup: ComponentType<ComponentProps<"div">>
+  SidebarGroupLabel: ComponentType<ComponentProps<"div">>
+  SidebarMenu: ComponentType<ComponentProps<"ul">>
+  SidebarMenuItem: ComponentType<ComponentProps<"li">>
+  SidebarMenuButton: ComponentType<ComponentProps<"button"> & { isActive?: boolean; size?: "default" | "sm"; tooltip?: ReactNode; render?: ReactElement }>
+  SidebarMenuBadge: ComponentType<ComponentProps<"span">>
+  SidebarMenuSub: ComponentType<ComponentProps<"ul">>
+  SidebarMenuSubItem: ComponentType<ComponentProps<"li">>
+  SidebarMenuSubButton: ComponentType<ComponentProps<"button"> & { isActive?: boolean; render?: ReactElement }>
   Dialog: ComponentType<{ children?: ReactNode; dismissible?: boolean }>
   DialogTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   DialogClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
@@ -466,6 +529,214 @@ function Pages({ ui, total = 3, initial = 2 }: { ui: DemoComponents; total?: num
 const moreIcon = <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className="size-4"><circle cx="3.5" cy="8" r="1.25" /><circle cx="8" cy="8" r="1.25" /><circle cx="12.5" cy="8" r="1.25" /></svg>
 const chevronDownIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 
+// A landscape drawn inline, so the Aspect Ratio demos show a real <img> cropped by object-cover without shipping assets.
+const landscape = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="s" x2="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#b9c7d6"/></linearGradient></defs><rect width="320" height="200" fill="url(#s)"/><circle cx="230" cy="70" r="22" fill="#fbeee0"/><path d="M0 150 70 80l50 45 60-65 70 70 70-40v110H0z" fill="#6f7f8f"/><path d="M0 170 90 120l60 30 70-40 100 60v30H0z" fill="#3f4a55"/></svg>')
+
+const commandSections: CommandSection[] = [
+  { value: "Suggestions", items: [{ value: "calendar", label: "Calendar" }, { value: "search-emoji", label: "Search emoji" }, { value: "calculator", label: "Calculator", disabled: true }] },
+  { value: "Settings", items: [{ value: "profile", label: "Profile", shortcut: "⌘P" }, { value: "billing", label: "Billing", shortcut: "⌘B" }, { value: "settings", label: "Settings", shortcut: "⌘S" }] },
+]
+const commandActions: CommandAction[] = [{ value: "new-file", label: "New file" }, { value: "new-folder", label: "New folder" }, { value: "open-settings", label: "Open settings" }, { value: "toggle-theme", label: "Toggle theme" }, { value: "invite", label: "Invite a teammate" }]
+
+function CommandBasic({ ui }: { ui: DemoComponents }) {
+  const { Command, CommandInput, CommandEmpty, CommandList, CommandGroup, CommandGroupLabel, CommandCollection, CommandItem, CommandShortcut } = ui
+  const [ran, setRan] = useState("")
+  return <div className="w-full max-w-sm space-y-2">
+    <Command items={commandSections} className="shadow-sm">
+      <CommandInput placeholder="Type a command or search" aria-label="Command" />
+      <CommandEmpty>No results found.</CommandEmpty>
+      <CommandList>{(group: CommandSection) => <CommandGroup key={group.value} items={group.items}><CommandGroupLabel>{group.value}</CommandGroupLabel><CommandCollection>{(item: CommandAction) => <CommandItem key={item.value} value={item} disabled={item.disabled} onClick={() => setRan(item.label)}>{item.label}{item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}</CommandItem>}</CommandCollection></CommandGroup>}</CommandList>
+    </Command>
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
+
+function CommandPalette({ ui }: { ui: DemoComponents }) {
+  const { Button, Kbd, KbdGroup, CommandDialog, Command, CommandInput, CommandEmpty, CommandList, CommandItem } = ui
+  const [open, setOpen] = useState(false)
+  const [ran, setRan] = useState("")
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) { event.preventDefault(); setOpen(value => !value) }
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [])
+  return <div className="flex flex-col items-center gap-2">
+    <Button variant="outline" onClick={() => setOpen(true)}>Search… <KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <Command items={commandActions}>
+        <CommandInput placeholder="Type a command" aria-label="Command" />
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandList>{(item: CommandAction) => <CommandItem key={item.value} value={item} onClick={() => { setRan(item.label); setOpen(false) }}>{item.label}</CommandItem>}</CommandList>
+      </Command>
+    </CommandDialog>
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
+
+function DirectionDemo({ ui }: { ui: DemoComponents }) {
+  const { DirectionProvider, Tabs, TabsList, TabsTab, Slider } = ui
+  return <div dir="rtl" lang="ar" className="w-full max-w-sm space-y-6">
+    <DirectionProvider direction="rtl">
+      <Tabs defaultValue="account"><TabsList aria-label="الإعدادات"><TabsTab value="account">الحساب</TabsTab><TabsTab value="security">الأمان</TabsTab><TabsTab value="billing">الفوترة</TabsTab></TabsList></Tabs>
+      <Slider defaultValue={30}><SliderRow ui={ui} label="مستوى الصوت" /></Slider>
+    </DirectionProvider>
+  </div>
+}
+
+const searchIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" /><path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+const copyIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" /><path d="M10.5 3.5v-.5A1.5 1.5 0 0 0 9 1.5H3A1.5 1.5 0 0 0 1.5 3v6A1.5 1.5 0 0 0 3 10.5h.5" stroke="currentColor" strokeWidth="1.5" /></svg>
+
+function InputGroupPrefix({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-sm gap-2"><Label htmlFor={id}>Website</Label><InputGroup>
+    <InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
+    <InputGroupInput id={id} placeholder="acme" aria-describedby={id + "-suffix"} />
+    <InputGroupAddon align="inline-end"><InputGroupText id={id + "-suffix"}>.zuno.app</InputGroupText></InputGroupAddon>
+  </InputGroup></div>
+}
+
+function InputGroupActions({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton, Kbd, KbdGroup } = ui
+  const [copied, setCopied] = useState(false)
+  return <div className="grid w-full max-w-sm gap-4">
+    <InputGroup>
+      <InputGroupAddon>{searchIcon}</InputGroupAddon>
+      <InputGroupInput type="search" placeholder="Search docs" aria-label="Search docs" />
+      <InputGroupAddon align="inline-end"><KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></InputGroupAddon>
+    </InputGroup>
+    <InputGroup>
+      <InputGroupInput readOnly defaultValue="zk_live_4f9a…c21" aria-label="API key" />
+      <InputGroupAddon align="inline-end"><InputGroupButton size="icon" aria-label="Copy API key" onClick={() => setCopied(true)}>{copyIcon}</InputGroupButton></InputGroupAddon>
+    </InputGroup>
+    <p role="status" className="text-sm text-muted-foreground">{copied ? "API key copied." : ""}</p>
+  </div>
+}
+
+function InputGroupReply({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupTextarea, InputGroupText, InputGroupButton, Label } = ui
+  const id = useId()
+  const [text, setText] = useState("")
+  return <div className="grid w-full max-w-md gap-2"><Label htmlFor={id}>Reply</Label><InputGroup>
+    <InputGroupTextarea id={id} value={text} onValueChange={setText} maxLength={280} placeholder="Write a reply" aria-describedby={id + "-count"} />
+    <InputGroupAddon align="block-end" className="justify-between">
+      <InputGroupText id={id + "-count"}>{text.length}/280</InputGroupText>
+      <InputGroupButton variant="default" disabled={!text} onClick={() => setText("")}>Send</InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup></div>
+}
+
+function InputGroupInvalid({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Amount</Label><InputGroup>
+    <InputGroupAddon><InputGroupText>$</InputGroupText></InputGroupAddon>
+    <InputGroupInput id={id} inputMode="decimal" defaultValue="-20" aria-invalid="true" aria-describedby={`${id}-currency ${id}-error`} />
+    <InputGroupAddon align="inline-end"><InputGroupText id={id + "-currency"}>USD</InputGroupText></InputGroupAddon>
+  </InputGroup><p id={id + "-error"} className="text-sm text-destructive">Enter an amount greater than zero.</p></div>
+}
+
+function NativeSelectBasic({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Country</Label><NativeSelect id={id} name="country" defaultValue="" required>
+    <NativeSelectOption value="" disabled>Select a country</NativeSelectOption>
+    {[["ar", "Argentina"], ["co", "Colombia"], ["mx", "Mexico"], ["es", "Spain"]].map(([value, label]) => <NativeSelectOption key={value} value={value}>{label}</NativeSelectOption>)}
+  </NativeSelect></div>
+}
+
+function NativeSelectGroups({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, NativeSelectOptGroup, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Time zone</Label><NativeSelect id={id} defaultValue="America/Mexico_City">
+    <NativeSelectOptGroup label="Americas"><NativeSelectOption value="America/New_York">New York</NativeSelectOption><NativeSelectOption value="America/Mexico_City">Mexico City</NativeSelectOption></NativeSelectOptGroup>
+    <NativeSelectOptGroup label="Europe"><NativeSelectOption value="Europe/London">London</NativeSelectOption><NativeSelectOption value="Europe/Madrid">Madrid</NativeSelectOption></NativeSelectOptGroup>
+  </NativeSelect></div>
+}
+
+function NativeSelectStates({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-4">
+    <div className="grid gap-2"><Label htmlFor={id + "-plan"}>Plan</Label><NativeSelect id={id + "-plan"} defaultValue="" aria-invalid="true" aria-describedby={id + "-error"}><NativeSelectOption value="" disabled>Choose a plan</NativeSelectOption><NativeSelectOption value="free">Free</NativeSelectOption><NativeSelectOption value="pro">Pro</NativeSelectOption></NativeSelect><p id={id + "-error"} className="text-sm text-destructive">Choose a plan to continue.</p></div>
+    <div className="grid gap-2"><Label htmlFor={id + "-region"}>Region</Label><NativeSelect id={id + "-region"} disabled defaultValue="us"><NativeSelectOption value="us">United States</NativeSelectOption></NativeSelect></div>
+  </div>
+}
+
+const shieldIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.75 2.75 3.5v4c0 3.1 2.2 5.6 5.25 6.75 3.05-1.15 5.25-3.65 5.25-6.75v-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="m5.75 8 1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const chevronEndIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4 text-muted-foreground rtl:-scale-x-100"><path d="m6 4 4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const itemPeople = [{ name: "Ana Ruiz", email: "ana@acme.dev", initials: "AR" }, { name: "Diego Soto", email: "diego@acme.dev", initials: "DS" }, { name: "Mei Chen", email: "mei@acme.dev", initials: "MC" }]
+
+function ItemPeople({ ui }: { ui: DemoComponents }) {
+  const { ItemGroup, ItemSeparator, Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Avatar, AvatarFallback, Button } = ui
+  const [people, setPeople] = useState(itemPeople)
+  return <div className="w-full max-w-md">
+    {people.length ? <ItemGroup aria-label="Team members">{people.map((person, index) => <Fragment key={person.email}>
+      {index > 0 && <ItemSeparator />}
+      <Item size="sm" render={<li />}>
+        <ItemMedia><Avatar><AvatarFallback>{person.initials}</AvatarFallback></Avatar></ItemMedia>
+        <ItemContent><ItemTitle>{person.name}</ItemTitle><ItemDescription>{person.email}</ItemDescription></ItemContent>
+        <ItemActions><Button size="sm" variant="ghost" aria-label={`Remove ${person.name}`} onClick={() => setPeople(list => list.filter(p => p !== person))}>Remove</Button></ItemActions>
+      </Item>
+    </Fragment>)}</ItemGroup> : <Button variant="outline" onClick={() => setPeople(itemPeople)}>Restore members</Button>}
+  </div>
+}
+
+const sbIcon = (d: string) => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={d} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const sidebarLinks = [
+  { id: "home", label: "Home", icon: sbIcon("M2.5 7 8 2.5 13.5 7v6.5h-4v-4h-3v4h-4z") },
+  { id: "inbox", label: "Inbox", icon: sbIcon("M2 9.5 3.5 3h9L14 9.5V13H2zM2 9.5h3.5l1 1.5h3l1-1.5H14"), badge: "12" },
+  { id: "projects", label: "Projects", icon: sbIcon("M2 4.5h4l1.5 1.5H14V13H2z") },
+  { id: "reports", label: "Reports", icon: sbIcon("M3 13V8m5 5V3m5 10V6") },
+]
+const settingsIcon = sbIcon("M8 5.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5zM8 1.5v2m0 9v2M1.5 8h2m9 0h2M3.4 3.4l1.4 1.4m6.4 6.4 1.4 1.4m0-9.2-1.4 1.4m-6.4 6.4-1.4 1.4")
+
+function SidebarShell({ ui, collapsible = "offcanvas", defaultOpen = true, shortcut = false, nested = false }: { ui: DemoComponents; collapsible?: "offcanvas" | "icon"; defaultOpen?: boolean; shortcut?: string | false; nested?: boolean }) {
+  const { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuBadge, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarInset, SidebarTrigger, SidebarSeparator, Avatar, AvatarFallback } = ui
+  const [page, setPage] = useState(nested ? "profile" : "home")
+  const go = (id: string): ComponentProps<"a">["onClick"] => event => { event.preventDefault(); setPage(id) }
+  const title = [...sidebarLinks, { id: "profile", label: "Profile" }, { id: "billing", label: "Billing" }].find(link => link.id === page)?.label
+  return <SidebarProvider defaultOpen={defaultOpen} shortcut={shortcut} className="h-[28rem] min-h-0 w-full max-w-3xl overflow-hidden rounded-xl border border-border">
+    <Sidebar collapsible={collapsible} className="h-full">
+      <SidebarHeader><div className="flex min-h-9 items-center gap-2 px-2.5 text-sm font-semibold"><span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded bg-foreground text-[10px] text-background">A</span><span className="truncate group-data-[collapsible=icon]/sidebar:sr-only">Acme Inc.</span></div></SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>{sidebarLinks.map(link => <SidebarMenuItem key={link.id}><SidebarMenuButton tooltip={link.label} isActive={page === link.id} render={<a href="#" onClick={go(link.id)} />}>{link.icon}<span>{link.label}</span>{link.badge && <SidebarMenuBadge>{link.badge}</SidebarMenuBadge>}</SidebarMenuButton></SidebarMenuItem>)}</SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarMenu><SidebarMenuItem>
+            <SidebarMenuButton tooltip="Settings" isActive={!nested && page === "settings"} render={<a href="#" onClick={go(nested ? "profile" : "settings")} />}>{settingsIcon}<span>Settings</span></SidebarMenuButton>
+            {nested && <SidebarMenuSub>{[["profile", "Profile"], ["billing", "Billing"]].map(([id, label]) => <SidebarMenuSubItem key={id}><SidebarMenuSubButton isActive={page === id} render={<a href="#" onClick={go(id)} />}><span>{label}</span></SidebarMenuSubButton></SidebarMenuSubItem>)}</SidebarMenuSub>}
+          </SidebarMenuItem></SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter><div className="flex items-center gap-2 px-1"><Avatar size="sm"><AvatarFallback>AR</AvatarFallback></Avatar><span className="truncate text-sm group-data-[collapsible=icon]/sidebar:sr-only">Ana Ruiz</span></div></SidebarFooter>
+    </Sidebar>
+    <SidebarInset render={<div />}>
+      <header className="flex items-center gap-2 border-b border-border p-2"><SidebarTrigger /><h3 className="text-sm font-medium text-foreground">{title ?? "Settings"}</h3></header>
+      <div className="grid flex-1 content-start gap-3 p-4">{[0, 1, 2].map(i => <div key={i} className="h-16 rounded-lg bg-muted" />)}</div>
+    </SidebarInset>
+  </SidebarProvider>
+}
+
+// The docs page already has an h1 and h2s, so the article demo keeps the recipes but starts at h3.
+function TypographyArticle({ ui }: { ui: DemoComponents }) {
+  const { TypographyLead, TypographyP, TypographyInlineCode, TypographyBlockquote, TypographyList, typography } = ui
+  return <article className="flex w-full max-w-xl flex-col gap-4">
+    <h3 className={typography.h1}>Shipping a design system</h3>
+    <TypographyLead>Notes from moving three products onto one set of components.</TypographyLead>
+    <h4 className={typography.h2}>Start with tokens</h4>
+    <TypographyP>Every surface reads <TypographyInlineCode>bg-background</TypographyInlineCode>, so dark mode came for free.</TypographyP>
+    <TypographyBlockquote>Consistency is a feature your users never ask for and always notice.</TypographyBlockquote>
+    <TypographyList><li>Tokens before components</li><li>Compositions before variants</li><li>Docs before release</li></TypographyList>
+  </article>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -644,7 +915,36 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "kbd-in-button": ({ Kbd, KbdGroup, Button }) => <Button variant="outline" aria-keyshortcuts="Meta+K">Search<KbdGroup className="ms-2"><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>,
       "kbd-in-text": ({ Kbd }) => <p className="text-sm text-foreground">Press <Kbd>Esc</Kbd> to close, or <Kbd label="Enter">↵</Kbd> to confirm.</p>,
     },
+  },  "native-select": {
+    preview: ui => <NativeSelectBasic ui={ui} />,
+    examples: {
+      "native-select-basic": ui => <NativeSelectBasic ui={ui} />,
+      "native-select-groups": ui => <NativeSelectGroups ui={ui} />,
+      "native-select-states": ui => <NativeSelectStates ui={ui} />,
+    },
+  },  item: {
+    preview: ({ Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Button }) => <Item variant="outline" className="w-full max-w-md"><ItemMedia variant="icon">{shieldIcon}</ItemMedia><ItemContent><ItemTitle>Two-factor authentication</ItemTitle><ItemDescription>Add a second step when you sign in, with an app or a security key.</ItemDescription></ItemContent><ItemActions><Button size="sm" variant="outline">Enable</Button></ItemActions></Item>,
+    examples: {
+      "item-basic": ({ Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Button }) => <Item variant="outline" className="w-full max-w-md"><ItemMedia variant="icon">{shieldIcon}</ItemMedia><ItemContent><ItemTitle>Two-factor authentication</ItemTitle><ItemDescription>Add a second step when you sign in, with an app or a security key.</ItemDescription></ItemContent><ItemActions><Button size="sm" variant="outline">Enable</Button></ItemActions></Item>,
+      "item-list": ui => <ItemPeople ui={ui} />,
+      "item-link": ({ Item, ItemContent, ItemTitle, ItemDescription, ItemActions }) => <div className="flex w-full max-w-md flex-col gap-2">{[["Billing", "Plan, invoices and payment method."], ["Notifications", "Email and push preferences."]].map(([title, description]) => <Item key={title} variant="outline" render={<a href="#" onClick={preventNav} />}><ItemContent><ItemTitle>{title}</ItemTitle><ItemDescription>{description}</ItemDescription></ItemContent><ItemActions>{chevronEndIcon}</ItemActions></Item>)}</div>,
+      "item-variants": ({ Item, ItemContent, ItemTitle, ItemDescription, ItemFooter, Badge }) => <div className="flex w-full max-w-md flex-col gap-3">
+        <Item><ItemContent><ItemTitle>Default</ItemTitle><ItemDescription>No frame; sits on the page surface.</ItemDescription></ItemContent></Item>
+        <Item variant="outline"><ItemContent><ItemTitle>Outline</ItemTitle><ItemDescription>A border for rows that stand alone.</ItemDescription></ItemContent></Item>
+        <Item variant="muted"><ItemContent><ItemTitle>Quarterly report <Badge variant="secondary">Draft</Badge></ItemTitle><ItemDescription>Revenue, churn and the hiring plan.</ItemDescription></ItemContent><ItemFooter className="text-xs text-muted-foreground"><span>Edited 2 h ago</span><span>3 comments</span></ItemFooter></Item>
+      </div>,
+    },
+  },  typography: {
+    preview: ui => <TypographyArticle ui={ui} />,
+    examples: {
+      "typography-article": ui => <TypographyArticle ui={ui} />,
+      "typography-levels": ({ typography }) => <section aria-labelledby="typography-billing" className="flex w-full max-w-md flex-col gap-2"><h3 id="typography-billing" className={typography.h1}>Billing</h3><h4 className={typography.h4}>Payment method</h4><p className={typography.muted}>Visa ending in 4242</p></section>,
+      "typography-small": ({ TypographySmall, TypographyMuted, TypographyList, typography }) => <div className="flex w-full max-w-md flex-col gap-4"><div className="flex flex-col gap-1"><TypographySmall>Email address</TypographySmall><TypographyMuted>We only use it for receipts.</TypographyMuted><p className={typography.caption}>Updated 2 min ago</p></div><TypographyList ordered><li>Create a project</li><li>Invite your team</li><li>Connect a domain</li></TypographyList></div>,
+    },
   },
+
+
+
   pagination: {
     preview: ui => <Pages ui={ui} total={12} initial={6} />,
     examples: {
@@ -660,7 +960,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "button-group-split": ({ ButtonGroup, ButtonGroupSeparator, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }) => <ButtonGroup aria-label="Publish"><Button>Publish</Button><ButtonGroupSeparator /><DropdownMenu><DropdownMenuTrigger render={<Button size="icon" aria-label="Publish options" />}>{chevronDownIcon}</DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem>Schedule</DropdownMenuItem><DropdownMenuItem>Save as draft</DropdownMenuItem></DropdownMenuContent></DropdownMenu></ButtonGroup>,
       "button-group-vertical": ({ ButtonGroup, Button }) => <ButtonGroup orientation="vertical" aria-label="Zoom"><Button variant="outline" size="icon" aria-label="Zoom in">+</Button><Button variant="outline" size="icon" aria-label="Zoom out">−</Button></ButtonGroup>,
     },
+  },  "aspect-ratio": {
+    preview: ({ AspectRatio }) => <div className="w-full max-w-sm"><AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted"><img src={landscape} alt="Mountains at dusk" className="object-cover" /></AspectRatio></div>,
+    examples: {
+      "aspect-ratio-image": ({ AspectRatio }) => <div className="w-full max-w-sm"><AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted"><img src={landscape} alt="Mountain lake at dawn" className="object-cover" /></AspectRatio></div>,
+      "aspect-ratio-square": ({ AspectRatio, ResponsiveGrid }) => <ResponsiveGrid min="6rem" className="w-full max-w-md">{["Inbox", "Drafts", "Sent", "Archive"].map(name => <AspectRatio key={name} className="rounded-lg bg-muted"><div className="flex items-center justify-center text-sm text-muted-foreground">{name}</div></AspectRatio>)}</ResponsiveGrid>,
+      "aspect-ratio-card": ({ AspectRatio, Card, CardTitle, CardDescription }) => <Card className="w-full max-w-xs overflow-hidden p-0"><AspectRatio ratio={4 / 3} className="bg-muted"><img src={landscape} alt="Cabin by the lake" className="object-cover" /></AspectRatio><div className="p-4"><CardTitle>Lakeside cabin</CardTitle><CardDescription>Sleeps four · 2 h from the city</CardDescription></div></Card>,
+    },
   },
+
   label: {
     preview: ({ Label }) => <Label>Email</Label>,
     examples: {
@@ -816,7 +1124,20 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
     },
+  },  command: {
+    preview: ui => <CommandBasic ui={ui} />,
+    examples: {
+      "command-basic": ui => <CommandBasic ui={ui} />,
+      "command-dialog": ui => <CommandPalette ui={ui} />,
+    },
   },
+  direction: {
+    preview: ui => <DirectionDemo ui={ui} />,
+    examples: {
+      "direction-rtl": ui => <DirectionDemo ui={ui} />,
+    },
+  },
+
   "scroll-area": {
     preview: ({ ScrollArea }) => <ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags"><div className="p-4"><p className="mb-2 text-sm font-medium text-foreground">Tags</p>{scrollTags.map(tag => <div key={tag} className="border-b border-border py-2 text-sm text-foreground">{tag}</div>)}</div></ScrollArea>,
     examples: {
@@ -865,7 +1186,16 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "input-otp-recovery": ({ InputOTP, Label }) => <div className="grid gap-2"><Label htmlFor="otp-recovery">Recovery code</Label><InputOTP id="otp-recovery" length={8} groups={[4, 4]} validationType="alphanumeric" normalizeValue={value => value.toUpperCase()} /></div>,
       "input-otp-error": ui => <OtpError ui={ui} />,
     },
+  },  "input-group": {
+    preview: ui => <InputGroupPrefix ui={ui} />,
+    examples: {
+      "input-group-text": ui => <InputGroupPrefix ui={ui} />,
+      "input-group-buttons": ui => <InputGroupActions ui={ui} />,
+      "input-group-textarea": ui => <InputGroupReply ui={ui} />,
+      "input-group-invalid": ui => <InputGroupInvalid ui={ui} />,
+    },
   },
+
   "navigation-menu": {
     preview: ui => <NavMenuBasic ui={ui} />,
     examples: {
@@ -901,7 +1231,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "sheet-form": ui => <SheetForm ui={ui} />,
       "sheet-sides": ({ Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, Button }) => <div className="showcase-button-row">{(["top", "right", "bottom", "left"] as const).map(side => <Sheet key={side} side={side}><SheetTrigger render={<Button variant="outline">{side}</Button>} /><SheetContent><SheetHeader><SheetTitle>From the {side}</SheetTitle><SheetDescription>Swipe toward the {side} edge, press Escape or use the close button.</SheetDescription></SheetHeader></SheetContent></Sheet>)}</div>,
     },
+  },  sidebar: {
+    preview: ui => <SidebarShell ui={ui} shortcut="b" />,
+    examples: {
+      "sidebar-basic": ui => <SidebarShell ui={ui} />,
+      "sidebar-icon": ui => <SidebarShell ui={ui} collapsible="icon" defaultOpen={false} />,
+      "sidebar-submenu": ui => <SidebarShell ui={ui} nested />,
+    },
   },
+
   dialog: {
     preview: ({ Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, Button }) => <Dialog><DialogTrigger render={<Button>Edit profile</Button>} /><DialogContent><DialogHeader><DialogTitle>Edit profile</DialogTitle><DialogDescription>Change your display name. It is saved when you confirm.</DialogDescription></DialogHeader><DialogFooter><DialogClose render={<Button variant="outline">Cancel</Button>} /><DialogClose render={<Button>Save changes</Button>} /></DialogFooter></DialogContent></Dialog>,
     examples: {
