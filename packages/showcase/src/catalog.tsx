@@ -155,6 +155,12 @@ export type DemoComponents = {
   ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
   ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
   InputOTP: ComponentType<{ id?: string; className?: string; length: number; groups?: number[]; value?: string; defaultValue?: string; onValueChange?: (value: string) => void; onValueComplete?: (value: string) => void; validationType?: "numeric" | "alpha" | "alphanumeric" | "none"; normalizeValue?: (value: string) => string; invalid?: boolean; describedBy?: string; disabled?: boolean }>
+  InputGroup: ComponentType<ComponentProps<"div">>
+  InputGroupInput: ComponentType<ComponentProps<"input">>
+  InputGroupTextarea: ComponentType<Omit<ComponentProps<"textarea">, "onChange"> & { onValueChange?: (value: string) => void }>
+  InputGroupAddon: ComponentType<ComponentProps<"div"> & { align?: "inline-start" | "inline-end" | "block-start" | "block-end" }>
+  InputGroupText: ComponentType<ComponentProps<"span">>
+  InputGroupButton: ComponentType<ComponentProps<"button"> & { variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "link"; size?: "sm" | "default" | "lg" | "icon" }>
   NavigationMenu: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
   NavigationMenuList: ComponentType<{ children?: ReactNode; className?: string }>
   NavigationMenuItem: ComponentType<{ children?: ReactNode; className?: string }>
@@ -535,6 +541,59 @@ function DirectionDemo({ ui }: { ui: DemoComponents }) {
       <Slider defaultValue={30}><SliderRow ui={ui} label="مستوى الصوت" /></Slider>
     </DirectionProvider>
   </div>
+}
+
+const searchIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" /><path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+const copyIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" /><path d="M10.5 3.5v-.5A1.5 1.5 0 0 0 9 1.5H3A1.5 1.5 0 0 0 1.5 3v6A1.5 1.5 0 0 0 3 10.5h.5" stroke="currentColor" strokeWidth="1.5" /></svg>
+
+function InputGroupPrefix({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-sm gap-2"><Label htmlFor={id}>Website</Label><InputGroup>
+    <InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
+    <InputGroupInput id={id} placeholder="acme" aria-describedby={id + "-suffix"} />
+    <InputGroupAddon align="inline-end"><InputGroupText id={id + "-suffix"}>.zuno.app</InputGroupText></InputGroupAddon>
+  </InputGroup></div>
+}
+
+function InputGroupActions({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton, Kbd, KbdGroup } = ui
+  const [copied, setCopied] = useState(false)
+  return <div className="grid w-full max-w-sm gap-4">
+    <InputGroup>
+      <InputGroupAddon>{searchIcon}</InputGroupAddon>
+      <InputGroupInput type="search" placeholder="Search docs" aria-label="Search docs" />
+      <InputGroupAddon align="inline-end"><KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></InputGroupAddon>
+    </InputGroup>
+    <InputGroup>
+      <InputGroupInput readOnly defaultValue="zk_live_4f9a…c21" aria-label="API key" />
+      <InputGroupAddon align="inline-end"><InputGroupButton size="icon" aria-label="Copy API key" onClick={() => setCopied(true)}>{copyIcon}</InputGroupButton></InputGroupAddon>
+    </InputGroup>
+    <p role="status" className="text-sm text-muted-foreground">{copied ? "API key copied." : ""}</p>
+  </div>
+}
+
+function InputGroupReply({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupTextarea, InputGroupText, InputGroupButton, Label } = ui
+  const id = useId()
+  const [text, setText] = useState("")
+  return <div className="grid w-full max-w-md gap-2"><Label htmlFor={id}>Reply</Label><InputGroup>
+    <InputGroupTextarea id={id} value={text} onValueChange={setText} maxLength={280} placeholder="Write a reply" aria-describedby={id + "-count"} />
+    <InputGroupAddon align="block-end" className="justify-between">
+      <InputGroupText id={id + "-count"}>{text.length}/280</InputGroupText>
+      <InputGroupButton variant="default" disabled={!text} onClick={() => setText("")}>Send</InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup></div>
+}
+
+function InputGroupInvalid({ ui }: { ui: DemoComponents }) {
+  const { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Amount</Label><InputGroup>
+    <InputGroupAddon><InputGroupText>$</InputGroupText></InputGroupAddon>
+    <InputGroupInput id={id} inputMode="decimal" defaultValue="-20" aria-invalid="true" aria-describedby={`${id}-currency ${id}-error`} />
+    <InputGroupAddon align="inline-end"><InputGroupText id={id + "-currency"}>USD</InputGroupText></InputGroupAddon>
+  </InputGroup><p id={id + "-error"} className="text-sm text-destructive">Enter an amount greater than zero.</p></div>
 }
 
 function OtpBasic({ ui }: { ui: DemoComponents }) {
@@ -957,7 +1016,16 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "input-otp-recovery": ({ InputOTP, Label }) => <div className="grid gap-2"><Label htmlFor="otp-recovery">Recovery code</Label><InputOTP id="otp-recovery" length={8} groups={[4, 4]} validationType="alphanumeric" normalizeValue={value => value.toUpperCase()} /></div>,
       "input-otp-error": ui => <OtpError ui={ui} />,
     },
+  },  "input-group": {
+    preview: ui => <InputGroupPrefix ui={ui} />,
+    examples: {
+      "input-group-text": ui => <InputGroupPrefix ui={ui} />,
+      "input-group-buttons": ui => <InputGroupActions ui={ui} />,
+      "input-group-textarea": ui => <InputGroupReply ui={ui} />,
+      "input-group-invalid": ui => <InputGroupInvalid ui={ui} />,
+    },
   },
+
   "navigation-menu": {
     preview: ui => <NavMenuBasic ui={ui} />,
     examples: {
