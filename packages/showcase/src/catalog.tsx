@@ -64,6 +64,18 @@ export type DemoComponents = {
   ItemActions: ComponentType<ComponentProps<"div">>
   ItemHeader: ComponentType<ComponentProps<"div">>
   ItemFooter: ComponentType<ComponentProps<"div">>
+  TypographyH1: ComponentType<ComponentProps<"h1">>
+  TypographyH2: ComponentType<ComponentProps<"h2">>
+  TypographyH3: ComponentType<ComponentProps<"h3">>
+  TypographyH4: ComponentType<ComponentProps<"h4">>
+  TypographyP: ComponentType<ComponentProps<"p">>
+  TypographyLead: ComponentType<ComponentProps<"p">>
+  TypographySmall: ComponentType<ComponentProps<"small">>
+  TypographyMuted: ComponentType<ComponentProps<"p">>
+  TypographyBlockquote: ComponentType<ComponentProps<"blockquote">>
+  TypographyInlineCode: ComponentType<ComponentProps<"code">>
+  TypographyList: ComponentType<ComponentProps<"ul"> & { ordered?: boolean }>
+  typography: Record<"h1" | "h2" | "h3" | "h4" | "p" | "lead" | "small" | "muted" | "caption" | "blockquote" | "code" | "list", string>
   Pagination: ComponentType<ComponentProps<"nav">>
   PaginationContent: ComponentType<ComponentProps<"ul">>
   PaginationItem: ComponentType<ComponentProps<"li">>
@@ -712,6 +724,19 @@ function SidebarShell({ ui, collapsible = "offcanvas", defaultOpen = true, short
   </SidebarProvider>
 }
 
+// The docs page already has an h1 and h2s, so the article demo keeps the recipes but starts at h3.
+function TypographyArticle({ ui }: { ui: DemoComponents }) {
+  const { TypographyLead, TypographyP, TypographyInlineCode, TypographyBlockquote, TypographyList, typography } = ui
+  return <article className="flex w-full max-w-xl flex-col gap-4">
+    <h3 className={typography.h1}>Shipping a design system</h3>
+    <TypographyLead>Notes from moving three products onto one set of components.</TypographyLead>
+    <h4 className={typography.h2}>Start with tokens</h4>
+    <TypographyP>Every surface reads <TypographyInlineCode>bg-background</TypographyInlineCode>, so dark mode came for free.</TypographyP>
+    <TypographyBlockquote>Consistency is a feature your users never ask for and always notice.</TypographyBlockquote>
+    <TypographyList><li>Tokens before components</li><li>Compositions before variants</li><li>Docs before release</li></TypographyList>
+  </article>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -909,7 +934,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
         <Item variant="muted"><ItemContent><ItemTitle>Quarterly report <Badge variant="secondary">Draft</Badge></ItemTitle><ItemDescription>Revenue, churn and the hiring plan.</ItemDescription></ItemContent><ItemFooter className="text-xs text-muted-foreground"><span>Edited 2 h ago</span><span>3 comments</span></ItemFooter></Item>
       </div>,
     },
+  },  typography: {
+    preview: ui => <TypographyArticle ui={ui} />,
+    examples: {
+      "typography-article": ui => <TypographyArticle ui={ui} />,
+      "typography-levels": ({ typography }) => <section aria-labelledby="typography-billing" className="flex w-full max-w-md flex-col gap-2"><h3 id="typography-billing" className={typography.h1}>Billing</h3><h4 className={typography.h4}>Payment method</h4><p className={typography.muted}>Visa ending in 4242</p></section>,
+      "typography-small": ({ TypographySmall, TypographyMuted, TypographyList, typography }) => <div className="flex w-full max-w-md flex-col gap-4"><div className="flex flex-col gap-1"><TypographySmall>Email address</TypographySmall><TypographyMuted>We only use it for receipts.</TypographyMuted><p className={typography.caption}>Updated 2 min ago</p></div><TypographyList ordered><li>Create a project</li><li>Invite your team</li><li>Connect a domain</li></TypographyList></div>,
+    },
   },
+
 
 
   pagination: {
