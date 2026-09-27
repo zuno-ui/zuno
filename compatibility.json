@@ -34,6 +34,7 @@
     { "id": "S-30", "name": "input", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-07" },
     { "id": "S-31", "name": "input-group", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-27" },
     { "id": "S-32", "name": "input-otp", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-26" },
+    { "id": "S-33", "name": "item", "kind": "html-css", "status": "stable", "reviewed": "2026-09-27" },
     { "id": "S-34", "name": "kbd", "kind": "html-css", "status": "stable", "reviewed": "2026-09-26" },
     { "id": "S-35", "name": "label", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-40", "name": "native-select", "kind": "html-css", "status": "stable", "reviewed": "2026-09-27" },

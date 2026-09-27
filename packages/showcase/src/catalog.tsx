@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { Fragment, useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import type { DateRange, DayPickerProps } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
@@ -54,6 +54,16 @@ export type DemoComponents = {
   NativeSelect: ComponentType<ComponentProps<"select">>
   NativeSelectOption: ComponentType<ComponentProps<"option">>
   NativeSelectOptGroup: ComponentType<ComponentProps<"optgroup">>
+  Item: ComponentType<ComponentProps<"div"> & { variant?: "default" | "outline" | "muted"; size?: "default" | "sm"; render?: ReactElement }>
+  ItemGroup: ComponentType<ComponentProps<"ul">>
+  ItemSeparator: ComponentType<ComponentProps<"li">>
+  ItemMedia: ComponentType<ComponentProps<"div"> & { variant?: "default" | "icon" | "image" }>
+  ItemContent: ComponentType<ComponentProps<"div">>
+  ItemTitle: ComponentType<ComponentProps<"div">>
+  ItemDescription: ComponentType<ComponentProps<"p">>
+  ItemActions: ComponentType<ComponentProps<"div">>
+  ItemHeader: ComponentType<ComponentProps<"div">>
+  ItemFooter: ComponentType<ComponentProps<"div">>
   Pagination: ComponentType<ComponentProps<"nav">>
   PaginationContent: ComponentType<ComponentProps<"ul">>
   PaginationItem: ComponentType<ComponentProps<"li">>
@@ -626,6 +636,25 @@ function NativeSelectStates({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
+const shieldIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.75 2.75 3.5v4c0 3.1 2.2 5.6 5.25 6.75 3.05-1.15 5.25-3.65 5.25-6.75v-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="m5.75 8 1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const chevronEndIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4 text-muted-foreground rtl:-scale-x-100"><path d="m6 4 4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const itemPeople = [{ name: "Ana Ruiz", email: "ana@acme.dev", initials: "AR" }, { name: "Diego Soto", email: "diego@acme.dev", initials: "DS" }, { name: "Mei Chen", email: "mei@acme.dev", initials: "MC" }]
+
+function ItemPeople({ ui }: { ui: DemoComponents }) {
+  const { ItemGroup, ItemSeparator, Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Avatar, AvatarFallback, Button } = ui
+  const [people, setPeople] = useState(itemPeople)
+  return <div className="w-full max-w-md">
+    {people.length ? <ItemGroup aria-label="Team members">{people.map((person, index) => <Fragment key={person.email}>
+      {index > 0 && <ItemSeparator />}
+      <Item size="sm" render={<li />}>
+        <ItemMedia><Avatar><AvatarFallback>{person.initials}</AvatarFallback></Avatar></ItemMedia>
+        <ItemContent><ItemTitle>{person.name}</ItemTitle><ItemDescription>{person.email}</ItemDescription></ItemContent>
+        <ItemActions><Button size="sm" variant="ghost" aria-label={`Remove ${person.name}`} onClick={() => setPeople(list => list.filter(p => p !== person))}>Remove</Button></ItemActions>
+      </Item>
+    </Fragment>)}</ItemGroup> : <Button variant="outline" onClick={() => setPeople(itemPeople)}>Restore members</Button>}
+  </div>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -811,7 +840,20 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "native-select-groups": ui => <NativeSelectGroups ui={ui} />,
       "native-select-states": ui => <NativeSelectStates ui={ui} />,
     },
+  },  item: {
+    preview: ({ Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Button }) => <Item variant="outline" className="w-full max-w-md"><ItemMedia variant="icon">{shieldIcon}</ItemMedia><ItemContent><ItemTitle>Two-factor authentication</ItemTitle><ItemDescription>Add a second step when you sign in, with an app or a security key.</ItemDescription></ItemContent><ItemActions><Button size="sm" variant="outline">Enable</Button></ItemActions></Item>,
+    examples: {
+      "item-basic": ({ Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions, Button }) => <Item variant="outline" className="w-full max-w-md"><ItemMedia variant="icon">{shieldIcon}</ItemMedia><ItemContent><ItemTitle>Two-factor authentication</ItemTitle><ItemDescription>Add a second step when you sign in, with an app or a security key.</ItemDescription></ItemContent><ItemActions><Button size="sm" variant="outline">Enable</Button></ItemActions></Item>,
+      "item-list": ui => <ItemPeople ui={ui} />,
+      "item-link": ({ Item, ItemContent, ItemTitle, ItemDescription, ItemActions }) => <div className="flex w-full max-w-md flex-col gap-2">{[["Billing", "Plan, invoices and payment method."], ["Notifications", "Email and push preferences."]].map(([title, description]) => <Item key={title} variant="outline" render={<a href="#" onClick={preventNav} />}><ItemContent><ItemTitle>{title}</ItemTitle><ItemDescription>{description}</ItemDescription></ItemContent><ItemActions>{chevronEndIcon}</ItemActions></Item>)}</div>,
+      "item-variants": ({ Item, ItemContent, ItemTitle, ItemDescription, ItemFooter, Badge }) => <div className="flex w-full max-w-md flex-col gap-3">
+        <Item><ItemContent><ItemTitle>Default</ItemTitle><ItemDescription>No frame; sits on the page surface.</ItemDescription></ItemContent></Item>
+        <Item variant="outline"><ItemContent><ItemTitle>Outline</ItemTitle><ItemDescription>A border for rows that stand alone.</ItemDescription></ItemContent></Item>
+        <Item variant="muted"><ItemContent><ItemTitle>Quarterly report <Badge variant="secondary">Draft</Badge></ItemTitle><ItemDescription>Revenue, churn and the hiring plan.</ItemDescription></ItemContent><ItemFooter className="text-xs text-muted-foreground"><span>Edited 2 h ago</span><span>3 comments</span></ItemFooter></Item>
+      </div>,
+    },
   },
+
 
   pagination: {
     preview: ui => <Pages ui={ui} total={12} initial={6} />,

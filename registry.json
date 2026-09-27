@@ -300,6 +300,19 @@
       ]
     },
     {
+      "name": "item",
+      "type": "registry:ui",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/item.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "pagination",
       "type": "registry:ui",
       "registryDependencies": [
