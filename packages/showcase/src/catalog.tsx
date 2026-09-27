@@ -39,6 +39,16 @@ export type DemoComponents = {
   Spinner: ComponentType<ComponentProps<"svg"> & { label?: string }>
   Icon: ComponentType<Omit<ComponentProps<"svg">, "children"> & { icon: ComponentType<SVGProps<SVGSVGElement>>; size?: "xs" | "sm" | "md" | "lg" | "xl"; label?: string }>
   Label: ComponentType<ComponentProps<"label">>
+  Breadcrumb: ComponentType<ComponentProps<"nav">>
+  BreadcrumbList: ComponentType<ComponentProps<"ol">>
+  BreadcrumbItem: ComponentType<ComponentProps<"li">>
+  BreadcrumbLink: ComponentType<ComponentProps<"a">>
+  BreadcrumbPage: ComponentType<ComponentProps<"span">>
+  BreadcrumbSeparator: ComponentType<ComponentProps<"li">>
+  BreadcrumbEllipsis: ComponentType<ComponentProps<"span"> & { label?: string }>
+  breadcrumbLinkClass: string
+  Kbd: ComponentType<ComponentProps<"kbd"> & { label?: string }>
+  KbdGroup: ComponentType<ComponentProps<"kbd">>
   Empty: ComponentType<ComponentProps<"div">>
   EmptyMedia: ComponentType<ComponentProps<"div">>
   EmptyTitle: ComponentType<ComponentProps<"h3">>
@@ -416,6 +426,21 @@ function SheetForm({ ui }: { ui: DemoComponents }) {
   return <Sheet><SheetTrigger render={<Button variant="outline">Edit profile</Button>} /><SheetContent><SheetHeader><SheetTitle>Edit profile</SheetTitle><SheetDescription>Changes are visible to your team.</SheetDescription></SheetHeader><div className="grid gap-2"><Label htmlFor={id + "name"}>Name</Label><Input id={id + "name"} defaultValue="Ana García" /></div><div className="grid gap-2"><Label htmlFor={id + "role"}>Role</Label><Input id={id + "role"} defaultValue="Product designer" /></div><SheetFooter><SheetClose render={<Button variant="outline">Cancel</Button>} /><SheetClose render={<Button>Save</Button>} /></SheetFooter></SheetContent></Sheet>
 }
 
+function Crumbs({ ui, separator, collapsed }: { ui: DemoComponents; separator?: ReactNode; collapsed?: boolean }) {
+  const { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator, BreadcrumbEllipsis, breadcrumbLinkClass, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } = ui
+  const sep = <BreadcrumbSeparator>{separator}</BreadcrumbSeparator>
+  if (collapsed) return <Breadcrumb><BreadcrumbList>
+    <BreadcrumbItem><BreadcrumbLink href="#" onClick={preventNav}>Home</BreadcrumbLink></BreadcrumbItem>{sep}
+    <BreadcrumbItem><DropdownMenu><DropdownMenuTrigger render={<button type="button" className={breadcrumbLinkClass} />}><BreadcrumbEllipsis /></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem>Workspace</DropdownMenuItem><DropdownMenuItem>Projects</DropdownMenuItem></DropdownMenuContent></DropdownMenu></BreadcrumbItem>{sep}
+    <BreadcrumbItem><BreadcrumbPage title="Quarterly roadmap and delivery plan for 2026">Quarterly roadmap and delivery plan for 2026</BreadcrumbPage></BreadcrumbItem>
+  </BreadcrumbList></Breadcrumb>
+  return <Breadcrumb><BreadcrumbList>
+    <BreadcrumbItem><BreadcrumbLink href="#" onClick={preventNav}>Home</BreadcrumbLink></BreadcrumbItem>{sep}
+    <BreadcrumbItem><BreadcrumbLink href="#" onClick={preventNav}>Components</BreadcrumbLink></BreadcrumbItem>{sep}
+    <BreadcrumbItem><BreadcrumbPage>Breadcrumb</BreadcrumbPage></BreadcrumbItem>
+  </BreadcrumbList></Breadcrumb>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -577,6 +602,22 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "icon-sizes": ({ Icon }) => <div className="showcase-button-row items-center"><Icon icon={BellIcon} size="xs" /><Icon icon={BellIcon} size="sm" /><Icon icon={BellIcon} size="md" /><Icon icon={BellIcon} size="lg" /><Icon icon={BellIcon} size="xl" /></div>,
       "icon-meaningful": ({ Icon }) => <div className="showcase-button-row items-center"><Icon icon={CircleCheckIcon} size="lg" label="Completed" className="text-zuno-success" /><Icon icon={TriangleAlertIcon} size="lg" label="Warning" className="text-zuno-warning" /></div>,
       "icon-in-button": ({ Icon, Button }) => <Button size="icon" aria-label="Add project"><Icon icon={PlusIcon} /></Button>,
+    },
+  },
+  breadcrumb: {
+    preview: ui => <Crumbs ui={ui} />,
+    examples: {
+      "breadcrumb-basic": ui => <Crumbs ui={ui} />,
+      "breadcrumb-collapsed": ui => <Crumbs ui={ui} collapsed />,
+      "breadcrumb-separator": ui => <Crumbs ui={ui} separator="/" />,
+    },
+  },
+  kbd: {
+    preview: ({ Kbd, KbdGroup }) => <KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup>,
+    examples: {
+      "kbd-shortcut": ({ Kbd, KbdGroup }) => <div className="flex items-center gap-4"><KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup><KbdGroup><Kbd label="Control">Ctrl</Kbd><Kbd label="Shift">⇧</Kbd><Kbd>P</Kbd></KbdGroup></div>,
+      "kbd-in-button": ({ Kbd, KbdGroup, Button }) => <Button variant="outline" aria-keyshortcuts="Meta+K">Search<KbdGroup className="ms-2"><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>,
+      "kbd-in-text": ({ Kbd }) => <p className="text-sm text-foreground">Press <Kbd>Esc</Kbd> to close, or <Kbd label="Enter">↵</Kbd> to confirm.</p>,
     },
   },
   label: {

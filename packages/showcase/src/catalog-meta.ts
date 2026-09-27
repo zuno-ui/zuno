@@ -178,6 +178,30 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "breadcrumb", title: "Breadcrumb", registryPath: "ui/breadcrumb.tsx",
+    description: "Hierarchical location with reasonable truncation and accessible names.",
+    usage: 'import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"\n\n<Breadcrumb>\n  <BreadcrumbList>\n    <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>\n    <BreadcrumbSeparator />\n    <BreadcrumbItem><BreadcrumbPage>Settings</BreadcrumbPage></BreadcrumbItem>\n  </BreadcrumbList>\n</Breadcrumb>',
+    properties: [["Breadcrumb", "nav", '"Breadcrumb"', "Navigation landmark; aria-label defaults to \"Breadcrumb\"."], ["BreadcrumbList / BreadcrumbItem", "ol / li", "—", "Ordered list that wraps on narrow screens."], ["BreadcrumbLink", "a", "—", "A level you can go back to; labels truncate at 20ch (add title for the full text)."], ["breadcrumbLinkClass", "string", "—", "Link styles for router links (NextLink, react-router…)."], ["BreadcrumbPage", "span", "—", "The current page, with aria-current=\"page\"."], ["BreadcrumbSeparator", "li", "chevron", "Decorative and aria-hidden; pass children for a custom glyph. Flips in RTL."], ["BreadcrumbEllipsis", "span", '"More pages"', "Stands for collapsed levels; wrap it in a DropdownMenuTrigger."]],
+    accessibility: ["The nav is a named landmark and the ol exposes the number of levels; separators are hidden so they are not read between items.", "The current page is a span with aria-current=\"page\", not a link to itself.", "Truncated labels keep their full text in title; collapsed levels stay reachable through the ellipsis menu, whose button has an accessible name.", "Server-safe: no client JavaScript unless you add the dropdown."],
+    examples: [
+      { id: "breadcrumb-basic", title: "Location", description: "Links for the ancestors and aria-current on the current page.", code: '<Breadcrumb>\n  <BreadcrumbList>\n    <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>\n    <BreadcrumbSeparator />\n    <BreadcrumbItem><BreadcrumbLink href="/components">Components</BreadcrumbLink></BreadcrumbItem>\n    <BreadcrumbSeparator />\n    <BreadcrumbItem><BreadcrumbPage>Breadcrumb</BreadcrumbPage></BreadcrumbItem>\n  </BreadcrumbList>\n</Breadcrumb>' },
+      { id: "breadcrumb-collapsed", title: "Collapsed levels", description: "Middle levels behind an ellipsis menu; a long label truncates with its full text in title.", code: '<BreadcrumbItem>\n  <DropdownMenu>\n    <DropdownMenuTrigger render={<button type="button" className={breadcrumbLinkClass} />}>\n      <BreadcrumbEllipsis />\n    </DropdownMenuTrigger>\n    <DropdownMenuContent>\n      <DropdownMenuItem>Workspace</DropdownMenuItem>\n      <DropdownMenuItem>Projects</DropdownMenuItem>\n    </DropdownMenuContent>\n  </DropdownMenu>\n</BreadcrumbItem>\n<BreadcrumbSeparator />\n<BreadcrumbItem>\n  <BreadcrumbPage title="Quarterly roadmap and delivery plan for 2026">Quarterly roadmap and delivery plan for 2026</BreadcrumbPage>\n</BreadcrumbItem>' },
+      { id: "breadcrumb-separator", title: "Custom separator", description: "Pass a glyph as children; it stays decorative.", code: '<BreadcrumbSeparator>/</BreadcrumbSeparator>' },
+    ],
+  },
+  {
+    name: "kbd", title: "Kbd", registryPath: "ui/kbd.tsx",
+    description: "Readable keyboard shortcuts that do not look like clickable actions.",
+    usage: 'import { Kbd, KbdGroup } from "@/components/ui/kbd"\n\n<KbdGroup>\n  <Kbd label="Command">⌘</Kbd>\n  <Kbd>K</Kbd>\n</KbdGroup>',
+    properties: [["Kbd", "kbd", "—", "One key; flat cap with no hover or pointer."], ["label", "string", "—", "Spoken name for symbol keys (⌘ → \"Command\"); the symbol stays visible."], ["KbdGroup", "kbd", "—", "Keys pressed together, as nested kbd elements."]],
+    accessibility: ["Uses the kbd element, so assistive tech knows it is keyboard input.", "Symbols are read literally (⌘ as \"place of interest\", ⌥ as \"option key\" or nothing), so give them a label with the key's name.", "It is not interactive and does not look it: no hover state, no pointer, no raised shadow. Put the shortcut next to the action it triggers, never instead of it, and declare it on that control with aria-keyshortcuts.", "Server-safe: plain HTML and CSS."],
+    examples: [
+      { id: "kbd-shortcut", title: "Shortcuts", description: "Symbol keys with a spoken label; letters need none.", code: '<KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup>\n<KbdGroup><Kbd label="Control">Ctrl</Kbd><Kbd label="Shift">⇧</Kbd><Kbd>P</Kbd></KbdGroup>' },
+      { id: "kbd-in-button", title: "Next to an action", description: "The shortcut sits inside the button it triggers; aria-keyshortcuts exposes it to assistive tech.", code: '<Button variant="outline" aria-keyshortcuts="Meta+K">\n  Search\n  <KbdGroup className="ms-2"><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup>\n</Button>' },
+      { id: "kbd-in-text", title: "In a sentence", description: "Inline with body text.", code: '<p>Press <Kbd>Esc</Kbd> to close, or <Kbd label="Enter">↵</Kbd> to confirm.</p>' },
+    ],
+  },
+  {
     name: "label", title: "Label", registryPath: "ui/label.tsx",
     description: "Correct association with the control and a shared typographic hierarchy.",
     usage: 'import { Label } from "@/components/ui/label"\n\n<Label htmlFor="name">Name</Label>\n<Input id="name" />',

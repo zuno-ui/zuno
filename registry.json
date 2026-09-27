@@ -261,6 +261,32 @@
       ]
     },
     {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/breadcrumb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/kbd.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "table",
       "type": "registry:ui",
       "registryDependencies": [
