@@ -410,6 +410,32 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "slider", title: "Slider", registryPath: "ui/slider.tsx", reference: "slider",
+    description: "Pick a value or a range by dragging or with the keyboard, with the value always readable.",
+    usage: 'import { Slider, SliderLabel, SliderValue } from "@/components/ui/slider"\n\n<Slider defaultValue={40}>\n  <div className="flex justify-between">\n    <SliderLabel>Volume</SliderLabel>\n    <SliderValue />\n  </div>\n</Slider>',
+    properties: [["value / defaultValue", "number | number[]", "—", "An array renders one thumb per value (a range)."], ["onValueChange / onValueCommitted", "(value) => void", "—", "While dragging, and once when released."], ["min / max / step", "number", "0 / 100 / 1", "Bounds and increment; Page Up/Down moves by largeStep."], ["format / locale", "Intl.NumberFormatOptions / string", '— / "en-US"', "How SliderValue and screen readers present the value (currency, percent…). locale defaults to en-US so SSR and the client agree."], ["thumbLabels", "string[]", "—", "One accessible name per thumb for ranges."], ["orientation", '"horizontal" | "vertical"', '"horizontal"', "Vertical sliders need a height (h-40 by default)."], ["disabled", "boolean", "false", "Dims the slider and blocks interaction."], ["SliderLabel / SliderValue", "div / output", "—", "Label wired to the thumbs, and the live formatted value."]],
+    accessibility: ["Each thumb is a native range input: arrows change by step, Page Up/Down by a larger step, Home/End jump to the bounds.", "SliderLabel names a single thumb; ranges need thumbLabels so each thumb says which end it controls.", "SliderValue is an <output> and format shapes both what is shown and what is announced (\"$250\", not \"250\").", "The control is 24px tall and the whole track is clickable, so small thumbs stay easy to reach."],
+    states: [["Idle", "Track in muted, filled part and thumb ring in primary."], ["Dragging", "The value and output follow the pointer."], ["Focus", "Offset outline on the focused thumb."], ["Range", "Two thumbs; they cannot cross."], ["Disabled", "Dimmed with a not-allowed cursor."]],
+    examples: [
+      { id: "slider-basic", title: "Label and value", description: "SliderLabel names the thumb; SliderValue shows and announces the value.", code: '<Slider defaultValue={40}>\n  <div className="flex justify-between">\n    <SliderLabel>Volume</SliderLabel>\n    <SliderValue />\n  </div>\n</Slider>' },
+      { id: "slider-range", title: "Price range", description: "Two thumbs, each with its own name, formatted as currency.", code: '<Slider\n  defaultValue={[200, 800]}\n  min={0}\n  max={1000}\n  step={10}\n  format={{ style: "currency", currency: "USD", maximumFractionDigits: 0 }}\n  thumbLabels={["Minimum price", "Maximum price"]}\n>\n  <div className="flex justify-between">\n    <SliderLabel>Price</SliderLabel>\n    <SliderValue />\n  </div>\n</Slider>' },
+      { id: "slider-steps", title: "Steps and disabled", description: "step=\"25\" snaps to quarters; disabled blocks interaction.", code: '<Slider defaultValue={50} step={25} format={{ style: "percent" }} min={0} max={1}>…</Slider>\n<Slider defaultValue={30} disabled>…</Slider>' },
+    ],
+  },
+  {
+    name: "progress", title: "Progress", registryPath: "ui/progress.tsx", reference: "progress",
+    description: "Determinate or indeterminate progress, without made-up percentages.",
+    usage: 'import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress"\n\n<Progress value={60}>\n  <div className="flex justify-between">\n    <ProgressLabel>Uploading</ProgressLabel>\n    <ProgressValue />\n  </div>\n</Progress>',
+    properties: [["value", "number | null", "—", "Current progress; null means indeterminate."], ["min / max", "number", "0 / 100", "Range of value."], ["format / locale", "Intl.NumberFormatOptions / string", 'percent / "en-US"', "How ProgressValue formats and announces the value; locale defaults to en-US so SSR and the client agree."], ["getAriaValueText", "(formatted, value) => string", "—", "Custom spoken text, e.g. \"3 of 5 files\"."], ["ProgressLabel / ProgressValue", "span", "—", "Names the progressbar and shows the formatted value."]],
+    accessibility: ["The root is a progressbar with aria-valuenow, min and max; ProgressLabel gives it its accessible name.", "Use value={null} when the duration is unknown: it becomes indeterminate instead of inventing a percentage.", "Updates are not announced on every tick; announce completion yourself (e.g. a toast or role=\"status\" text).", "The width change and the indeterminate pulse stop with prefers-reduced-motion."],
+    states: [["Progressing", "Primary bar grows with a short width transition."], ["Complete", "Full bar; data-complete is set."], ["Indeterminate", "Full bar pulsing; no value shown."], ["Reduced motion", "No transition and no pulse."]],
+    examples: [
+      { id: "progress-basic", title: "Label and value", description: "ProgressLabel names the bar; ProgressValue formats the percentage.", code: '<Progress value={60}>\n  <div className="flex justify-between">\n    <ProgressLabel>Storage used</ProgressLabel>\n    <ProgressValue />\n  </div>\n</Progress>' },
+      { id: "progress-live", title: "Live upload", description: "The value advances in steps and completion is announced with role=\"status\".", code: 'const [value, setValue] = useState(0)\n\n<Progress value={value} getAriaValueText={(_, v) => v + "% uploaded"}>\n  <div className="flex justify-between">\n    <ProgressLabel>report.pdf</ProgressLabel>\n    <ProgressValue />\n  </div>\n</Progress>\n<p role="status">{value === 100 ? "Upload complete." : ""}</p>' },
+      { id: "progress-indeterminate", title: "Indeterminate", description: "value={null} while the duration is unknown; no percentage is shown.", code: '<Progress value={null}>\n  <ProgressLabel>Preparing export…</ProgressLabel>\n</Progress>' },
+    ],
+  },
+  {
     name: "toggle", title: "Toggle", registryPath: "ui/toggle.tsx", reference: "toggle",
     description: "A two-state button with a recognizable pressed state.",
     usage: 'import { Toggle } from "@/components/ui/toggle"\n\n<Toggle aria-label="Bold"><strong>B</strong></Toggle>',

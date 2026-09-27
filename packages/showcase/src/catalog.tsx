@@ -101,6 +101,12 @@ export type DemoComponents = {
   ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
   ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
   ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
+  Slider: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: number | number[]; value?: number | number[]; min?: number; max?: number; step?: number; disabled?: boolean; format?: Intl.NumberFormatOptions; thumbLabels?: string[] }>
+  SliderLabel: ComponentType<{ children?: ReactNode; className?: string }>
+  SliderValue: ComponentType<{ className?: string }>
+  Progress: ComponentType<{ children?: ReactNode; className?: string; value: number | null; getAriaValueText?: (formattedValue: string | null, value: number | null) => string }>
+  ProgressLabel: ComponentType<{ children?: ReactNode; className?: string }>
+  ProgressValue: ComponentType<{ className?: string }>
   Toggle: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; pressed?: boolean; defaultPressed?: boolean; disabled?: boolean; "aria-label"?: string }>
   ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
   ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
@@ -323,6 +329,23 @@ function RadioStates({ ui }: { ui: DemoComponents }) {
 const alignIcon = (lines: string) => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={lines} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
 const alignments = [["left", "Align left", "M2.5 4h11M2.5 8h7M2.5 12h9"], ["center", "Align center", "M2.5 4h11M4.5 8h7M3.5 12h9"], ["right", "Align right", "M2.5 4h11M6.5 8h7M4.5 12h9"]] as const
 const starIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m8 2 1.8 3.8 4.2.5-3.1 2.9.8 4.1L8 11.3l-3.7 2 .8-4.1L2 6.3l4.2-.5L8 2Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" /></svg>
+
+function SliderRow({ ui, label }: { ui: DemoComponents; label: string }) {
+  return <div className="flex items-center justify-between"><ui.SliderLabel>{label}</ui.SliderLabel><ui.SliderValue /></div>
+}
+
+function ProgressLive({ ui }: { ui: DemoComponents }) {
+  const { Progress, ProgressLabel, ProgressValue, Button } = ui
+  const [value, setValue] = useState(0)
+  const start = () => {
+    setValue(0)
+    const timer = setInterval(() => setValue(current => { const next = Math.min(100, current + 20); if (next === 100) clearInterval(timer); return next }), 500)
+  }
+  return <div className="grid w-full max-w-sm gap-3">
+    <Progress value={value} getAriaValueText={(_, current) => (current ?? 0) + "% uploaded"}><div className="flex items-center justify-between"><ProgressLabel>report.pdf</ProgressLabel><ProgressValue /></div></Progress>
+    <div className="flex items-center gap-3"><Button size="sm" variant="outline" onClick={start} disabled={value > 0 && value < 100}>{value === 100 ? "Upload again" : "Upload"}</Button><p role="status" className="text-sm text-muted-foreground">{value === 100 ? "Upload complete." : ""}</p></div>
+  </div>
+}
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
 const comboboxZones: ComboboxZone[] = [{ value: "Americas", items: ["New York", "Mexico City", "São Paulo"] }, { value: "Europe", items: ["London", "Madrid", "Berlin"] }]
@@ -592,6 +615,22 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-basic": ui => <ComboboxBasic ui={ui} />,
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
+    },
+  },
+  slider: {
+    preview: ui => <ui.Slider defaultValue={40} className="max-w-sm"><SliderRow ui={ui} label="Volume" /></ui.Slider>,
+    examples: {
+      "slider-basic": ui => <ui.Slider defaultValue={40} className="max-w-sm"><SliderRow ui={ui} label="Volume" /></ui.Slider>,
+      "slider-range": ui => <ui.Slider defaultValue={[200, 800]} min={0} max={1000} step={10} format={{ style: "currency", currency: "USD", maximumFractionDigits: 0 }} thumbLabels={["Minimum price", "Maximum price"]} className="max-w-sm"><SliderRow ui={ui} label="Price" /></ui.Slider>,
+      "slider-steps": ui => <div className="grid w-full max-w-sm gap-8"><ui.Slider defaultValue={0.5} min={0} max={1} step={0.25} format={{ style: "percent" }}><SliderRow ui={ui} label="Opacity" /></ui.Slider><ui.Slider defaultValue={30} disabled><SliderRow ui={ui} label="Bass (unavailable)" /></ui.Slider></div>,
+    },
+  },
+  progress: {
+    preview: ({ Progress, ProgressLabel, ProgressValue }) => <Progress value={60} className="max-w-sm"><div className="flex items-center justify-between"><ProgressLabel>Storage used</ProgressLabel><ProgressValue /></div></Progress>,
+    examples: {
+      "progress-basic": ({ Progress, ProgressLabel, ProgressValue }) => <Progress value={60} className="max-w-sm"><div className="flex items-center justify-between"><ProgressLabel>Storage used</ProgressLabel><ProgressValue /></div></Progress>,
+      "progress-live": ui => <ProgressLive ui={ui} />,
+      "progress-indeterminate": ({ Progress, ProgressLabel }) => <Progress value={null} className="max-w-sm"><ProgressLabel>Preparing export…</ProgressLabel></Progress>,
     },
   },
   toggle: {
