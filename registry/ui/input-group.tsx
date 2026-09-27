@@ -6,8 +6,8 @@ import { Field as BaseField } from "@base-ui/react/field"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-// One bordered field that holds a control plus addons (icons, text, buttons). The ring follows the
-// text control only, so a focused button inside keeps its own outline instead of lighting the frame.
+// One framed field that holds a control plus addons (icons, text, buttons). The focus frame follows
+// the text control only, so a focused button inside keeps its own indicator instead of lighting it.
 // Put addons in the DOM where they appear (inline-start before the control, inline-end after), so
 // reading order matches what people see; block addons stack the group vertically.
 export function InputGroup({ className, ...props }: ComponentProps<"div">) {
