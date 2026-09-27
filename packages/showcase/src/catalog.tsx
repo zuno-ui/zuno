@@ -51,6 +51,9 @@ export type DemoComponents = {
   breadcrumbLinkClass: string
   Kbd: ComponentType<ComponentProps<"kbd"> & { label?: string }>
   KbdGroup: ComponentType<ComponentProps<"kbd">>
+  NativeSelect: ComponentType<ComponentProps<"select">>
+  NativeSelectOption: ComponentType<ComponentProps<"option">>
+  NativeSelectOptGroup: ComponentType<ComponentProps<"optgroup">>
   Pagination: ComponentType<ComponentProps<"nav">>
   PaginationContent: ComponentType<ComponentProps<"ul">>
   PaginationItem: ComponentType<ComponentProps<"li">>
@@ -596,6 +599,33 @@ function InputGroupInvalid({ ui }: { ui: DemoComponents }) {
   </InputGroup><p id={id + "-error"} className="text-sm text-destructive">Enter an amount greater than zero.</p></div>
 }
 
+function NativeSelectBasic({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Country</Label><NativeSelect id={id} name="country" defaultValue="" required>
+    <NativeSelectOption value="" disabled>Select a country</NativeSelectOption>
+    {[["ar", "Argentina"], ["co", "Colombia"], ["mx", "Mexico"], ["es", "Spain"]].map(([value, label]) => <NativeSelectOption key={value} value={value}>{label}</NativeSelectOption>)}
+  </NativeSelect></div>
+}
+
+function NativeSelectGroups({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, NativeSelectOptGroup, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-2"><Label htmlFor={id}>Time zone</Label><NativeSelect id={id} defaultValue="America/Mexico_City">
+    <NativeSelectOptGroup label="Americas"><NativeSelectOption value="America/New_York">New York</NativeSelectOption><NativeSelectOption value="America/Mexico_City">Mexico City</NativeSelectOption></NativeSelectOptGroup>
+    <NativeSelectOptGroup label="Europe"><NativeSelectOption value="Europe/London">London</NativeSelectOption><NativeSelectOption value="Europe/Madrid">Madrid</NativeSelectOption></NativeSelectOptGroup>
+  </NativeSelect></div>
+}
+
+function NativeSelectStates({ ui }: { ui: DemoComponents }) {
+  const { NativeSelect, NativeSelectOption, Label } = ui
+  const id = useId()
+  return <div className="grid w-full max-w-xs gap-4">
+    <div className="grid gap-2"><Label htmlFor={id + "-plan"}>Plan</Label><NativeSelect id={id + "-plan"} defaultValue="" aria-invalid="true" aria-describedby={id + "-error"}><NativeSelectOption value="" disabled>Choose a plan</NativeSelectOption><NativeSelectOption value="free">Free</NativeSelectOption><NativeSelectOption value="pro">Pro</NativeSelectOption></NativeSelect><p id={id + "-error"} className="text-sm text-destructive">Choose a plan to continue.</p></div>
+    <div className="grid gap-2"><Label htmlFor={id + "-region"}>Region</Label><NativeSelect id={id + "-region"} disabled defaultValue="us"><NativeSelectOption value="us">United States</NativeSelectOption></NativeSelect></div>
+  </div>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -774,7 +804,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "kbd-in-button": ({ Kbd, KbdGroup, Button }) => <Button variant="outline" aria-keyshortcuts="Meta+K">Search<KbdGroup className="ms-2"><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>,
       "kbd-in-text": ({ Kbd }) => <p className="text-sm text-foreground">Press <Kbd>Esc</Kbd> to close, or <Kbd label="Enter">↵</Kbd> to confirm.</p>,
     },
+  },  "native-select": {
+    preview: ui => <NativeSelectBasic ui={ui} />,
+    examples: {
+      "native-select-basic": ui => <NativeSelectBasic ui={ui} />,
+      "native-select-groups": ui => <NativeSelectGroups ui={ui} />,
+      "native-select-states": ui => <NativeSelectStates ui={ui} />,
+    },
   },
+
   pagination: {
     preview: ui => <Pages ui={ui} total={12} initial={6} />,
     examples: {
