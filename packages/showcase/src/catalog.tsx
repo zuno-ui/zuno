@@ -61,6 +61,7 @@ export type DemoComponents = {
   ButtonGroup: ComponentType<ComponentProps<"div"> & { orientation?: "horizontal" | "vertical" }>
   ButtonGroupSeparator: ComponentType<ComponentProps<"div">>
   AspectRatio: ComponentType<ComponentProps<"div"> & { ratio?: number }>
+  DirectionProvider: ComponentType<{ children?: ReactNode; direction?: "ltr" | "rtl" }>
   Empty: ComponentType<ComponentProps<"div">>
   EmptyMedia: ComponentType<ComponentProps<"div">>
   EmptyTitle: ComponentType<ComponentProps<"h3">>
@@ -470,6 +471,16 @@ const chevronDownIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" 
 // A landscape drawn inline, so the Aspect Ratio demos show a real <img> cropped by object-cover without shipping assets.
 const landscape = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="s" x2="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#b9c7d6"/></linearGradient></defs><rect width="320" height="200" fill="url(#s)"/><circle cx="230" cy="70" r="22" fill="#fbeee0"/><path d="M0 150 70 80l50 45 60-65 70 70 70-40v110H0z" fill="#6f7f8f"/><path d="M0 170 90 120l60 30 70-40 100 60v30H0z" fill="#3f4a55"/></svg>')
 
+function DirectionDemo({ ui }: { ui: DemoComponents }) {
+  const { DirectionProvider, Tabs, TabsList, TabsTab, Slider } = ui
+  return <div dir="rtl" lang="ar" className="w-full max-w-sm space-y-6">
+    <DirectionProvider direction="rtl">
+      <Tabs defaultValue="account"><TabsList aria-label="الإعدادات"><TabsTab value="account">الحساب</TabsTab><TabsTab value="security">الأمان</TabsTab><TabsTab value="billing">الفوترة</TabsTab></TabsList></Tabs>
+      <Slider defaultValue={30}><SliderRow ui={ui} label="مستوى الصوت" /></Slider>
+    </DirectionProvider>
+  </div>
+}
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -828,7 +839,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
     },
+  },  direction: {
+    preview: ui => <DirectionDemo ui={ui} />,
+    examples: {
+      "direction-rtl": ui => <DirectionDemo ui={ui} />,
+    },
   },
+
   "scroll-area": {
     preview: ({ ScrollArea }) => <ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags"><div className="p-4"><p className="mb-2 text-sm font-medium text-foreground">Tags</p>{scrollTags.map(tag => <div key={tag} className="border-b border-border py-2 text-sm text-foreground">{tag}</div>)}</div></ScrollArea>,
     examples: {

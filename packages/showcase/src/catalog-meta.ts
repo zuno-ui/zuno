@@ -483,6 +483,16 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "direction", title: "Direction", registryPath: "ui/direction.tsx", upstream: { name: "Base UI DirectionProvider", url: "https://base-ui.com/react/utils/direction-provider" },
+    description: "Right-to-left behavior for keyboard and popups, separate from the theme.",
+    usage: 'import { DirectionProvider } from "@/components/ui/direction"\n\n<html lang="ar" dir="rtl">\n  <body>\n    <DirectionProvider direction="rtl">{children}</DirectionProvider>\n  </body>\n</html>',
+    properties: [["direction", '"ltr" | "rtl"', '"ltr"', "Reading direction Base UI components follow for arrow keys and popup sides."], ["useDirection()", "hook", "—", "Returns the current direction, for your own components."]],
+    accessibility: ["Set dir on <html> (or the subtree) too: the provider only informs Base UI behavior, while dir drives the layout, text order and what screen readers announce.", "With rtl, arrow keys follow what people see: in Tabs, RadioGroup, ToggleGroup and Slider, Left moves toward the end.", "Pair dir with a matching lang so screen readers pick the right voice.", "ZUNO styles use logical properties (ps-*, ms-*, start/end), so spacing and icons mirror without extra classes."],
+    examples: [
+      { id: "direction-rtl", title: "Right to left", description: "Tabs and a slider in RTL: the first tab sits on the right and Left moves forward.", code: '<div dir="rtl" lang="ar">\n  <DirectionProvider direction="rtl">\n    <Tabs defaultValue="account">\n      <TabsList aria-label="الإعدادات">\n        <TabsTab value="account">الحساب</TabsTab>\n        <TabsTab value="security">الأمان</TabsTab>\n        <TabsTab value="billing">الفوترة</TabsTab>\n      </TabsList>\n    </Tabs>\n    <Slider defaultValue={30}>\n      <SliderLabel>مستوى الصوت</SliderLabel>\n      <SliderValue />\n    </Slider>\n  </DirectionProvider>\n</div>' },
+    ],
+  },
+  {
     name: "input-otp", title: "InputOTP", registryPath: "ui/input-otp.tsx", reference: "otp-field",
     description: "One-time codes with paste, autofill, errors and an easy way to recover.",
     usage: 'import { InputOTP } from "@/components/ui/input-otp"\n\n<Label htmlFor="code">Verification code</Label>\n<InputOTP id="code" length={6} groups={[3, 3]} />',
