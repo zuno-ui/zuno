@@ -227,6 +227,18 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "aspect-ratio", title: "Aspect Ratio", registryPath: "ui/aspect-ratio.tsx",
+    description: "Media in proportion, without fixing the size of the layout around it.",
+    usage: 'import { AspectRatio } from "@/components/ui/aspect-ratio"\n\n<AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted">\n  <img src="/cover.jpg" alt="Team at the offsite" className="object-cover" />\n</AspectRatio>',
+    properties: [["ratio", "number", "1", "Width divided by height, e.g. 16 / 9. The width comes from the parent; the height follows."], ["AspectRatio", "div", "—", "Children are pinned to fill the box; give images object-cover or object-contain. Add overflow-hidden with rounded-* to clip the corners."]],
+    accessibility: ["Purely presentational: the box adds no role or name, so the media inside keeps its own (alt text on images, a title on iframes, captions on video).", "The height is reserved before the media loads, so the page does not jump while people read.", "Server-safe: a single div with the CSS aspect-ratio property."],
+    examples: [
+      { id: "aspect-ratio-image", title: "Image", description: "A 16:9 cover that fills its column and crops with object-cover.", code: '<AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted">\n  <img src="/cover.jpg" alt="Mountain lake at dawn" className="object-cover" />\n</AspectRatio>' },
+      { id: "aspect-ratio-square", title: "Square grid", description: "ratio defaults to 1; each tile keeps its shape at any column width.", code: '<ResponsiveGrid min="8rem">\n  {items.map(item => (\n    <AspectRatio key={item.id} className="rounded-lg bg-muted">\n      <div className="flex items-center justify-center text-sm">{item.name}</div>\n    </AspectRatio>\n  ))}\n</ResponsiveGrid>' },
+      { id: "aspect-ratio-card", title: "Card media", description: "A 4:3 cover at the top of a Card; the card sets the width.", code: '<Card className="max-w-xs overflow-hidden p-0">\n  <AspectRatio ratio={4 / 3} className="bg-muted">\n    <img src="/cabin.jpg" alt="Cabin by the lake" className="object-cover" />\n  </AspectRatio>\n  <div className="p-4">\n    <CardTitle>Lakeside cabin</CardTitle>\n    <CardDescription>Sleeps four · 2 h from the city</CardDescription>\n  </div>\n</Card>' },
+    ],
+  },
+  {
     name: "label", title: "Label", registryPath: "ui/label.tsx",
     description: "Correct association with the control and a shared typographic hierarchy.",
     usage: 'import { Label } from "@/components/ui/label"\n\n<Label htmlFor="name">Name</Label>\n<Input id="name" />',

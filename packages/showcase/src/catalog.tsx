@@ -60,6 +60,7 @@ export type DemoComponents = {
   paginationRange: (page: number, total: number, siblings?: number) => (number | "ellipsis")[]
   ButtonGroup: ComponentType<ComponentProps<"div"> & { orientation?: "horizontal" | "vertical" }>
   ButtonGroupSeparator: ComponentType<ComponentProps<"div">>
+  AspectRatio: ComponentType<ComponentProps<"div"> & { ratio?: number }>
   Empty: ComponentType<ComponentProps<"div">>
   EmptyMedia: ComponentType<ComponentProps<"div">>
   EmptyTitle: ComponentType<ComponentProps<"h3">>
@@ -466,6 +467,9 @@ function Pages({ ui, total = 3, initial = 2 }: { ui: DemoComponents; total?: num
 const moreIcon = <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className="size-4"><circle cx="3.5" cy="8" r="1.25" /><circle cx="8" cy="8" r="1.25" /><circle cx="12.5" cy="8" r="1.25" /></svg>
 const chevronDownIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 
+// A landscape drawn inline, so the Aspect Ratio demos show a real <img> cropped by object-cover without shipping assets.
+const landscape = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="s" x2="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#b9c7d6"/></linearGradient></defs><rect width="320" height="200" fill="url(#s)"/><circle cx="230" cy="70" r="22" fill="#fbeee0"/><path d="M0 150 70 80l50 45 60-65 70 70 70-40v110H0z" fill="#6f7f8f"/><path d="M0 170 90 120l60 30 70-40 100 60v30H0z" fill="#3f4a55"/></svg>')
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -660,7 +664,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "button-group-split": ({ ButtonGroup, ButtonGroupSeparator, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }) => <ButtonGroup aria-label="Publish"><Button>Publish</Button><ButtonGroupSeparator /><DropdownMenu><DropdownMenuTrigger render={<Button size="icon" aria-label="Publish options" />}>{chevronDownIcon}</DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem>Schedule</DropdownMenuItem><DropdownMenuItem>Save as draft</DropdownMenuItem></DropdownMenuContent></DropdownMenu></ButtonGroup>,
       "button-group-vertical": ({ ButtonGroup, Button }) => <ButtonGroup orientation="vertical" aria-label="Zoom"><Button variant="outline" size="icon" aria-label="Zoom in">+</Button><Button variant="outline" size="icon" aria-label="Zoom out">−</Button></ButtonGroup>,
     },
+  },  "aspect-ratio": {
+    preview: ({ AspectRatio }) => <div className="w-full max-w-sm"><AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted"><img src={landscape} alt="Mountains at dusk" className="object-cover" /></AspectRatio></div>,
+    examples: {
+      "aspect-ratio-image": ({ AspectRatio }) => <div className="w-full max-w-sm"><AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg bg-muted"><img src={landscape} alt="Mountain lake at dawn" className="object-cover" /></AspectRatio></div>,
+      "aspect-ratio-square": ({ AspectRatio, ResponsiveGrid }) => <ResponsiveGrid min="6rem" className="w-full max-w-md">{["Inbox", "Drafts", "Sent", "Archive"].map(name => <AspectRatio key={name} className="rounded-lg bg-muted"><div className="flex items-center justify-center text-sm text-muted-foreground">{name}</div></AspectRatio>)}</ResponsiveGrid>,
+      "aspect-ratio-card": ({ AspectRatio, Card, CardTitle, CardDescription }) => <Card className="w-full max-w-xs overflow-hidden p-0"><AspectRatio ratio={4 / 3} className="bg-muted"><img src={landscape} alt="Cabin by the lake" className="object-cover" /></AspectRatio><div className="p-4"><CardTitle>Lakeside cabin</CardTitle><CardDescription>Sleeps four · 2 h from the city</CardDescription></div></Card>,
+    },
   },
+
   label: {
     preview: ({ Label }) => <Label>Email</Label>,
     examples: {
