@@ -117,6 +117,13 @@ export type DemoComponents = {
   Toggle: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; pressed?: boolean; defaultPressed?: boolean; disabled?: boolean; "aria-label"?: string }>
   ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
   ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
+  NavigationMenu: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
+  NavigationMenuList: ComponentType<{ children?: ReactNode; className?: string }>
+  NavigationMenuItem: ComponentType<{ children?: ReactNode; className?: string }>
+  NavigationMenuTrigger: ComponentType<{ children?: ReactNode; className?: string }>
+  NavigationMenuContent: ComponentType<{ children?: ReactNode; className?: string }>
+  NavigationMenuLink: ComponentType<{ children?: ReactNode; className?: string; href?: string; active?: boolean; onClick?: ComponentProps<"a">["onClick"] }>
+  navigationMenuTriggerClass: string
   Popover: ComponentType<{ children?: ReactNode; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
   PopoverTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement; openOnHover?: boolean }>
   PopoverContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "right" | "bottom" | "left"; align?: "start" | "center" | "end"; sideOffset?: number }>
@@ -401,6 +408,19 @@ function SheetForm({ ui }: { ui: DemoComponents }) {
   const { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose, Button, Input, Label } = ui
   const id = useId()
   return <Sheet><SheetTrigger render={<Button variant="outline">Edit profile</Button>} /><SheetContent><SheetHeader><SheetTitle>Edit profile</SheetTitle><SheetDescription>Changes are visible to your team.</SheetDescription></SheetHeader><div className="grid gap-2"><Label htmlFor={id + "name"}>Name</Label><Input id={id + "name"} defaultValue="Ana García" /></div><div className="grid gap-2"><Label htmlFor={id + "role"}>Role</Label><Input id={id + "role"} defaultValue="Product designer" /></div><SheetFooter><SheetClose render={<Button variant="outline">Cancel</Button>} /><SheetClose render={<Button>Save</Button>} /></SheetFooter></SheetContent></Sheet>
+}
+
+const navProducts = [["Analytics", "Dashboards and reports for every team."], ["Automations", "Workflows triggered by your data."], ["Integrations", "Connect the tools you already use."], ["Security", "SSO, roles and audit logs."]]
+const navResources = ["Documentation", "Changelog", "Community"]
+const preventNav: ComponentProps<"a">["onClick"] = event => event.preventDefault()
+
+function NavMenuBasic({ ui }: { ui: DemoComponents }) {
+  const { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink, navigationMenuTriggerClass } = ui
+  return <NavigationMenu aria-label="Main"><NavigationMenuList>
+    <NavigationMenuItem><NavigationMenuTrigger>Products</NavigationMenuTrigger><NavigationMenuContent><ul className="grid gap-1 sm:grid-cols-2">{navProducts.map(([title, description]) => <li key={title}><NavigationMenuLink href="#" onClick={preventNav}><span className="font-medium">{title}</span><span className="block text-muted-foreground">{description}</span></NavigationMenuLink></li>)}</ul></NavigationMenuContent></NavigationMenuItem>
+    <NavigationMenuItem><NavigationMenuTrigger>Resources</NavigationMenuTrigger><NavigationMenuContent className="w-64"><ul className="grid gap-1">{navResources.map(title => <li key={title}><NavigationMenuLink href="#" onClick={preventNav}>{title}</NavigationMenuLink></li>)}</ul></NavigationMenuContent></NavigationMenuItem>
+    <NavigationMenuItem><NavigationMenuLink href="#" onClick={preventNav} className={navigationMenuTriggerClass}>Pricing</NavigationMenuLink></NavigationMenuItem>
+  </NavigationMenuList></NavigationMenu>
 }
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
@@ -719,6 +739,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "toggle-group-multiple": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup multiple aria-label="Formatting" defaultValue={["bold"]}><ToggleGroupItem value="bold" aria-label="Bold"><strong>B</strong></ToggleGroupItem><ToggleGroupItem value="italic" aria-label="Italic"><em>I</em></ToggleGroupItem><ToggleGroupItem value="underline" aria-label="Underline"><u>U</u></ToggleGroupItem></ToggleGroup>,
       "toggle-group-outline": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup variant="outline" aria-label="View" defaultValue={["list"]}><ToggleGroupItem value="list">List</ToggleGroupItem><ToggleGroupItem value="board">Board</ToggleGroupItem><ToggleGroupItem value="calendar">Calendar</ToggleGroupItem></ToggleGroup>,
       "toggle-group-vertical": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup orientation="vertical" aria-label="Density" defaultValue={["comfortable"]}><ToggleGroupItem value="comfortable">Comfortable</ToggleGroupItem><ToggleGroupItem value="compact">Compact</ToggleGroupItem></ToggleGroup>,
+    },
+  },
+  "navigation-menu": {
+    preview: ui => <NavMenuBasic ui={ui} />,
+    examples: {
+      "navigation-menu-basic": ui => <NavMenuBasic ui={ui} />,
+      "navigation-menu-links": ({ NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerClass }) => <NavigationMenu aria-label="Account"><NavigationMenuList>{["Overview", "Projects", "Settings"].map(page => <NavigationMenuItem key={page}><NavigationMenuLink href="#" onClick={preventNav} active={page === "Projects"} className={navigationMenuTriggerClass}>{page}</NavigationMenuLink></NavigationMenuItem>)}</NavigationMenuList></NavigationMenu>,
     },
   },
   popover: {
