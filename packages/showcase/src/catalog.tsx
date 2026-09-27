@@ -204,6 +204,23 @@ export type DemoComponents = {
   SheetFooter: ComponentType<ComponentProps<"div">>
   SheetTitle: ComponentType<{ children?: ReactNode; className?: string }>
   SheetDescription: ComponentType<{ children?: ReactNode; className?: string }>
+  SidebarProvider: ComponentType<ComponentProps<"div"> & { defaultOpen?: boolean; open?: boolean; onOpenChange?: (open: boolean) => void; shortcut?: string | false }>
+  Sidebar: ComponentType<ComponentProps<"nav"> & { side?: "start" | "end"; collapsible?: "offcanvas" | "icon" | "none" }>
+  SidebarTrigger: ComponentType<ComponentProps<"button">>
+  SidebarInset: ComponentType<ComponentProps<"main"> & { render?: ReactElement }>
+  SidebarHeader: ComponentType<ComponentProps<"div">>
+  SidebarContent: ComponentType<ComponentProps<"div">>
+  SidebarFooter: ComponentType<ComponentProps<"div">>
+  SidebarSeparator: ComponentType<ComponentProps<"div">>
+  SidebarGroup: ComponentType<ComponentProps<"div">>
+  SidebarGroupLabel: ComponentType<ComponentProps<"div">>
+  SidebarMenu: ComponentType<ComponentProps<"ul">>
+  SidebarMenuItem: ComponentType<ComponentProps<"li">>
+  SidebarMenuButton: ComponentType<ComponentProps<"button"> & { isActive?: boolean; size?: "default" | "sm"; tooltip?: ReactNode; render?: ReactElement }>
+  SidebarMenuBadge: ComponentType<ComponentProps<"span">>
+  SidebarMenuSub: ComponentType<ComponentProps<"ul">>
+  SidebarMenuSubItem: ComponentType<ComponentProps<"li">>
+  SidebarMenuSubButton: ComponentType<ComponentProps<"button"> & { isActive?: boolean; render?: ReactElement }>
   Dialog: ComponentType<{ children?: ReactNode; dismissible?: boolean }>
   DialogTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   DialogClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
@@ -653,6 +670,46 @@ function ItemPeople({ ui }: { ui: DemoComponents }) {
       </Item>
     </Fragment>)}</ItemGroup> : <Button variant="outline" onClick={() => setPeople(itemPeople)}>Restore members</Button>}
   </div>
+}
+
+const sbIcon = (d: string) => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={d} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const sidebarLinks = [
+  { id: "home", label: "Home", icon: sbIcon("M2.5 7 8 2.5 13.5 7v6.5h-4v-4h-3v4h-4z") },
+  { id: "inbox", label: "Inbox", icon: sbIcon("M2 9.5 3.5 3h9L14 9.5V13H2zM2 9.5h3.5l1 1.5h3l1-1.5H14"), badge: "12" },
+  { id: "projects", label: "Projects", icon: sbIcon("M2 4.5h4l1.5 1.5H14V13H2z") },
+  { id: "reports", label: "Reports", icon: sbIcon("M3 13V8m5 5V3m5 10V6") },
+]
+const settingsIcon = sbIcon("M8 5.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5zM8 1.5v2m0 9v2M1.5 8h2m9 0h2M3.4 3.4l1.4 1.4m6.4 6.4 1.4 1.4m0-9.2-1.4 1.4m-6.4 6.4-1.4 1.4")
+
+function SidebarShell({ ui, collapsible = "offcanvas", defaultOpen = true, shortcut = false, nested = false }: { ui: DemoComponents; collapsible?: "offcanvas" | "icon"; defaultOpen?: boolean; shortcut?: string | false; nested?: boolean }) {
+  const { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuBadge, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarInset, SidebarTrigger, SidebarSeparator, Avatar, AvatarFallback } = ui
+  const [page, setPage] = useState(nested ? "profile" : "home")
+  const go = (id: string): ComponentProps<"a">["onClick"] => event => { event.preventDefault(); setPage(id) }
+  const title = [...sidebarLinks, { id: "profile", label: "Profile" }, { id: "billing", label: "Billing" }].find(link => link.id === page)?.label
+  return <SidebarProvider defaultOpen={defaultOpen} shortcut={shortcut} className="h-[28rem] min-h-0 w-full max-w-3xl overflow-hidden rounded-xl border border-border">
+    <Sidebar collapsible={collapsible} className="h-full">
+      <SidebarHeader><div className="flex min-h-9 items-center gap-2 px-2.5 text-sm font-semibold"><span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded bg-foreground text-[10px] text-background">A</span><span className="truncate group-data-[collapsible=icon]/sidebar:sr-only">Acme Inc.</span></div></SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>{sidebarLinks.map(link => <SidebarMenuItem key={link.id}><SidebarMenuButton tooltip={link.label} isActive={page === link.id} render={<a href="#" onClick={go(link.id)} />}>{link.icon}<span>{link.label}</span>{link.badge && <SidebarMenuBadge>{link.badge}</SidebarMenuBadge>}</SidebarMenuButton></SidebarMenuItem>)}</SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarMenu><SidebarMenuItem>
+            <SidebarMenuButton tooltip="Settings" isActive={!nested && page === "settings"} render={<a href="#" onClick={go(nested ? "profile" : "settings")} />}>{settingsIcon}<span>Settings</span></SidebarMenuButton>
+            {nested && <SidebarMenuSub>{[["profile", "Profile"], ["billing", "Billing"]].map(([id, label]) => <SidebarMenuSubItem key={id}><SidebarMenuSubButton isActive={page === id} render={<a href="#" onClick={go(id)} />}><span>{label}</span></SidebarMenuSubButton></SidebarMenuSubItem>)}</SidebarMenuSub>}
+          </SidebarMenuItem></SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter><div className="flex items-center gap-2 px-1"><Avatar size="sm"><AvatarFallback>AR</AvatarFallback></Avatar><span className="truncate text-sm group-data-[collapsible=icon]/sidebar:sr-only">Ana Ruiz</span></div></SidebarFooter>
+    </Sidebar>
+    <SidebarInset render={<div />}>
+      <header className="flex items-center gap-2 border-b border-border p-2"><SidebarTrigger /><h3 className="text-sm font-medium text-foreground">{title ?? "Settings"}</h3></header>
+      <div className="grid flex-1 content-start gap-3 p-4">{[0, 1, 2].map(i => <div key={i} className="h-16 rounded-lg bg-muted" />)}</div>
+    </SidebarInset>
+  </SidebarProvider>
 }
 
 function OtpBasic({ ui }: { ui: DemoComponents }) {
@@ -1141,7 +1198,15 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "sheet-form": ui => <SheetForm ui={ui} />,
       "sheet-sides": ({ Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, Button }) => <div className="showcase-button-row">{(["top", "right", "bottom", "left"] as const).map(side => <Sheet key={side} side={side}><SheetTrigger render={<Button variant="outline">{side}</Button>} /><SheetContent><SheetHeader><SheetTitle>From the {side}</SheetTitle><SheetDescription>Swipe toward the {side} edge, press Escape or use the close button.</SheetDescription></SheetHeader></SheetContent></Sheet>)}</div>,
     },
+  },  sidebar: {
+    preview: ui => <SidebarShell ui={ui} shortcut="b" />,
+    examples: {
+      "sidebar-basic": ui => <SidebarShell ui={ui} />,
+      "sidebar-icon": ui => <SidebarShell ui={ui} collapsible="icon" defaultOpen={false} />,
+      "sidebar-submenu": ui => <SidebarShell ui={ui} nested />,
+    },
   },
+
   dialog: {
     preview: ({ Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, Button }) => <Dialog><DialogTrigger render={<Button>Edit profile</Button>} /><DialogContent><DialogHeader><DialogTitle>Edit profile</DialogTitle><DialogDescription>Change your display name. It is saved when you confirm.</DialogDescription></DialogHeader><DialogFooter><DialogClose render={<Button variant="outline">Cancel</Button>} /><DialogClose render={<Button>Save changes</Button>} /></DialogFooter></DialogContent></Dialog>,
     examples: {

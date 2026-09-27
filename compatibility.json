@@ -47,6 +47,7 @@
     { "id": "S-49", "name": "select", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-10" },
     { "id": "S-50", "name": "separator", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-51", "name": "sheet", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-26" },
+    { "id": "S-52", "name": "sidebar", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-27" },
     { "id": "S-53", "name": "skeleton", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "S-54", "name": "slider", "kind": "base-ui", "status": "stable", "reviewed": "2026-09-26" },
     { "id": "S-55", "name": "spinner", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
