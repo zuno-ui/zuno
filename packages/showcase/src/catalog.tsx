@@ -118,6 +118,7 @@ export type DemoComponents = {
   Toggle: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; pressed?: boolean; defaultPressed?: boolean; disabled?: boolean; "aria-label"?: string }>
   ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
   ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
+  InputOTP: ComponentType<{ id?: string; className?: string; length: number; groups?: number[]; value?: string; defaultValue?: string; onValueChange?: (value: string) => void; onValueComplete?: (value: string) => void; validationType?: "numeric" | "alpha" | "alphanumeric" | "none"; normalizeValue?: (value: string) => string; invalid?: boolean; describedBy?: string; disabled?: boolean }>
   NavigationMenu: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
   NavigationMenuList: ComponentType<{ children?: ReactNode; className?: string }>
   NavigationMenuItem: ComponentType<{ children?: ReactNode; className?: string }>
@@ -413,6 +414,27 @@ function SheetForm({ ui }: { ui: DemoComponents }) {
   const { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose, Button, Input, Label } = ui
   const id = useId()
   return <Sheet><SheetTrigger render={<Button variant="outline">Edit profile</Button>} /><SheetContent><SheetHeader><SheetTitle>Edit profile</SheetTitle><SheetDescription>Changes are visible to your team.</SheetDescription></SheetHeader><div className="grid gap-2"><Label htmlFor={id + "name"}>Name</Label><Input id={id + "name"} defaultValue="Ana García" /></div><div className="grid gap-2"><Label htmlFor={id + "role"}>Role</Label><Input id={id + "role"} defaultValue="Product designer" /></div><SheetFooter><SheetClose render={<Button variant="outline">Cancel</Button>} /><SheetClose render={<Button>Save</Button>} /></SheetFooter></SheetContent></Sheet>
+}
+
+function OtpBasic({ ui }: { ui: DemoComponents }) {
+  const { InputOTP, Label } = ui
+  const id = useId()
+  const [done, setDone] = useState(false)
+  return <div className="grid gap-2"><Label htmlFor={id}>Verification code</Label><InputOTP id={id} length={6} groups={[3, 3]} onValueChange={value => setDone(value.length === 6)} /><p role="status" className="min-h-5 text-sm text-muted-foreground">{done ? "Code complete." : ""}</p></div>
+}
+
+function OtpError({ ui }: { ui: DemoComponents }) {
+  const { InputOTP, Label, Button } = ui
+  const id = useId()
+  const [code, setCode] = useState("")
+  const [error, setError] = useState(false)
+  const [resent, setResent] = useState(false)
+  return <div className="grid gap-2">
+    <Label htmlFor={id}>Enter the code we sent you</Label>
+    <InputOTP id={id} length={6} value={code} onValueChange={value => { setCode(value); setError(false) }} onValueComplete={value => setError(value !== "123456")} invalid={error} describedBy={id + "help"} />
+    <p id={id + "help"} className={error ? "text-sm text-destructive" : "text-sm text-muted-foreground"}>{error ? "That code is not valid. Check it or request a new one." : resent ? "We sent a new code." : "Check your inbox for a 6-digit code."}</p>
+    <Button variant="link" className="justify-self-start px-0" onClick={() => { setCode(""); setError(false); setResent(true) }}>Resend code</Button>
+  </div>
 }
 
 const navProducts = [["Analytics", "Dashboards and reports for every team."], ["Automations", "Workflows triggered by your data."], ["Integrations", "Connect the tools you already use."], ["Security", "SSO, roles and audit logs."]]
@@ -752,6 +774,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "toggle-group-multiple": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup multiple aria-label="Formatting" defaultValue={["bold"]}><ToggleGroupItem value="bold" aria-label="Bold"><strong>B</strong></ToggleGroupItem><ToggleGroupItem value="italic" aria-label="Italic"><em>I</em></ToggleGroupItem><ToggleGroupItem value="underline" aria-label="Underline"><u>U</u></ToggleGroupItem></ToggleGroup>,
       "toggle-group-outline": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup variant="outline" aria-label="View" defaultValue={["list"]}><ToggleGroupItem value="list">List</ToggleGroupItem><ToggleGroupItem value="board">Board</ToggleGroupItem><ToggleGroupItem value="calendar">Calendar</ToggleGroupItem></ToggleGroup>,
       "toggle-group-vertical": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup orientation="vertical" aria-label="Density" defaultValue={["comfortable"]}><ToggleGroupItem value="comfortable">Comfortable</ToggleGroupItem><ToggleGroupItem value="compact">Compact</ToggleGroupItem></ToggleGroup>,
+    },
+  },
+  "input-otp": {
+    preview: ui => <OtpBasic ui={ui} />,
+    examples: {
+      "input-otp-basic": ui => <OtpBasic ui={ui} />,
+      "input-otp-recovery": ({ InputOTP, Label }) => <div className="grid gap-2"><Label htmlFor="otp-recovery">Recovery code</Label><InputOTP id="otp-recovery" length={8} groups={[4, 4]} validationType="alphanumeric" normalizeValue={value => value.toUpperCase()} /></div>,
+      "input-otp-error": ui => <OtpError ui={ui} />,
     },
   },
   "navigation-menu": {
