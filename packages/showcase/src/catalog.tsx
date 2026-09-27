@@ -49,6 +49,17 @@ export type DemoComponents = {
   breadcrumbLinkClass: string
   Kbd: ComponentType<ComponentProps<"kbd"> & { label?: string }>
   KbdGroup: ComponentType<ComponentProps<"kbd">>
+  Pagination: ComponentType<ComponentProps<"nav">>
+  PaginationContent: ComponentType<ComponentProps<"ul">>
+  PaginationItem: ComponentType<ComponentProps<"li">>
+  PaginationLink: ComponentType<ComponentProps<"a"> & { isActive?: boolean }>
+  PaginationPrevious: ComponentType<ComponentProps<"a"> & { label?: string; disabled?: boolean }>
+  PaginationNext: ComponentType<ComponentProps<"a"> & { label?: string; disabled?: boolean }>
+  PaginationEllipsis: ComponentType<ComponentProps<"span"> & { label?: string }>
+  paginationLinkClass: string
+  paginationRange: (page: number, total: number, siblings?: number) => (number | "ellipsis")[]
+  ButtonGroup: ComponentType<ComponentProps<"div"> & { orientation?: "horizontal" | "vertical" }>
+  ButtonGroupSeparator: ComponentType<ComponentProps<"div">>
   Empty: ComponentType<ComponentProps<"div">>
   EmptyMedia: ComponentType<ComponentProps<"div">>
   EmptyTitle: ComponentType<ComponentProps<"h3">>
@@ -441,6 +452,20 @@ function Crumbs({ ui, separator, collapsed }: { ui: DemoComponents; separator?: 
   </BreadcrumbList></Breadcrumb>
 }
 
+function Pages({ ui, total = 3, initial = 2 }: { ui: DemoComponents; total?: number; initial?: number }) {
+  const { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, paginationRange } = ui
+  const [page, setPage] = useState(initial)
+  const go = (p: number): ComponentProps<"a">["onClick"] => event => { event.preventDefault(); setPage(p) }
+  return <Pagination><PaginationContent>
+    <PaginationItem><PaginationPrevious href="#" onClick={go(page - 1)} disabled={page === 1} /></PaginationItem>
+    {paginationRange(page, total).map((p, i) => <PaginationItem key={i}>{p === "ellipsis" ? <PaginationEllipsis /> : <PaginationLink href="#" onClick={go(p)} isActive={p === page}>{p}</PaginationLink>}</PaginationItem>)}
+    <PaginationItem><PaginationNext href="#" onClick={go(page + 1)} disabled={page === total} /></PaginationItem>
+  </PaginationContent></Pagination>
+}
+
+const moreIcon = <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className="size-4"><circle cx="3.5" cy="8" r="1.25" /><circle cx="8" cy="8" r="1.25" /><circle cx="12.5" cy="8" r="1.25" /></svg>
+const chevronDownIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+
 function OtpBasic({ ui }: { ui: DemoComponents }) {
   const { InputOTP, Label } = ui
   const id = useId()
@@ -618,6 +643,22 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "kbd-shortcut": ({ Kbd, KbdGroup }) => <div className="flex items-center gap-4"><KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup><KbdGroup><Kbd label="Control">Ctrl</Kbd><Kbd label="Shift">⇧</Kbd><Kbd>P</Kbd></KbdGroup></div>,
       "kbd-in-button": ({ Kbd, KbdGroup, Button }) => <Button variant="outline" aria-keyshortcuts="Meta+K">Search<KbdGroup className="ms-2"><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>,
       "kbd-in-text": ({ Kbd }) => <p className="text-sm text-foreground">Press <Kbd>Esc</Kbd> to close, or <Kbd label="Enter">↵</Kbd> to confirm.</p>,
+    },
+  },
+  pagination: {
+    preview: ui => <Pages ui={ui} total={12} initial={6} />,
+    examples: {
+      "pagination-basic": ui => <Pages ui={ui} />,
+      "pagination-range": ui => <Pages ui={ui} total={12} initial={1} />,
+      "pagination-router": ({ Pagination, PaginationContent, PaginationItem, paginationLinkClass }) => <Pagination aria-label="Results pages"><PaginationContent>{[1, 2, 3].map(p => <PaginationItem key={p}><a href="#" onClick={preventNav} className={paginationLinkClass} aria-current={p === 2 ? "page" : undefined}>{p}</a></PaginationItem>)}</PaginationContent></Pagination>,
+    },
+  },
+  "button-group": {
+    preview: ({ ButtonGroup, Button }) => <ButtonGroup aria-label="Message actions"><Button variant="outline">Archive</Button><Button variant="outline">Report</Button><Button variant="outline">Snooze</Button></ButtonGroup>,
+    examples: {
+      "button-group-outline": ({ ButtonGroup, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }) => <ButtonGroup aria-label="Message actions"><Button variant="outline">Archive</Button><Button variant="outline">Report</Button><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="More actions" />}>{moreIcon}</DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem>Snooze</DropdownMenuItem><DropdownMenuItem>Mark as unread</DropdownMenuItem></DropdownMenuContent></DropdownMenu></ButtonGroup>,
+      "button-group-split": ({ ButtonGroup, ButtonGroupSeparator, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }) => <ButtonGroup aria-label="Publish"><Button>Publish</Button><ButtonGroupSeparator /><DropdownMenu><DropdownMenuTrigger render={<Button size="icon" aria-label="Publish options" />}>{chevronDownIcon}</DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem>Schedule</DropdownMenuItem><DropdownMenuItem>Save as draft</DropdownMenuItem></DropdownMenuContent></DropdownMenu></ButtonGroup>,
+      "button-group-vertical": ({ ButtonGroup, Button }) => <ButtonGroup orientation="vertical" aria-label="Zoom"><Button variant="outline" size="icon" aria-label="Zoom in">+</Button><Button variant="outline" size="icon" aria-label="Zoom out">−</Button></ButtonGroup>,
     },
   },
   label: {
