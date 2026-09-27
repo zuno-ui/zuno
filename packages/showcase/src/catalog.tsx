@@ -124,6 +124,22 @@ export type DemoComponents = {
   PopoverTitle: ComponentType<{ children?: ReactNode; className?: string }>
   PopoverDescription: ComponentType<{ children?: ReactNode; className?: string }>
   PopoverClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  Drawer: ComponentType<{ children?: ReactNode; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
+  DrawerTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  DrawerClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  DrawerContent: ComponentType<{ children?: ReactNode; className?: string; showClose?: boolean }>
+  DrawerHeader: ComponentType<ComponentProps<"div">>
+  DrawerFooter: ComponentType<ComponentProps<"div">>
+  DrawerTitle: ComponentType<{ children?: ReactNode; className?: string }>
+  DrawerDescription: ComponentType<{ children?: ReactNode; className?: string }>
+  Sheet: ComponentType<{ children?: ReactNode; side?: "top" | "right" | "bottom" | "left"; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
+  SheetTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  SheetClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  SheetContent: ComponentType<{ children?: ReactNode; className?: string; showClose?: boolean }>
+  SheetHeader: ComponentType<ComponentProps<"div">>
+  SheetFooter: ComponentType<ComponentProps<"div">>
+  SheetTitle: ComponentType<{ children?: ReactNode; className?: string }>
+  SheetDescription: ComponentType<{ children?: ReactNode; className?: string }>
   Dialog: ComponentType<{ children?: ReactNode; dismissible?: boolean }>
   DialogTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   DialogClose: ComponentType<{ children?: ReactNode; render?: ReactElement }>
@@ -372,6 +388,19 @@ function ProgressLive({ ui }: { ui: DemoComponents }) {
     <Progress value={value} getAriaValueText={(_, current) => (current ?? 0) + "% uploaded"}><div className="flex items-center justify-between"><ProgressLabel>report.pdf</ProgressLabel><ProgressValue /></div></Progress>
     <div className="flex items-center gap-3"><Button size="sm" variant="outline" onClick={start} disabled={value > 0 && value < 100}>{value === 100 ? "Upload again" : "Upload"}</Button><p role="status" className="text-sm text-muted-foreground">{value === 100 ? "Upload complete." : ""}</p></div>
   </div>
+}
+
+const releaseNotes = Array.from({ length: 14 }, (_, index) => `v1.${14 - index}.0 — Faster search, clearer empty states and fixes for keyboard navigation in menus.`)
+
+function DrawerGoal({ ui }: { ui: DemoComponents }) {
+  const { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose, Button } = ui
+  return <Drawer><DrawerTrigger render={<Button variant="outline">Set goal</Button>} /><DrawerContent><DrawerHeader><DrawerTitle>Move goal</DrawerTitle><DrawerDescription>Set your daily activity goal.</DrawerDescription></DrawerHeader><p className="py-4 text-center text-5xl font-semibold tabular-nums text-foreground">350<span className="block text-xs font-normal text-muted-foreground">calories / day</span></p><DrawerFooter><DrawerClose render={<Button>Save goal</Button>} /><DrawerClose render={<Button variant="outline">Cancel</Button>} /></DrawerFooter></DrawerContent></Drawer>
+}
+
+function SheetForm({ ui }: { ui: DemoComponents }) {
+  const { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose, Button, Input, Label } = ui
+  const id = useId()
+  return <Sheet><SheetTrigger render={<Button variant="outline">Edit profile</Button>} /><SheetContent><SheetHeader><SheetTitle>Edit profile</SheetTitle><SheetDescription>Changes are visible to your team.</SheetDescription></SheetHeader><div className="grid gap-2"><Label htmlFor={id + "name"}>Name</Label><Input id={id + "name"} defaultValue="Ana García" /></div><div className="grid gap-2"><Label htmlFor={id + "role"}>Role</Label><Input id={id + "role"} defaultValue="Product designer" /></div><SheetFooter><SheetClose render={<Button variant="outline">Cancel</Button>} /><SheetClose render={<Button>Save</Button>} /></SheetFooter></SheetContent></Sheet>
 }
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
@@ -705,6 +734,20 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     examples: {
       "tooltip-basic": ({ TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Button }) => <TooltipProvider><Tooltip><TooltipTrigger render={<Button variant="outline">Save</Button>} /><TooltipContent>Save your changes (⌘S)</TooltipContent></Tooltip></TooltipProvider>,
       "tooltip-states": ({ TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Button }) => <TooltipProvider><div className="showcase-button-row"><Tooltip><TooltipTrigger render={<Button>Publish</Button>} /><TooltipContent>Publish the project now</TooltipContent></Tooltip><Tooltip><TooltipTrigger render={<span tabIndex={0} className="inline-flex rounded-md" />}><Button disabled>Publish</Button></TooltipTrigger><TooltipContent>Fill in the required fields first</TooltipContent></Tooltip></div></TooltipProvider>,
+    },
+  },
+  drawer: {
+    preview: ui => <DrawerGoal ui={ui} />,
+    examples: {
+      "drawer-basic": ui => <DrawerGoal ui={ui} />,
+      "drawer-scroll": ({ Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, Button }) => <Drawer><DrawerTrigger render={<Button variant="outline">Release notes</Button>} /><DrawerContent><DrawerHeader><DrawerTitle>Release notes</DrawerTitle></DrawerHeader>{releaseNotes.map(note => <p key={note} className="text-sm text-muted-foreground">{note}</p>)}</DrawerContent></Drawer>,
+    },
+  },
+  sheet: {
+    preview: ui => <SheetForm ui={ui} />,
+    examples: {
+      "sheet-form": ui => <SheetForm ui={ui} />,
+      "sheet-sides": ({ Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, Button }) => <div className="showcase-button-row">{(["top", "right", "bottom", "left"] as const).map(side => <Sheet key={side} side={side}><SheetTrigger render={<Button variant="outline">{side}</Button>} /><SheetContent><SheetHeader><SheetTitle>From the {side}</SheetTitle><SheetDescription>Swipe toward the {side} edge, press Escape or use the close button.</SheetDescription></SheetHeader></SheetContent></Sheet>)}</div>,
     },
   },
   dialog: {
