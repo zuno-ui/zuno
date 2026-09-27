@@ -101,6 +101,9 @@ export type DemoComponents = {
   ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
   ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
   ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
+  Toggle: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; pressed?: boolean; defaultPressed?: boolean; disabled?: boolean; "aria-label"?: string }>
+  ToggleGroup: ComponentType<{ children?: ReactNode; className?: string; variant?: "default" | "outline"; size?: "sm" | "default" | "lg"; multiple?: boolean; orientation?: "horizontal" | "vertical"; defaultValue?: string[]; "aria-label"?: string }>
+  ToggleGroupItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean; "aria-label"?: string }>
   Popover: ComponentType<{ children?: ReactNode; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
   PopoverTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement; openOnHover?: boolean }>
   PopoverContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "right" | "bottom" | "left"; align?: "start" | "center" | "end"; sideOffset?: number }>
@@ -316,6 +319,10 @@ function RadioStates({ ui }: { ui: DemoComponents }) {
   const id = useId()
   return <ui.RadioGroup aria-label="Shipping" defaultValue="standard"><RadioOption ui={ui} id={id} value="standard" label="Standard" /><RadioOption ui={ui} id={id} value="express" label="Express" /><RadioOption ui={ui} id={id} value="same-day" label="Same day (unavailable)" disabled /></ui.RadioGroup>
 }
+
+const alignIcon = (lines: string) => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={lines} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+const alignments = [["left", "Align left", "M2.5 4h11M2.5 8h7M2.5 12h9"], ["center", "Align center", "M2.5 4h11M4.5 8h7M3.5 12h9"], ["right", "Align right", "M2.5 4h11M6.5 8h7M4.5 12h9"]] as const
+const starIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m8 2 1.8 3.8 4.2.5-3.1 2.9.8 4.1L8 11.3l-3.7 2 .8-4.1L2 6.3l4.2-.5L8 2Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" /></svg>
 
 const comboboxFrameworks = ["Next.js", "Remix", "Astro", "Vite", "Nuxt", "SvelteKit", "Gatsby"]
 const comboboxZones: ComboboxZone[] = [{ value: "Americas", items: ["New York", "Mexico City", "São Paulo"] }, { value: "Europe", items: ["London", "Madrid", "Berlin"] }]
@@ -585,6 +592,23 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-basic": ui => <ComboboxBasic ui={ui} />,
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
+    },
+  },
+  toggle: {
+    preview: ({ Toggle }) => <div className="showcase-button-row"><Toggle aria-label="Bold"><strong>B</strong></Toggle><Toggle aria-label="Italic" defaultPressed><em>I</em></Toggle><Toggle aria-label="Underline"><u>U</u></Toggle></div>,
+    examples: {
+      "toggle-basic": ({ Toggle }) => <div className="showcase-button-row"><Toggle aria-label="Bold"><strong>B</strong></Toggle><Toggle aria-label="Italic" defaultPressed><em>I</em></Toggle><Toggle aria-label="Underline"><u>U</u></Toggle></div>,
+      "toggle-outline": ({ Toggle }) => <Toggle variant="outline" defaultPressed>{starIcon}Starred</Toggle>,
+      "toggle-sizes": ({ Toggle }) => <div className="showcase-button-row items-center"><Toggle size="sm" aria-label="Bold, small"><strong>B</strong></Toggle><Toggle aria-label="Bold, default"><strong>B</strong></Toggle><Toggle size="lg" aria-label="Bold, large"><strong>B</strong></Toggle><Toggle aria-label="Bold, disabled" disabled><strong>B</strong></Toggle></div>,
+    },
+  },
+  "toggle-group": {
+    preview: ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup aria-label="Text alignment" defaultValue={["left"]}>{alignments.map(([value, label, d]) => <ToggleGroupItem key={value} value={value} aria-label={label}>{alignIcon(d)}</ToggleGroupItem>)}</ToggleGroup>,
+    examples: {
+      "toggle-group-single": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup aria-label="Text alignment" defaultValue={["left"]}>{alignments.map(([value, label, d]) => <ToggleGroupItem key={value} value={value} aria-label={label}>{alignIcon(d)}</ToggleGroupItem>)}</ToggleGroup>,
+      "toggle-group-multiple": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup multiple aria-label="Formatting" defaultValue={["bold"]}><ToggleGroupItem value="bold" aria-label="Bold"><strong>B</strong></ToggleGroupItem><ToggleGroupItem value="italic" aria-label="Italic"><em>I</em></ToggleGroupItem><ToggleGroupItem value="underline" aria-label="Underline"><u>U</u></ToggleGroupItem></ToggleGroup>,
+      "toggle-group-outline": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup variant="outline" aria-label="View" defaultValue={["list"]}><ToggleGroupItem value="list">List</ToggleGroupItem><ToggleGroupItem value="board">Board</ToggleGroupItem><ToggleGroupItem value="calendar">Calendar</ToggleGroupItem></ToggleGroup>,
+      "toggle-group-vertical": ({ ToggleGroup, ToggleGroupItem }) => <ToggleGroup orientation="vertical" aria-label="Density" defaultValue={["comfortable"]}><ToggleGroupItem value="comfortable">Comfortable</ToggleGroupItem><ToggleGroupItem value="compact">Compact</ToggleGroupItem></ToggleGroup>,
     },
   },
   popover: {
