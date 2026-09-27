@@ -447,6 +447,19 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "scroll-area", title: "ScrollArea", registryPath: "ui/scroll-area.tsx", reference: "scroll-area",
+    description: "Usable scrolling with thin overlay scrollbars, without hiding content or controls.",
+    usage: 'import { ScrollArea } from "@/components/ui/scroll-area"\n\n<ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags">\n  {tags.map(tag => <div key={tag}>{tag}</div>)}\n</ScrollArea>',
+    properties: [["orientation", '"vertical" | "horizontal" | "both"', '"vertical"', "Which scrollbars render; both adds the corner."], ["className", "string", "—", "Size the root (h-72, max-h-96…); the viewport fills it."], ["overflowEdgeThreshold", "number", "0", "Pixels before data-overflow-*-start/end flip, for fade edges."], ["ScrollBar", "div", "—", "Exported for custom layouts; decorative (aria-hidden)."]],
+    accessibility: ["Scrolling stays native: wheel, touch, keyboard and assistive tech work as in any overflow container.", "The viewport becomes focusable only when it overflows, so keyboard users can scroll it with the arrow keys even when it has no focusable content (a gap in Safari's native behavior).", "Pass aria-label (or aria-labelledby) when it holds a list or other meaningful content: the root then becomes a named region. The scrollbars are decorative.", "Overlay scrollbars never cover content: they show on hover or while scrolling and the thumb uses the border token."],
+    states: [["Idle", "Scrollbars hidden; content fully visible."], ["Hover / scrolling", "Thin scrollbar fades in."], ["Focus", "Inset outline on the viewport when it is focusable."], ["No overflow", "No scrollbar and no tab stop."]],
+    examples: [
+      { id: "scroll-area-list", title: "Vertical list", description: "A fixed-height list named with aria-label.", code: '<ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags">\n  <div className="p-4">\n    {tags.map(tag => <div key={tag} className="border-b border-border py-2 text-sm">{tag}</div>)}\n  </div>\n</ScrollArea>' },
+      { id: "scroll-area-horizontal", title: "Horizontal row", description: "orientation=\"horizontal\" for a row of cards.", code: '<ScrollArea orientation="horizontal" className="w-full max-w-md rounded-lg border border-border">\n  <div className="flex gap-3 p-4">\n    {covers.map(cover => <div key={cover} className="h-32 w-40 shrink-0 rounded-md bg-muted" />)}\n  </div>\n</ScrollArea>' },
+      { id: "scroll-area-both", title: "Both directions", description: "Wide and tall content; both scrollbars and the corner.", code: '<ScrollArea orientation="both" className="h-56 w-full max-w-md rounded-lg border border-border">\n  <pre className="p-4 text-xs">{longLog}</pre>\n</ScrollArea>' },
+    ],
+  },
+  {
     name: "slider", title: "Slider", registryPath: "ui/slider.tsx", reference: "slider",
     description: "Pick a value or a range by dragging or with the keyboard, with the value always readable.",
     usage: 'import { Slider, SliderLabel, SliderValue } from "@/components/ui/slider"\n\n<Slider defaultValue={40}>\n  <div className="flex justify-between">\n    <SliderLabel>Volume</SliderLabel>\n    <SliderValue />\n  </div>\n</Slider>',

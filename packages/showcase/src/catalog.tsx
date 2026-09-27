@@ -108,6 +108,7 @@ export type DemoComponents = {
   ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
   ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
   ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
+  ScrollArea: ComponentType<{ children?: ReactNode; className?: string; orientation?: "vertical" | "horizontal" | "both"; "aria-label"?: string }>
   Slider: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: number | number[]; value?: number | number[]; min?: number; max?: number; step?: number; disabled?: boolean; format?: Intl.NumberFormatOptions; thumbLabels?: string[] }>
   SliderLabel: ComponentType<{ children?: ReactNode; className?: string }>
   SliderValue: ComponentType<{ className?: string }>
@@ -379,6 +380,10 @@ function RadioStates({ ui }: { ui: DemoComponents }) {
 const alignIcon = (lines: string) => <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={lines} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
 const alignments = [["left", "Align left", "M2.5 4h11M2.5 8h7M2.5 12h9"], ["center", "Align center", "M2.5 4h11M4.5 8h7M3.5 12h9"], ["right", "Align right", "M2.5 4h11M6.5 8h7M4.5 12h9"]] as const
 const starIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m8 2 1.8 3.8 4.2.5-3.1 2.9.8 4.1L8 11.3l-3.7 2 .8-4.1L2 6.3l4.2-.5L8 2Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" /></svg>
+
+const scrollTags = Array.from({ length: 40 }, (_, index) => `v1.2.0-beta.${40 - index}`)
+const scrollCovers = ["Aurora", "Basalt", "Cirrus", "Dune", "Ember", "Fjord", "Glacier"]
+const scrollLog = Array.from({ length: 24 }, (_, index) => `[09:${String(index).padStart(2, "0")}:12] INFO  worker-${index % 3} processed batch ${1200 + index} in ${40 + index * 3}ms — queue=default region=eu-west-1 retries=0`).join("\n")
 
 function SliderRow({ ui, label }: { ui: DemoComponents; label: string }) {
   return <div className="flex items-center justify-between"><ui.SliderLabel>{label}</ui.SliderLabel><ui.SliderValue /></div>
@@ -706,6 +711,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-basic": ui => <ComboboxBasic ui={ui} />,
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
+    },
+  },
+  "scroll-area": {
+    preview: ({ ScrollArea }) => <ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags"><div className="p-4"><p className="mb-2 text-sm font-medium text-foreground">Tags</p>{scrollTags.map(tag => <div key={tag} className="border-b border-border py-2 text-sm text-foreground">{tag}</div>)}</div></ScrollArea>,
+    examples: {
+      "scroll-area-list": ({ ScrollArea }) => <ScrollArea className="h-72 w-48 rounded-lg border border-border" aria-label="Tags"><div className="p-4"><p className="mb-2 text-sm font-medium text-foreground">Tags</p>{scrollTags.map(tag => <div key={tag} className="border-b border-border py-2 text-sm text-foreground">{tag}</div>)}</div></ScrollArea>,
+      "scroll-area-horizontal": ({ ScrollArea }) => <ScrollArea orientation="horizontal" className="w-full max-w-md rounded-lg border border-border" aria-label="Covers"><div className="flex gap-3 p-4">{scrollCovers.map(cover => <figure key={cover} className="shrink-0"><div className="h-32 w-40 rounded-md bg-muted" /><figcaption className="pt-2 text-xs text-muted-foreground">{cover}</figcaption></figure>)}</div></ScrollArea>,
+      "scroll-area-both": ({ ScrollArea }) => <ScrollArea orientation="both" className="h-56 w-full max-w-md rounded-lg border border-border" aria-label="Worker log"><pre className="p-4 font-mono text-xs text-foreground">{scrollLog}</pre></ScrollArea>,
     },
   },
   slider: {

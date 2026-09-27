@@ -609,6 +609,22 @@
       ]
     },
     {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "dependencies": [
+        "@base-ui/react@1.8.0"
+      ],
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/scroll-area.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "slider",
       "type": "registry:ui",
       "dependencies": [
