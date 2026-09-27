@@ -85,6 +85,13 @@ export type DemoComponents = {
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
   TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  Accordion: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: string[]; multiple?: boolean }>
+  AccordionItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean }>
+  AccordionTrigger: ComponentType<{ children?: ReactNode; className?: string; headingLevel?: 2 | 3 | 4 | 5 | 6 }>
+  AccordionContent: ComponentType<{ children?: ReactNode; className?: string }>
+  Collapsible: ComponentType<{ children?: ReactNode; className?: string; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void }>
+  CollapsibleTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
+  CollapsibleContent: ComponentType<{ children?: ReactNode; className?: string; hiddenUntilFound?: boolean }>
   Calendar: ComponentType<DayPickerProps>
   DatePicker: ComponentType<DatePickerDemoProps & { value?: Date; defaultValue?: Date; onValueChange?: (date: Date | undefined) => void; name?: string }>
   DateRangePicker: ComponentType<DatePickerDemoProps & { value?: DateRange; defaultValue?: DateRange; onValueChange?: (range: DateRange | undefined) => void }>
@@ -233,6 +240,26 @@ function TableSelectionExample({ ui }: { ui: DemoComponents }) {
     <TableHeader><TableRow><TableHead><Checkbox aria-label="Select all" checked={selected.length === rows.length} indeterminate={selected.length > 0 && selected.length < rows.length} onCheckedChange={all => setSelected(all ? rows : [])} /></TableHead><TableHead>Project</TableHead></TableRow></TableHeader>
     <TableBody>{rows.map(name => <TableRow key={name} data-state={selected.includes(name) ? "selected" : undefined}><TableCell><Checkbox aria-label={"Select " + name} checked={selected.includes(name)} onCheckedChange={on => setSelected(on ? [...selected, name] : selected.filter(item => item !== name))} /></TableCell><TableCell>{name}</TableCell></TableRow>)}</TableBody>
   </Table>
+}
+
+const faq = [["billing", "How does billing work?", "Plans are billed monthly and you can cancel anytime from settings."], ["team", "Can I invite my team?", "Yes, Pro includes up to 10 members; Team has no limit."], ["export", "Can I export my data?", "Export any project as JSON or CSV from its settings page."]]
+const settingsSections = [["profile", "Profile", "Name, photo and public details."], ["notifications", "Notifications", "Email and push preferences."], ["security", "Security", "Password, sessions and two-factor authentication."]]
+
+function AccordionList({ ui, items, multiple, defaultValue }: { ui: DemoComponents; items: string[][]; multiple?: boolean; defaultValue?: string[] }) {
+  const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } = ui
+  return <Accordion multiple={multiple} defaultValue={defaultValue} className="max-w-md">{items.map(([value, title, body]) => <AccordionItem key={value} value={value}><AccordionTrigger>{title}</AccordionTrigger><AccordionContent>{body}</AccordionContent></AccordionItem>)}</Accordion>
+}
+
+function CollapsibleRepos({ ui }: { ui: DemoComponents }) {
+  const { Collapsible, CollapsibleTrigger, CollapsibleContent, Button } = ui
+  const [open, setOpen] = useState(false)
+  const row = "rounded-md border border-border px-3 py-2 font-mono text-sm text-foreground"
+  return <Collapsible open={open} onOpenChange={setOpen} className="grid w-full max-w-xs gap-2">
+    <p className="text-sm font-medium text-foreground">3 repositories starred</p>
+    <div className={row}>@zuno/ui</div>
+    <CollapsibleContent><div className="grid gap-2"><div className={row}>@zuno/cli</div><div className={row}>@zuno/tokens</div></div></CollapsibleContent>
+    <CollapsibleTrigger render={<Button variant="ghost" size="sm" className="justify-self-start">{open ? "Show less" : "Show all"}</Button>} />
+  </Collapsible>
 }
 
 function CalendarSingle({ ui }: { ui: DemoComponents }) {
@@ -589,6 +616,21 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "avatar-fallback": ({ Avatar, AvatarImage, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar><AvatarImage src="/missing-avatar.jpg" alt="Ana Ruiz" /><AvatarFallback>AR</AvatarFallback></Avatar><Avatar><AvatarImage src="/broken-avatar.jpg" alt="Luis Mora" /><AvatarFallback>LM</AvatarFallback></Avatar><Avatar><AvatarFallback>+3</AvatarFallback></Avatar></div>,
       "avatar-sizes": ({ Avatar, AvatarFallback }) => <div className="showcase-button-row items-center"><Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar><Avatar><AvatarFallback>MD</AvatarFallback></Avatar><Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar></div>,
       "avatar-group": ({ Avatar, AvatarFallback }) => <div className="flex -space-x-2">{["AR", "LM", "TS", "+3"].map(initials => <Avatar key={initials} className="ring-2 ring-background"><AvatarFallback>{initials}</AvatarFallback></Avatar>)}</div>,
+    },
+  },
+  accordion: {
+    preview: ui => <AccordionList ui={ui} items={faq} defaultValue={["billing"]} />,
+    examples: {
+      "accordion-basic": ui => <AccordionList ui={ui} items={faq} defaultValue={["billing"]} />,
+      "accordion-multiple": ui => <AccordionList ui={ui} items={settingsSections} multiple defaultValue={["profile", "notifications"]} />,
+      "accordion-disabled": ({ Accordion, AccordionItem, AccordionTrigger, AccordionContent }) => <Accordion className="max-w-md"><AccordionItem value="overview"><AccordionTrigger headingLevel={2}>Overview</AccordionTrigger><AccordionContent>Usage, members and billing at a glance.</AccordionContent></AccordionItem><AccordionItem value="audit" disabled><AccordionTrigger headingLevel={2}>Audit log (Enterprise)</AccordionTrigger><AccordionContent>Every change with its author and date.</AccordionContent></AccordionItem><AccordionItem value="api"><AccordionTrigger headingLevel={2}>API keys</AccordionTrigger><AccordionContent>Create and revoke keys for integrations.</AccordionContent></AccordionItem></Accordion>,
+    },
+  },
+  collapsible: {
+    preview: ui => <CollapsibleRepos ui={ui} />,
+    examples: {
+      "collapsible-basic": ui => <CollapsibleRepos ui={ui} />,
+      "collapsible-details": ({ Collapsible, CollapsibleTrigger, CollapsibleContent, Button }) => <Collapsible defaultOpen className="grid w-full max-w-xs gap-3"><CollapsibleTrigger render={<Button variant="outline" size="sm" className="justify-self-start">Order details</Button>} /><CollapsibleContent><dl className="grid grid-cols-2 gap-2 text-sm"><dt className="text-muted-foreground">Order</dt><dd className="text-foreground">#4821</dd><dt className="text-muted-foreground">Carrier</dt><dd className="text-foreground">DHL Express</dd><dt className="text-muted-foreground">Arrives</dt><dd className="text-foreground">Oct 2</dd></dl></CollapsibleContent></Collapsible>,
     },
   },
   calendar: {

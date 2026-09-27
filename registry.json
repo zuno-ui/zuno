@@ -514,6 +514,38 @@
       ]
     },
     {
+      "name": "accordion",
+      "type": "registry:ui",
+      "dependencies": [
+        "@base-ui/react@1.8.0"
+      ],
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/accordion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "dependencies": [
+        "@base-ui/react@1.8.0"
+      ],
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/collapsible.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "calendar",
       "type": "registry:ui",
       "dependencies": [
