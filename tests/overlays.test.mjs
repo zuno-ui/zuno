@@ -2,9 +2,9 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 
-// The 7 Base UI overlays. Each renders outside the local tree, so its surface must inherit the
+// The Base UI overlays. Each renders outside the local tree, so its surface must inherit the
 // active theme through the portal, and the catalog must include the composition demos.
-const OVERLAYS = ["alert-dialog", "avatar", "dialog", "dropdown-menu", "select", "toast", "tooltip"]
+const OVERLAYS = ["alert-dialog", "avatar", "combobox", "dialog", "drawer", "dropdown-menu", "navigation-menu", "popover", "select", "sheet", "toast", "tooltip"]
 const read = name => readFile(`registry/ui/${name}.tsx`, "utf8")
 
 test("portals: overlay surfaces use semantic theme tokens, not hard-coded colors", async t => {

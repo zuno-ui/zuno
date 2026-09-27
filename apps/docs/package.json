@@ -8,13 +8,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@zuno/showcase": "workspace:*",
     "@base-ui/react": "1.8.0",
+    "@zuno/showcase": "workspace:*",
     "clsx": "2.1.1",
-    "tailwind-merge": "3.3.1",
+    "next": "16.3.4",
     "react": "19.2.8",
+    "react-day-picker": "10.0.1",
     "react-dom": "19.2.8",
-    "next": "16.3.4"
+    "tailwind-merge": "3.3.1"
   },
   "devDependencies": {
     "tailwindcss": "4.3.3",

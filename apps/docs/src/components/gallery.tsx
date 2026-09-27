@@ -13,11 +13,16 @@ import { Stack } from "@/kit/stack"
 import { Cluster } from "@/kit/cluster"
 import { ResponsiveGrid } from "@/kit/responsive-grid"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Icon } from "@/components/ui/icon"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator, BreadcrumbEllipsis, breadcrumbLinkClass } from "@/components/ui/breadcrumb"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, paginationLinkClass, paginationRange } from "@/components/ui/pagination"
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { Label } from "@/components/ui/label"
 import { Empty, EmptyMedia, EmptyTitle, EmptyDescription, EmptyActions } from "@/components/ui/empty"
 import { Alert, AlertContent, AlertTitle, AlertDescription } from "@/components/ui/alert"
@@ -27,18 +32,34 @@ import { StatusBadge } from "@/kit/status-badge"
 import { PasswordInput } from "@/kit/password-input"
 import { SearchInput } from "@/kit/search-input"
 import { CopyButton as KitCopyButton } from "@/kit/copy-button"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { Tabs as UiTabs, TabsList, TabsTab, TabsPanel } from "@/components/ui/tabs"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import { DatePicker, DateRangePicker } from "@/kit/date-picker"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
+import { Calendar } from "@/components/ui/calendar"
+import { Combobox, ComboboxInput, ComboboxChips, ComboboxChip, ComboboxChipsInput, ComboboxValue, ComboboxContent, ComboboxList, ComboboxItem, ComboboxEmpty, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection } from "@/components/ui/combobox"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Slider, SliderLabel, SliderValue } from "@/components/ui/slider"
+import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress"
+import { Toggle } from "@/components/ui/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Drawer, DrawerTrigger, DrawerClose, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription } from "@/components/ui/drawer"
+import { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription } from "@/components/ui/sheet"
+import { InputOTP } from "@/components/ui/input-otp"
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink, navigationMenuTriggerClass } from "@/components/ui/navigation-menu"
+import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle, PopoverDescription, PopoverClose } from "@/components/ui/popover"
 import { Dialog, DialogTrigger, DialogClose, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogTrigger, AlertDialogClose, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Select, SelectValue, SelectGroup, SelectTrigger, SelectContent, SelectItem, SelectGroupLabel, SelectSeparator } from "@/components/ui/select"
 import { ToastProvider, Toaster, useToast } from "@/components/ui/toast"
 
-const ui = { Input, Textarea, Button, Form, Field, FieldLabel, FieldControl, FieldDescription, FieldError, Container, Stack, Cluster, ResponsiveGrid, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Badge, Separator, Skeleton, Spinner, Icon, Label, Empty, EmptyMedia, EmptyTitle, EmptyDescription, EmptyActions, Alert, AlertContent, AlertTitle, AlertDescription, PageHeader, PageHeaderContent, PageHeaderHeading, PageHeaderDescription, PageHeaderActions, FormSection, FormSectionHeader, FormSectionTitle, FormSectionDescription, FormSectionContent, StatusBadge, PasswordInput, SearchInput, CopyButton: KitCopyButton, Checkbox, Switch, Tabs: UiTabs, TabsList, TabsTab, TabsPanel, Avatar, AvatarImage, AvatarFallback, TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Dialog, DialogTrigger, DialogClose, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, AlertDialog, AlertDialogTrigger, AlertDialogClose, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, DropdownMenu, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, Select, SelectValue, SelectGroup, SelectTrigger, SelectContent, SelectItem, SelectGroupLabel, SelectSeparator, ToastProvider, Toaster, useToast }
+const ui = { Input, Textarea, Button, Form, Field, FieldLabel, FieldControl, FieldDescription, FieldError, Container, Stack, Cluster, ResponsiveGrid, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Badge, Separator, Skeleton, Spinner, Icon, Label, Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator, BreadcrumbEllipsis, breadcrumbLinkClass, Kbd, KbdGroup, Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, paginationLinkClass, paginationRange, ButtonGroup, ButtonGroupSeparator, Empty, EmptyMedia, EmptyTitle, EmptyDescription, EmptyActions, Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption, Alert, AlertContent, AlertTitle, AlertDescription, PageHeader, PageHeaderContent, PageHeaderHeading, PageHeaderDescription, PageHeaderActions, FormSection, FormSectionHeader, FormSectionTitle, FormSectionDescription, FormSectionContent, StatusBadge, PasswordInput, SearchInput, CopyButton: KitCopyButton, RadioGroup, RadioGroupItem, Checkbox, Switch, Tabs: UiTabs, TabsList, TabsTab, TabsPanel, Avatar, AvatarImage, AvatarFallback, TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, Accordion, AccordionItem, AccordionTrigger, AccordionContent, Collapsible, CollapsibleTrigger, CollapsibleContent, Calendar, DatePicker, DateRangePicker, Combobox, ComboboxInput, ComboboxChips, ComboboxChip, ComboboxChipsInput, ComboboxValue, ComboboxContent, ComboboxList, ComboboxItem, ComboboxEmpty, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ScrollArea, Slider, SliderLabel, SliderValue, Progress, ProgressLabel, ProgressValue, Toggle, ToggleGroup, ToggleGroupItem, InputOTP, NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink, navigationMenuTriggerClass, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle, PopoverDescription, PopoverClose, Drawer, DrawerTrigger, DrawerClose, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription, Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription, Dialog, DialogTrigger, DialogClose, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, AlertDialog, AlertDialogTrigger, AlertDialogClose, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, DropdownMenu, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, Select, SelectValue, SelectGroup, SelectTrigger, SelectContent, SelectItem, SelectGroupLabel, SelectSeparator, ToastProvider, Toaster, useToast }
 
 type Deps = { npm: string[]; zuno: string[] }
 
@@ -89,7 +110,7 @@ function ComponentDetail({ component, source, deps }: { component: string; sourc
   return <div className="docs-detail-layout">
     <article ref={articleRef} className="docs-detail">
       <div className="docs-breadcrumb"><Link href="/components">Components</Link><span>/</span>{details.title}</div>
-      <header className="docs-detail-header"><h1>{details.title}</h1><p>{details.description}</p>{details.reference && <a href={"https://base-ui.com/react/components/" + details.reference} target="_blank" rel="noreferrer" className="docs-detail-reference">Base UI reference ↗</a>}</header>
+      <header className="docs-detail-header"><h1>{details.title}</h1><p>{details.description}</p>{details.reference && <a href={"https://base-ui.com/react/components/" + details.reference} target="_blank" rel="noreferrer" className="docs-detail-reference">Base UI reference ↗</a>}{details.upstream && <a href={details.upstream.url} target="_blank" rel="noreferrer" className="docs-detail-reference">{details.upstream.name} reference ↗</a>}</header>
       <nav className="docs-detail-jump" aria-label="Component sections"><a href="#preview" aria-current={activeSection === "preview" ? "location" : undefined}>Preview</a><a href="#installation" aria-current={activeSection === "installation" ? "location" : undefined}>Installation</a><a href="#dependencies" aria-current={activeSection === "dependencies" ? "location" : undefined}>Dependencies</a><a href="#examples" aria-current={activeSection === "examples" ? "location" : undefined}>Examples</a><a href="#properties" aria-current={activeSection === "properties" ? "location" : undefined}>API reference</a>{hasStates && <a href="#states" aria-current={activeSection === "states" ? "location" : undefined}>States</a>}<a href="#accessibility" aria-current={activeSection === "accessibility" ? "location" : undefined}>Accessibility</a></nav>
       <section id="preview" className="docs-detail-demo" aria-label={details.title + " demo"}>
         <UiTabs defaultValue="preview" className="gap-4">
@@ -119,7 +140,7 @@ function ComponentDetail({ component, source, deps }: { component: string; sourc
         </div>
       </section>
       <section id="examples" className="docs-detail-examples"><Showcase ui={ui} component={component} /></section>
-      <section id="properties" className="docs-guide"><h2>API reference</h2><p>{details.reference ? "Keeps the props, events and refs of the matching Base UI primitive, plus ZUNO's styles." : "Forwards props and ref to the container element; it only adds composition utilities."}</p><div className="docs-property-scroll" role="region" aria-label="Component props" tabIndex={0}><table><thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th></tr></thead><tbody>{details.properties.map(([name, type, defaultValue, description]) => <tr key={name}><th scope="row"><div className="docs-property-name"><code>{name}</code><details className="docs-property-info"><summary aria-label={"Description of " + name}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg></summary><p>{description}</p></details></div></th><td><code>{type}</code></td><td>{defaultValue === "—" ? <span className="docs-property-empty">—</span> : <code>{defaultValue}</code>}</td></tr>)}</tbody></table></div></section>
+      <section id="properties" className="docs-guide"><h2>API reference</h2><p>{details.reference ? "Keeps the props, events and refs of the matching Base UI primitive, plus ZUNO's styles." : details.upstream ? `Keeps the props of ${details.upstream.name}, plus ZUNO's styles; the table lists the ones you use most.` : "Forwards props and ref to the container element; it only adds composition utilities."}</p><div className="docs-property-scroll" role="region" aria-label="Component props" tabIndex={0}><table><thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th></tr></thead><tbody>{details.properties.map(([name, type, defaultValue, description]) => <tr key={name}><th scope="row"><div className="docs-property-name"><code>{name}</code><details className="docs-property-info"><summary aria-label={"Description of " + name}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg></summary><p>{description}</p></details></div></th><td><code>{type}</code></td><td>{defaultValue === "—" ? <span className="docs-property-empty">—</span> : <code>{defaultValue}</code>}</td></tr>)}</tbody></table></div></section>
       {hasStates && <section id="states" className="docs-guide"><h2>States</h2><p>The states that apply to this component and their visual treatment.</p><div className="docs-property-scroll" role="region" aria-label="Component states" tabIndex={0}><table><thead><tr><th scope="col">State</th><th scope="col">Treatment</th></tr></thead><tbody>{details.states!.map(([state, treatment]) => <tr key={state}><th scope="row">{state}</th><td>{treatment}</td></tr>)}</tbody></table></div></section>}
       <section id="accessibility" className="docs-guide"><h2>Accessibility</h2>
         {details.accessibility.map((paragraph, index) => <p key={index}>{paragraph}</p>)}

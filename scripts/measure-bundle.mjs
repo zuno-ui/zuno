@@ -27,7 +27,15 @@ const FIRST_EXTERNAL = [/^react(\/|$)/, /^react-dom(\/|$)/]
 const KB = 1024
 // The budget caps a *simple* component's incremental CSS at 1 kB; interactive Base UI
 // components carry more states and variants, so they get a wider CSS allowance.
-const budgetFor = kind => kind === "base-ui" ? { js: 5 * KB, css: 1.5 * KB } : { js: 2 * KB, css: 1 * KB }
+// "integration" wraps a third-party engine (e.g. react-day-picker): its cost is the engine's, so it has no
+// default and must declare `budget: { js, css }` in kB plus a `budgetNote` in compatibility.json.
+const budgetFor = entry => {
+  if (entry.kind === "integration") {
+    if (!entry.budget || !entry.budgetNote) throw new Error(`${entry.name}: integration entries need budget and budgetNote`)
+    return { js: entry.budget.js * KB, css: entry.budget.css * KB }
+  }
+  return entry.kind === "base-ui" ? { js: 5 * KB, css: 1.5 * KB } : { js: 2 * KB, css: 1 * KB }
+}
 
 async function sizes(dir, { component, external, withBaseUi }) {
   // The entry stashes the module namespace on a global so Rollup keeps every export.
@@ -61,7 +69,7 @@ async function sizes(dir, { component, external, withBaseUi }) {
 export async function measure(names) {
   const registry = JSON.parse(await readFile(join(ROOT, "registry.json"), "utf8"))
   const compat = JSON.parse(await readFile(join(ROOT, "compatibility.json"), "utf8"))
-  const kinds = Object.fromEntries([...compat.official, ...compat.own].map(entry => [entry.name, entry.kind]))
+  const entries = Object.fromEntries([...compat.official, ...compat.own].map(entry => [entry.name, entry]))
   const entryOf = name => resolve(ROOT, registry.items.find(item => item.name === name).files[0].path)
   const dir = await mkdtemp(join(ROOT, ".bundle-"))
   try {
@@ -70,14 +78,15 @@ export async function measure(names) {
     const b0 = await sizes(dir, { external: FIRST_EXTERNAL, withBaseUi: false })
     const results = []
     for (const name of names) {
-      const kind = kinds[name] ?? "html-css"
+      const entry = entries[name] ?? { name, kind: "html-css" }
+      const kind = entry.kind
       const component = { entry: entryOf(name) }
       const inc = await sizes(dir, { component, external: BASE_EXTERNAL, withBaseUi: true })
       const first = await sizes(dir, { component, external: FIRST_EXTERNAL, withBaseUi: false })
       const jsIncremental = Math.max(0, inc.js - b1.js)
       const cssIncremental = Math.max(0, inc.css - b1.css)
       const jsFirstInstall = Math.max(0, first.js - b0.js)
-      const budget = budgetFor(kind)
+      const budget = budgetFor(entry)
       results.push({ name, kind, jsIncremental, cssIncremental, jsFirstInstall, budget, ok: jsIncremental <= budget.js && cssIncremental <= budget.css })
     }
     return results

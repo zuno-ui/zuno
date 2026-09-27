@@ -82,11 +82,11 @@ export default function Demo() {
           const runtime = pm === "npm" ? "node" : "bun"
           const invoke = (...args) => exec(runtime, [cli, ...args, "--cwd", cwd], options)
           await invoke("init", "--registry", registry)
-          await invoke("add", "button")
+          assert.match((await invoke("add", "button")).stdout, /Import from @\/components\/ui\/button/)
           await invoke("add", "field")
           await invoke("add", "input")
           await invoke("add", "textarea")
-          await invoke("add", "container")
+          assert.match((await invoke("add", "container")).stdout, /Import from @\/components\/container/)
           await invoke("add", "status-badge")
           assert.ok(await readFile(join(cwd, "src/components/status-badge.tsx"), "utf8"))
           assert.match(await readFile(join(cwd, "src/components/ui/badge.tsx"), "utf8"), /function Badge/)
