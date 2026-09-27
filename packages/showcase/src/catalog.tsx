@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import type { DateRange, DayPickerProps } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
@@ -11,6 +11,8 @@ export type { ComponentMeta, ExampleMeta } from "./catalog-meta"
 // Pure metadata lives in catalog-meta.ts so Server Components can read it without a client boundary.
 
 type ComboboxZone = { value: string; items: string[] }
+type CommandAction = { value: string; label: string; shortcut?: string; disabled?: boolean }
+type CommandSection = { value: string; items: CommandAction[] }
 type DatePickerDemoProps = { id?: string; placeholder?: string; disabled?: boolean; locale?: DayPickerProps["locale"]; formatOptions?: Intl.DateTimeFormatOptions; calendarProps?: Omit<DayPickerProps, "mode" | "selected" | "onSelect" | "required" | "locale">; className?: string; "aria-label"?: string; "aria-describedby"?: string; "aria-invalid"?: boolean }
 
 export type DemoComponents = {
@@ -131,6 +133,17 @@ export type DemoComponents = {
   ComboboxGroup: ComponentType<{ children?: ReactNode; items?: readonly string[] }>
   ComboboxGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
   ComboboxCollection: ComponentType<{ children: (item: string) => ReactNode }>
+  Command: ComponentType<{ children?: ReactNode; className?: string; items?: readonly CommandAction[] | readonly CommandSection[] }>
+  CommandInput: ComponentType<{ placeholder?: string; className?: string; "aria-label"?: string }>
+  CommandList: ComponentType<{ children?: ((item: CommandAction) => ReactNode) | ((group: CommandSection) => ReactNode); className?: string }>
+  CommandEmpty: ComponentType<{ children?: ReactNode; className?: string }>
+  CommandGroup: ComponentType<{ children?: ReactNode; items?: readonly CommandAction[] }>
+  CommandGroupLabel: ComponentType<{ children?: ReactNode; className?: string }>
+  CommandCollection: ComponentType<{ children: (item: CommandAction) => ReactNode }>
+  CommandItem: ComponentType<{ children?: ReactNode; value: CommandAction; className?: string; disabled?: boolean; onClick?: () => void }>
+  CommandSeparator: ComponentType<{ className?: string }>
+  CommandShortcut: ComponentType<ComponentProps<"span">>
+  CommandDialog: ComponentType<{ children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; title?: string; className?: string }>
   ScrollArea: ComponentType<{ children?: ReactNode; className?: string; orientation?: "vertical" | "horizontal" | "both"; "aria-label"?: string }>
   Slider: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: number | number[]; value?: number | number[]; min?: number; max?: number; step?: number; disabled?: boolean; format?: Intl.NumberFormatOptions; thumbLabels?: string[] }>
   SliderLabel: ComponentType<{ children?: ReactNode; className?: string }>
@@ -470,6 +483,49 @@ const chevronDownIcon = <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" 
 
 // A landscape drawn inline, so the Aspect Ratio demos show a real <img> cropped by object-cover without shipping assets.
 const landscape = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="s" x2="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#b9c7d6"/></linearGradient></defs><rect width="320" height="200" fill="url(#s)"/><circle cx="230" cy="70" r="22" fill="#fbeee0"/><path d="M0 150 70 80l50 45 60-65 70 70 70-40v110H0z" fill="#6f7f8f"/><path d="M0 170 90 120l60 30 70-40 100 60v30H0z" fill="#3f4a55"/></svg>')
+
+const commandSections: CommandSection[] = [
+  { value: "Suggestions", items: [{ value: "calendar", label: "Calendar" }, { value: "search-emoji", label: "Search emoji" }, { value: "calculator", label: "Calculator", disabled: true }] },
+  { value: "Settings", items: [{ value: "profile", label: "Profile", shortcut: "⌘P" }, { value: "billing", label: "Billing", shortcut: "⌘B" }, { value: "settings", label: "Settings", shortcut: "⌘S" }] },
+]
+const commandActions: CommandAction[] = [{ value: "new-file", label: "New file" }, { value: "new-folder", label: "New folder" }, { value: "open-settings", label: "Open settings" }, { value: "toggle-theme", label: "Toggle theme" }, { value: "invite", label: "Invite a teammate" }]
+
+function CommandBasic({ ui }: { ui: DemoComponents }) {
+  const { Command, CommandInput, CommandEmpty, CommandList, CommandGroup, CommandGroupLabel, CommandCollection, CommandItem, CommandShortcut } = ui
+  const [ran, setRan] = useState("")
+  return <div className="w-full max-w-sm space-y-2">
+    <Command items={commandSections} className="shadow-sm">
+      <CommandInput placeholder="Type a command or search" aria-label="Command" />
+      <CommandEmpty>No results found.</CommandEmpty>
+      <CommandList>{(group: CommandSection) => <CommandGroup key={group.value} items={group.items}><CommandGroupLabel>{group.value}</CommandGroupLabel><CommandCollection>{(item: CommandAction) => <CommandItem key={item.value} value={item} disabled={item.disabled} onClick={() => setRan(item.label)}>{item.label}{item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}</CommandItem>}</CommandCollection></CommandGroup>}</CommandList>
+    </Command>
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
+
+function CommandPalette({ ui }: { ui: DemoComponents }) {
+  const { Button, Kbd, KbdGroup, CommandDialog, Command, CommandInput, CommandEmpty, CommandList, CommandItem } = ui
+  const [open, setOpen] = useState(false)
+  const [ran, setRan] = useState("")
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) { event.preventDefault(); setOpen(value => !value) }
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [])
+  return <div className="flex flex-col items-center gap-2">
+    <Button variant="outline" onClick={() => setOpen(true)}>Search… <KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <Command items={commandActions}>
+        <CommandInput placeholder="Type a command" aria-label="Command" />
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandList>{(item: CommandAction) => <CommandItem key={item.value} value={item} onClick={() => { setRan(item.label); setOpen(false) }}>{item.label}</CommandItem>}</CommandList>
+      </Command>
+    </CommandDialog>
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
 
 function DirectionDemo({ ui }: { ui: DemoComponents }) {
   const { DirectionProvider, Tabs, TabsList, TabsTab, Slider } = ui
@@ -839,7 +895,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "combobox-groups": ({ Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxGroup, ComboboxGroupLabel, ComboboxCollection, ComboboxItem }) => <div className="w-full max-w-xs"><Combobox items={comboboxZones}><ComboboxInput placeholder="Search a time zone" aria-label="Time zone" /><ComboboxContent><ComboboxEmpty>No time zone found.</ComboboxEmpty><ComboboxList>{(group: ComboboxZone) => <ComboboxGroup key={group.value} items={group.items}><ComboboxGroupLabel>{group.value}</ComboboxGroupLabel><ComboboxCollection>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxCollection></ComboboxGroup>}</ComboboxList></ComboboxContent></Combobox></div>,
       "combobox-multiple": ({ Combobox, ComboboxChips, ComboboxValue, ComboboxChip, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem }) => <div className="w-full max-w-sm"><Combobox items={comboboxSkills} multiple defaultValue={["React", "TypeScript"]}><ComboboxChips><ComboboxValue>{(value: string[]) => <>{value.map(item => <ComboboxChip key={item}>{item}</ComboboxChip>)}<ComboboxChipsInput placeholder={value.length ? "" : "Add skills"} aria-label="Skills" /></>}</ComboboxValue></ComboboxChips><ComboboxContent><ComboboxEmpty>No skill found.</ComboboxEmpty><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox></div>,
     },
-  },  direction: {
+  },  command: {
+    preview: ui => <CommandBasic ui={ui} />,
+    examples: {
+      "command-basic": ui => <CommandBasic ui={ui} />,
+      "command-dialog": ui => <CommandPalette ui={ui} />,
+    },
+  },
+  direction: {
     preview: ui => <DirectionDemo ui={ui} />,
     examples: {
       "direction-rtl": ui => <DirectionDemo ui={ui} />,
