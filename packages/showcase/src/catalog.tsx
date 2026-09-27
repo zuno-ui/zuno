@@ -122,7 +122,7 @@ export type DemoComponents = {
   TooltipProvider: ComponentType<{ children?: ReactNode }>
   Tooltip: ComponentType<{ children?: ReactNode }>
   TooltipTrigger: ComponentType<{ children?: ReactNode; render?: ReactElement }>
-  TooltipContent: ComponentType<{ children?: ReactNode; className?: string; sideOffset?: number }>
+  TooltipContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end"; align?: "start" | "center" | "end"; sideOffset?: number }>
   Accordion: ComponentType<{ children?: ReactNode; className?: string; defaultValue?: string[]; multiple?: boolean }>
   AccordionItem: ComponentType<{ children?: ReactNode; className?: string; value: string; disabled?: boolean }>
   AccordionTrigger: ComponentType<{ children?: ReactNode; className?: string; headingLevel?: 2 | 3 | 4 | 5 | 6 }>
