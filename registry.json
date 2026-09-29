@@ -500,6 +500,20 @@
       ]
     },
     {
+      "name": "stat-card",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/card"
+      ],
+      "files": [
+        {
+          "path": "registry/components/stat-card.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "dependencies": [

@@ -276,6 +276,12 @@ export type DemoComponents = {
   SectionHeaderDescription: ComponentType<ComponentProps<"p">>
   SectionHeaderMeta: ComponentType<ComponentProps<"div">>
   SectionHeaderActions: ComponentType<ComponentProps<"div">>
+  StatCard: ComponentType<ComponentProps<"div">>
+  StatCardHeader: ComponentType<ComponentProps<"div">>
+  StatCardLabel: ComponentType<ComponentProps<"p">>
+  StatCardValue: ComponentType<ComponentProps<"p">>
+  StatCardFooter: ComponentType<ComponentProps<"div">>
+  StatCardTrend: ComponentType<ComponentProps<"span"> & { direction: "up" | "down" | "flat"; sentiment?: "positive" | "negative" | "neutral" }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -846,6 +852,30 @@ function SectionHeaderNested({ ui }: { ui: DemoComponents }) {
   return <Card className="w-full max-w-md"><CardContent className="pt-6"><SectionHeader><SectionHeaderContent><SectionHeaderTitle level={3} className="text-base">API keys</SectionHeaderTitle><SectionHeaderDescription>Keys are shown once when you create them.</SectionHeaderDescription></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="outline">Create key</Button></SectionHeaderActions></SectionHeader></CardContent></Card>
 }
 
+const statMetrics = [
+  { label: "Monthly revenue", value: "$48,210", change: "+12.4%", direction: "up", period: "vs. August" },
+  { label: "Active users", value: "2,318", change: "0%", direction: "flat", period: "vs. August" },
+  { label: "p95 latency", value: "182 ms", change: "−38 ms", direction: "down", sentiment: "positive", period: "vs. last week" },
+] as const
+
+function StatCardGrid({ ui }: { ui: DemoComponents }) {
+  const { ResponsiveGrid, StatCard, StatCardLabel, StatCardValue, StatCardFooter, StatCardTrend } = ui
+  return <ResponsiveGrid min="12rem" gap="4" className="w-full">{statMetrics.map(metric => <StatCard key={metric.label}>
+    <StatCardLabel>{metric.label}</StatCardLabel>
+    <StatCardValue>{metric.value}</StatCardValue>
+    <StatCardFooter><StatCardTrend direction={metric.direction} sentiment={"sentiment" in metric ? metric.sentiment : undefined}>{metric.change}</StatCardTrend><span>{metric.period}</span></StatCardFooter>
+  </StatCard>)}</ResponsiveGrid>
+}
+
+function StatCardWithHeader({ ui }: { ui: DemoComponents }) {
+  const { StatCard, StatCardHeader, StatCardLabel, StatCardValue, StatCardFooter, StatCardTrend } = ui
+  return <StatCard className="w-full max-w-60">
+    <StatCardHeader><StatCardLabel>Open incidents</StatCardLabel><svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><path d="M8 2 1.5 13.5h13z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8 6.5v3M8 11.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></StatCardHeader>
+    <StatCardValue>3</StatCardValue>
+    <StatCardFooter><StatCardTrend direction="up" sentiment="negative">+2</StatCardTrend><span>since yesterday</span></StatCardFooter>
+  </StatCard>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1090,6 +1120,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     examples: {
       "description-list-stacked": ui => <DescriptionListStacked ui={ui} />,
       "description-list-inline": ui => <DescriptionListInline ui={ui} />,
+    },
+  },
+  "stat-card": {
+    preview: ui => <StatCardGrid ui={ui} />,
+    examples: {
+      "stat-card-grid": ui => <StatCardGrid ui={ui} />,
+      "stat-card-header": ui => <StatCardWithHeader ui={ui} />,
     },
   },
   "radio-group": {
