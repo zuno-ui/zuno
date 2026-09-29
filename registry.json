@@ -404,6 +404,19 @@
       ]
     },
     {
+      "name": "section-header",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/section-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-section",
       "type": "registry:component",
       "registryDependencies": [

@@ -270,6 +270,12 @@ export type DemoComponents = {
   DescriptionListItem: ComponentType<ComponentProps<"div">>
   DescriptionListTerm: ComponentType<ComponentProps<"dt">>
   DescriptionListDetails: ComponentType<ComponentProps<"dd">>
+  SectionHeader: ComponentType<ComponentProps<"div">>
+  SectionHeaderContent: ComponentType<ComponentProps<"div">>
+  SectionHeaderTitle: ComponentType<ComponentProps<"h2"> & { level?: 2 | 3 | 4 }>
+  SectionHeaderDescription: ComponentType<ComponentProps<"p">>
+  SectionHeaderMeta: ComponentType<ComponentProps<"div">>
+  SectionHeaderActions: ComponentType<ComponentProps<"div">>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -825,6 +831,21 @@ function DescriptionListInline({ ui }: { ui: DemoComponents }) {
   </DescriptionList>
 }
 
+function SectionHeaderBasic({ ui }: { ui: DemoComponents }) {
+  const { SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderDescription, SectionHeaderActions, Button } = ui
+  return <SectionHeader className="w-full"><SectionHeaderContent><SectionHeaderTitle>Members</SectionHeaderTitle><SectionHeaderDescription>People with access to this workspace.</SectionHeaderDescription></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="outline">Invite member</Button></SectionHeaderActions></SectionHeader>
+}
+
+function SectionHeaderWithMeta({ ui }: { ui: DemoComponents }) {
+  const { SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderMeta, SectionHeaderActions, StatusBadge, Button } = ui
+  return <SectionHeader className="w-full"><SectionHeaderContent><SectionHeaderTitle>Deployments</SectionHeaderTitle><SectionHeaderMeta><StatusBadge status="success">Healthy</StatusBadge><span>24 this week</span><span>Last one 12 min ago</span></SectionHeaderMeta></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="ghost">View all</Button><Button size="sm">Deploy</Button></SectionHeaderActions></SectionHeader>
+}
+
+function SectionHeaderNested({ ui }: { ui: DemoComponents }) {
+  const { Card, CardContent, SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderDescription, SectionHeaderActions, Button } = ui
+  return <Card className="w-full max-w-md"><CardContent className="pt-6"><SectionHeader><SectionHeaderContent><SectionHeaderTitle level={3} className="text-base">API keys</SectionHeaderTitle><SectionHeaderDescription>Keys are shown once when you create them.</SectionHeaderDescription></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="outline">Create key</Button></SectionHeaderActions></SectionHeader></CardContent></Card>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1024,6 +1045,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ PageHeader, PageHeaderContent, PageHeaderHeading, PageHeaderDescription, PageHeaderActions, Button }) => <PageHeader className="w-full"><PageHeaderContent><PageHeaderHeading>Projects</PageHeaderHeading><PageHeaderDescription>Manage and organize your work.</PageHeaderDescription></PageHeaderContent><PageHeaderActions><Button>New project</Button></PageHeaderActions></PageHeader>,
     examples: {
       "page-header-basic": ({ PageHeader, PageHeaderContent, PageHeaderHeading, PageHeaderDescription, PageHeaderActions, Button }) => <PageHeader className="w-full"><PageHeaderContent><PageHeaderHeading>Projects</PageHeaderHeading><PageHeaderDescription>Manage and organize your work.</PageHeaderDescription></PageHeaderContent><PageHeaderActions><Button variant="outline">Import</Button><Button>New project</Button></PageHeaderActions></PageHeader>,
+    },
+  },
+  "section-header": {
+    preview: ui => <SectionHeaderBasic ui={ui} />,
+    examples: {
+      "section-header-basic": ui => <SectionHeaderBasic ui={ui} />,
+      "section-header-meta": ui => <SectionHeaderWithMeta ui={ui} />,
+      "section-header-nested": ui => <SectionHeaderNested ui={ui} />,
     },
   },
   "form-section": {

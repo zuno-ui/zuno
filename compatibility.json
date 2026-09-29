@@ -67,6 +67,7 @@
     { "id": "K-03", "name": "cluster", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-04", "name": "responsive-grid", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-05", "name": "page-header", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-06", "name": "section-header", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
     { "id": "K-08", "name": "form-section", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-09", "name": "password-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-10", "name": "search-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
