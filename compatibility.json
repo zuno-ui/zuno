@@ -77,6 +77,7 @@
     { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-37", "name": "save-indicator", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
     { "id": "K-39", "name": "confirm-action", "kind": "composition", "status": "stable", "reviewed": "2026-09-29", "budget": { "js": 2.5, "css": 1 }, "budgetNote": "Bundles the AlertDialog (0.91 kB) and Button (1.22 kB) wrappers, over the 2 kB composition default on their own; its own code is ~0.2 kB. Apps that already have both pay only that." },
+    { "id": "K-40", "name": "connection-status", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
     { "id": "K-49", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
   ]
 }

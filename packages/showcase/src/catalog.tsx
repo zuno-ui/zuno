@@ -284,6 +284,7 @@ export type DemoComponents = {
   StatCardTrend: ComponentType<ComponentProps<"span"> & { direction: "up" | "down" | "flat"; sentiment?: "positive" | "negative" | "neutral" }>
   SaveIndicator: ComponentType<ComponentProps<"span"> & { status: "idle" | "dirty" | "saving" | "saved" | "error" }>
   ConfirmAction: ComponentType<{ title: ReactNode; description?: ReactNode; children?: ReactNode; onConfirm: () => unknown; trigger?: ReactElement; open?: boolean; onOpenChange?: (open: boolean) => void; confirmLabel?: ReactNode; cancelLabel?: ReactNode; destructive?: boolean; errorMessage?: ReactNode | ((error: unknown) => ReactNode) }>
+  ConnectionStatus: ComponentType<ComponentProps<"span"> & { status: "connected" | "connecting" | "degraded" | "disconnected" }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -931,6 +932,34 @@ function ConfirmFromMenu({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
+function ConnectionSocketDemo({ ui }: { ui: DemoComponents }) {
+  const { ConnectionStatus, Button } = ui
+  const [status, setStatus] = useState<"connected" | "connecting" | "degraded" | "disconnected">("connected")
+  const [retryIn, setRetryIn] = useState(0)
+  // Simulated socket: after a drop it counts down, reconnects, then comes back live.
+  useEffect(() => {
+    if (status === "disconnected") {
+      if (retryIn === 0) {
+        setStatus("connecting")
+        return
+      }
+      const tick = setTimeout(() => setRetryIn(seconds => seconds - 1), 1000)
+      return () => clearTimeout(tick)
+    }
+    if (status === "connecting") {
+      const done = setTimeout(() => setStatus("connected"), 1500)
+      return () => clearTimeout(done)
+    }
+  }, [status, retryIn])
+  return <div className="flex flex-col items-start gap-3">
+    <ConnectionStatus status={status}>{status === "disconnected" ? "Disconnected · will retry" : status === "connecting" ? "Reconnecting…" : status === "connected" ? "Live" : undefined}</ConnectionStatus>
+    <div className="flex flex-wrap gap-2">
+      <Button size="sm" variant="outline" onClick={() => { setRetryIn(3); setStatus("disconnected") }} disabled={status !== "connected" && status !== "degraded"}>Drop connection</Button>
+      <Button size="sm" variant="outline" onClick={() => setStatus(status === "degraded" ? "connected" : "degraded")} disabled={status !== "connected" && status !== "degraded"}>{status === "degraded" ? "Recover" : "Slow down"}</Button>
+    </div>
+  </div>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1165,6 +1194,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "confirm-action-destructive": ui => <ConfirmDestructive ui={ui} />,
       "confirm-action-error": ui => <ConfirmWithError ui={ui} />,
       "confirm-action-menu": ui => <ConfirmFromMenu ui={ui} />,
+    },
+  },
+  "connection-status": {
+    preview: ui => <ConnectionSocketDemo ui={ui} />,
+    examples: {
+      "connection-status-states": ({ ConnectionStatus }) => <div className="flex flex-col items-start gap-2"><ConnectionStatus status="connected">Live · 42 ms</ConnectionStatus><ConnectionStatus status="connecting">Reconnecting…</ConnectionStatus><ConnectionStatus status="degraded" /><ConnectionStatus status="disconnected" /></div>,
+      "connection-status-socket": ui => <ConnectionSocketDemo ui={ui} />,
     },
   },
   "password-input": {

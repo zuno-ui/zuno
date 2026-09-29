@@ -472,6 +472,19 @@
       ]
     },
     {
+      "name": "connection-status",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/connection-status.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "password-input",
       "type": "registry:component",
       "registryDependencies": [

@@ -395,6 +395,18 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "connection-status", title: "ConnectionStatus", registryPath: "components/connection-status.tsx",
+    description: "The state of a connection your app reports: connected, connecting, degraded or disconnected.",
+    usage: 'import { ConnectionStatus } from "@/components/connection-status"\n\n<ConnectionStatus status={status} />',
+    properties: [["status", '"connected" | "connecting" | "degraded" | "disconnected"', "—", "What your app knows about the connection; you own the transitions."], ["children", "ReactNode", "the status label", "Replaces the default English label: translations or detail like \"Reconnecting…\" or \"Live · 42 ms\"."]],
+    accessibility: ["A role=\"status\" live region that stays mounted: changes are announced politely without moving focus. Every text change is announced, so keep per-second countdowns or live latency out of children.", "The text states the connection; the dot's color only reinforces it, and its pulse stops with reduced motion.", "Feed it from real signals (WebSocket open/close, a health endpoint, failed requests). navigator.onLine only says the device has a network, not that your service answers.", "If losing the connection blocks work, also say what still works and what to do (an Alert or a disabled Save with a reason); the indicator alone is easy to miss.", "Server-safe: no client JavaScript of its own."],
+    states: [["connected", "A success dot."], ["connecting", "A pulsing warning dot; use children for \"Reconnecting…\"."], ["degraded", "A steady warning dot: reachable but slow or partially failing."], ["disconnected", "An error dot."]],
+    examples: [
+      { id: "connection-status-states", title: "States", description: "The four statuses; children adds detail.", code: '<ConnectionStatus status="connected">Live · 42 ms</ConnectionStatus>\n<ConnectionStatus status="connecting">Reconnecting…</ConnectionStatus>\n<ConnectionStatus status="degraded" />\n<ConnectionStatus status="disconnected" />' },
+      { id: "connection-status-socket", title: "Driven by the socket", description: "The status follows the socket's events; a drop retries with backoff.", code: 'const [status, setStatus] = useState<ConnectionState>("connecting")\n\nuseEffect(() => {\n  const socket = new WebSocket(url)\n  socket.onopen = () => setStatus("connected")\n  socket.onclose = () => setStatus("disconnected")\n  return () => socket.close()\n}, [url])\n\n<ConnectionStatus status={status} />' },
+    ],
+  },
+  {
     name: "password-input", title: "PasswordInput", registryPath: "components/password-input.tsx",
     description: "Password input with show/hide that never loses focus.",
     usage: 'import { PasswordInput } from "@/components/password-input"\n\n<PasswordInput autoComplete="current-password" />',
