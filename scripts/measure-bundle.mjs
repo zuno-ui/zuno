@@ -28,10 +28,13 @@ const KB = 1024
 // The budget caps a *simple* component's incremental CSS at 1 kB; interactive Base UI
 // components carry more states and variants, so they get a wider CSS allowance.
 // "integration" wraps a third-party engine (e.g. react-day-picker): its cost is the engine's, so it has no
-// default and must declare `budget: { js, css }` in kB plus a `budgetNote` in compatibility.json.
+// default and must declare `budget: { js, css }` in kB plus a `budgetNote` in compatibility.json. Any other
+// entry may declare one too when its registry dependencies alone exceed the kind default (a composition over
+// AlertDialog + Button); the note must say what it bundles and how much is its own code.
 const budgetFor = entry => {
-  if (entry.kind === "integration") {
-    if (!entry.budget || !entry.budgetNote) throw new Error(`${entry.name}: integration entries need budget and budgetNote`)
+  if (entry.kind === "integration" && !entry.budget) throw new Error(`${entry.name}: integration entries need budget and budgetNote`)
+  if (entry.budget) {
+    if (!entry.budgetNote) throw new Error(`${entry.name}: a declared budget needs a budgetNote`)
     return { js: entry.budget.js * KB, css: entry.budget.css * KB }
   }
   return entry.kind === "base-ui" ? { js: 5 * KB, css: 1.5 * KB } : { js: 2 * KB, css: 1 * KB }

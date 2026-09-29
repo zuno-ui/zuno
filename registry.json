@@ -457,6 +457,21 @@
       ]
     },
     {
+      "name": "confirm-action",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/alert-dialog",
+        "@zuno/button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/confirm-action.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "password-input",
       "type": "registry:component",
       "registryDependencies": [

@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment, useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { Fragment, useEffect, useId, useRef, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import type { DateRange, DayPickerProps } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
@@ -283,6 +283,7 @@ export type DemoComponents = {
   StatCardFooter: ComponentType<ComponentProps<"div">>
   StatCardTrend: ComponentType<ComponentProps<"span"> & { direction: "up" | "down" | "flat"; sentiment?: "positive" | "negative" | "neutral" }>
   SaveIndicator: ComponentType<ComponentProps<"span"> & { status: "idle" | "dirty" | "saving" | "saved" | "error" }>
+  ConfirmAction: ComponentType<{ title: ReactNode; description?: ReactNode; children?: ReactNode; onConfirm: () => unknown; trigger?: ReactElement; open?: boolean; onOpenChange?: (open: boolean) => void; confirmLabel?: ReactNode; cancelLabel?: ReactNode; destructive?: boolean; errorMessage?: ReactNode | ((error: unknown) => ReactNode) }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -901,6 +902,35 @@ function SaveIndicatorEditor({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
+const simulateRequest = (fail = false) => new Promise<void>((resolve, reject) => setTimeout(() => fail ? reject(new Error("offline")) : resolve(), 1200))
+
+function ConfirmDestructive({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, Button } = ui
+  const [deleted, setDeleted] = useState(false)
+  return deleted
+    ? <Button variant="outline" onClick={() => setDeleted(false)}>Restore demo project</Button>
+    : <ConfirmAction trigger={<Button variant="destructive">Delete project</Button>} title="Delete Marketing site?" description="Its 24 deployments and 2 domains are removed. This can't be undone." confirmLabel="Delete project" destructive onConfirm={() => simulateRequest().then(() => setDeleted(true))} />
+}
+
+function ConfirmWithError({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, Button } = ui
+  const attempts = useRef(0)
+  return <ConfirmAction trigger={<Button variant="outline">Revoke key</Button>} title="Revoke API key zk_live_…4f2a?" description="Apps using it stop working right away. The first attempt in this demo fails." confirmLabel="Revoke key" destructive onOpenChange={open => { if (open) attempts.current = 0 }} onConfirm={() => simulateRequest(attempts.current++ === 0)} errorMessage="You're offline. Check your connection and try again." />
+}
+
+function ConfirmFromMenu({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Button } = ui
+  const [confirming, setConfirming] = useState(false)
+  return <div className="flex items-center gap-3">
+    <span className="text-sm">Ana Ruiz</span>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="Actions for Ana Ruiz" />}><svg viewBox="0 0 16 16" aria-hidden="true" className="size-4" fill="currentColor"><circle cx="3.5" cy="8" r="1.25" /><circle cx="8" cy="8" r="1.25" /><circle cx="12.5" cy="8" r="1.25" /></svg></DropdownMenuTrigger>
+      <DropdownMenuContent><DropdownMenuItem>Change role</DropdownMenuItem><DropdownMenuItem onClick={() => setConfirming(true)}>Remove from team</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
+    <ConfirmAction open={confirming} onOpenChange={setConfirming} title="Remove Ana Ruiz?" description="She loses access to all projects in this team." confirmLabel="Remove" destructive onConfirm={() => simulateRequest()} />
+  </div>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1127,6 +1157,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     examples: {
       "save-indicator-states": ({ SaveIndicator }) => <div className="flex flex-col items-start gap-2"><SaveIndicator status="idle" /><SaveIndicator status="dirty" /><SaveIndicator status="saving" /><SaveIndicator status="saved">Saved at 14:32</SaveIndicator><SaveIndicator status="error" /></div>,
       "save-indicator-editor": ui => <SaveIndicatorEditor ui={ui} />,
+    },
+  },
+  "confirm-action": {
+    preview: ui => <ConfirmDestructive ui={ui} />,
+    examples: {
+      "confirm-action-destructive": ui => <ConfirmDestructive ui={ui} />,
+      "confirm-action-error": ui => <ConfirmWithError ui={ui} />,
+      "confirm-action-menu": ui => <ConfirmFromMenu ui={ui} />,
     },
   },
   "password-input": {

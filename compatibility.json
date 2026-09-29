@@ -1,5 +1,5 @@
 {
-  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it.",
+  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it; any other entry may declare one when its registry dependencies alone exceed the kind default.",
   "updated": "2026-09-10",
   "phase": "F1",
   "target": { "official": 22, "own": 11, "total": 33 },
@@ -76,6 +76,7 @@
     { "id": "K-35", "name": "status-badge", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-37", "name": "save-indicator", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-39", "name": "confirm-action", "kind": "composition", "status": "stable", "reviewed": "2026-09-29", "budget": { "js": 2.5, "css": 1 }, "budgetNote": "Bundles the AlertDialog (0.91 kB) and Button (1.22 kB) wrappers, over the 2 kB composition default on their own; its own code is ~0.2 kB. Apps that already have both pay only that." },
     { "id": "K-49", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
   ]
 }
