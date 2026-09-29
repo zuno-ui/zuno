@@ -266,6 +266,10 @@ export type DemoComponents = {
   ToastProvider: ComponentType<{ children?: ReactNode }>
   Toaster: ComponentType<{ className?: string }>
   useToast: () => { add: (options: { title?: ReactNode; description?: ReactNode; type?: string; timeout?: number }) => string; close: (id?: string) => void }
+  DescriptionList: ComponentType<ComponentProps<"dl"> & { layout?: "stacked" | "inline"; divided?: boolean }>
+  DescriptionListItem: ComponentType<ComponentProps<"div">>
+  DescriptionListTerm: ComponentType<ComponentProps<"dt">>
+  DescriptionListDetails: ComponentType<ComponentProps<"dd">>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -802,6 +806,25 @@ function ToastTriggers({ ui }: { ui: DemoComponents }) {
 
 const box = "rounded-lg border border-border bg-card px-4 py-3 text-sm text-card-foreground"
 
+const billingPairs = [["Plan", "Pro, billed yearly"], ["Seats", "12 of 15 used"], ["Next invoice", "October 1, 2026 · $240.00"], ["Billing email", "finance@acme.dev"]]
+
+function DescriptionListStacked({ ui }: { ui: DemoComponents }) {
+  const { Card, CardHeader, CardTitle, CardContent, DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails } = ui
+  return <Card className="w-full max-w-sm"><CardHeader><CardTitle>Subscription</CardTitle></CardHeader><CardContent>
+    <DescriptionList>{billingPairs.map(([term, value]) => <DescriptionListItem key={term}><DescriptionListTerm>{term}</DescriptionListTerm><DescriptionListDetails>{value}</DescriptionListDetails></DescriptionListItem>)}</DescriptionList>
+  </CardContent></Card>
+}
+
+function DescriptionListInline({ ui }: { ui: DemoComponents }) {
+  const { DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails, StatusBadge, CopyButton } = ui
+  return <DescriptionList layout="inline" divided className="w-full max-w-xl">
+    <DescriptionListItem><DescriptionListTerm>Project</DescriptionListTerm><DescriptionListDetails>Marketing site</DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>Status</DescriptionListTerm><DescriptionListDetails><StatusBadge status="success">Active</StatusBadge></DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>API key</DescriptionListTerm><DescriptionListDetails className="flex items-center gap-2"><code className="text-xs">zk_live_…4f2a</code><CopyButton value="zk_live_demo_4f2a" label="Copy API key" /></DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>Domains</DescriptionListTerm><DescriptionListDetails>acme.dev</DescriptionListDetails><DescriptionListDetails>www.acme.dev</DescriptionListDetails></DescriptionListItem>
+  </DescriptionList>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1031,6 +1054,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
     examples: {
       "copy-button-basic": ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
+    },
+  },
+  "description-list": {
+    preview: ui => <DescriptionListStacked ui={ui} />,
+    examples: {
+      "description-list-stacked": ui => <DescriptionListStacked ui={ui} />,
+      "description-list-inline": ui => <DescriptionListInline ui={ui} />,
     },
   },
   "radio-group": {
