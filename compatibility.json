@@ -72,6 +72,6 @@
     { "id": "K-10", "name": "search-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-35", "name": "status-badge", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
-    { "id": "K-37", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
+    { "id": "K-49", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
   ]
 }
