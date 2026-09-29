@@ -444,6 +444,19 @@
       ]
     },
     {
+      "name": "save-indicator",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/save-indicator.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "password-input",
       "type": "registry:component",
       "registryDependencies": [

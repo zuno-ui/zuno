@@ -282,6 +282,7 @@ export type DemoComponents = {
   StatCardValue: ComponentType<ComponentProps<"p">>
   StatCardFooter: ComponentType<ComponentProps<"div">>
   StatCardTrend: ComponentType<ComponentProps<"span"> & { direction: "up" | "down" | "flat"; sentiment?: "positive" | "negative" | "neutral" }>
+  SaveIndicator: ComponentType<ComponentProps<"span"> & { status: "idle" | "dirty" | "saving" | "saved" | "error" }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -876,6 +877,30 @@ function StatCardWithHeader({ ui }: { ui: DemoComponents }) {
   </StatCard>
 }
 
+function SaveIndicatorEditor({ ui }: { ui: DemoComponents }) {
+  const { SaveIndicator, Textarea, Label, Button, Checkbox } = ui
+  const id = useId()
+  const [text, setText] = useState("Ship the pricing page on Friday.")
+  const [status, setStatus] = useState<"idle" | "dirty" | "saving" | "saved" | "error">("idle")
+  const [failNext, setFailNext] = useState(false)
+  function save(fail = failNext) {
+    setStatus("saving")
+    // Simulated request; in an app, await the real call.
+    setTimeout(() => setStatus(fail ? "error" : "saved"), 900)
+  }
+  return <div className="flex w-full max-w-md flex-col gap-3">
+    <Label htmlFor={id}>Note</Label>
+    <Textarea id={id} value={text} onChange={event => { setText(event.target.value); setStatus("dirty") }} />
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-3"><SaveIndicator status={status} />{status === "error" && <Button size="sm" variant="outline" onClick={() => { setFailNext(false); save(false) }}>Retry</Button>}</div>
+      <div className="flex items-center gap-2">
+        <Checkbox id={id + "-fail"} checked={failNext} onCheckedChange={setFailNext} /><Label htmlFor={id + "-fail"} className="text-muted-foreground">Fail next save</Label>
+        <Button size="sm" onClick={() => save()} disabled={status !== "dirty"}>Save</Button>
+      </div>
+    </div>
+  </div>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1095,6 +1120,13 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ StatusBadge }) => <StatusBadge status="success">Active</StatusBadge>,
     examples: {
       "status-badge-states": ({ StatusBadge }) => <div className="showcase-button-row"><StatusBadge status="success">Active</StatusBadge><StatusBadge status="warning">Pending</StatusBadge><StatusBadge status="error">Failed</StatusBadge><StatusBadge status="info">In review</StatusBadge><StatusBadge status="neutral" indicator={false}>Draft</StatusBadge></div>,
+    },
+  },
+  "save-indicator": {
+    preview: ui => <SaveIndicatorEditor ui={ui} />,
+    examples: {
+      "save-indicator-states": ({ SaveIndicator }) => <div className="flex flex-col items-start gap-2"><SaveIndicator status="idle" /><SaveIndicator status="dirty" /><SaveIndicator status="saving" /><SaveIndicator status="saved">Saved at 14:32</SaveIndicator><SaveIndicator status="error" /></div>,
+      "save-indicator-editor": ui => <SaveIndicatorEditor ui={ui} />,
     },
   },
   "password-input": {

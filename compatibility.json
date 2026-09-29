@@ -75,6 +75,7 @@
     { "id": "K-23", "name": "stat-card", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
     { "id": "K-35", "name": "status-badge", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-37", "name": "save-indicator", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
     { "id": "K-49", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
   ]
 }

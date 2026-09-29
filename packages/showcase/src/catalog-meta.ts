@@ -367,6 +367,18 @@ export const meta: ComponentMeta[] = [
     ],
   },
   {
+    name: "save-indicator", title: "SaveIndicator", registryPath: "components/save-indicator.tsx",
+    description: "Whether the user's work is saved: no changes, pending, saving, saved or failed, as reported by your save call.",
+    usage: 'import { SaveIndicator } from "@/components/save-indicator"\n\n<SaveIndicator status={status} />',
+    properties: [["status", '"idle" | "dirty" | "saving" | "saved" | "error"', "—", "The state of the real save operation; you own the transitions."], ["children", "ReactNode", "the status label", "Replaces the default English label: translations or detail like \"Saved at 14:32\"."]],
+    accessibility: ["A role=\"status\" live region that stays mounted: each change is announced once, politely, without moving focus.", "Every state has text; the icon and color only reinforce it. Error also turns the text red.", "It reports, it doesn't act: put the Retry button next to it, outside the live region, so the button isn't re-read on every change.", "Derive the status from the actual request (pending → saving, resolved → saved, rejected → error). A timer that shows \"Saved\" without a response is a false promise.", "Server-safe: no client JavaScript of its own."],
+    states: [["idle", "No changes: an empty dot, muted."], ["dirty", "Unsaved changes: a warning-colored dot."], ["saving", "A spinner (static with reduced motion)."], ["saved", "A success check; pass children to add the time."], ["error", "An alert icon and error-colored text; pair it with a Retry action."]],
+    examples: [
+      { id: "save-indicator-states", title: "States", description: "The five statuses with their default labels.", code: '<SaveIndicator status="idle" />\n<SaveIndicator status="dirty" />\n<SaveIndicator status="saving" />\n<SaveIndicator status="saved">Saved at 14:32</SaveIndicator>\n<SaveIndicator status="error" />' },
+      { id: "save-indicator-editor", title: "Driven by the save request", description: "Typing marks the note dirty; the status follows the request, and a failure offers Retry.", code: 'const [status, setStatus] = useState<SaveStatus>("idle")\n\nasync function save() {\n  setStatus("saving")\n  try {\n    await saveNote(text)\n    setStatus("saved")\n  } catch {\n    setStatus("error")\n  }\n}\n\n<Textarea value={text} onChange={event => { setText(event.target.value); setStatus("dirty") }} />\n<div className="flex items-center gap-3">\n  <SaveIndicator status={status} />\n  {status === "error" && <Button size="sm" variant="outline" onClick={save}>Retry</Button>}\n  <Button size="sm" onClick={save} disabled={status !== "dirty"}>Save</Button>\n</div>' },
+    ],
+  },
+  {
     name: "password-input", title: "PasswordInput", registryPath: "components/password-input.tsx",
     description: "Password input with show/hide that never loses focus.",
     usage: 'import { PasswordInput } from "@/components/password-input"\n\n<PasswordInput autoComplete="current-password" />',
