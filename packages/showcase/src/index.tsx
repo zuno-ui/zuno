@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useState } from "react"
+import { useEffect } from "react"
 import { ComponentPreview } from "./component-preview"
 import { componentNames, examples, type DemoComponents } from "./catalog"
 export { ComponentPreview } from "./component-preview"
@@ -12,34 +12,28 @@ export type { DemoComponents, CatalogEntry, Example } from "./catalog"
 // Component identity is open: any name present in the catalog.
 export type ComponentName = string
 
-export function ThemeSelect() {
-  const id = useId()
-  const [theme, setTheme] = useState("system")
+// The visible icon is chosen in CSS from the html class (or the OS when none is stored), so it is right before hydration.
+export function ThemeToggle() {
   useEffect(() => {
-    const root = document.documentElement
-    setTheme(root.classList.contains("dark") ? "dark" : root.classList.contains("light") ? "light" : "system")
     function sync(event: StorageEvent) {
       if (event.key !== "zuno-theme" && event.key !== null) return
-      const value = event.newValue === "light" || event.newValue === "dark" ? event.newValue : "system"
-      root.classList.remove("light", "dark")
-      if (value !== "system") root.classList.add(value)
-      setTheme(value)
+      document.documentElement.classList.remove("light", "dark")
+      if (event.newValue === "light" || event.newValue === "dark") document.documentElement.classList.add(event.newValue)
     }
     window.addEventListener("storage", sync)
     return () => window.removeEventListener("storage", sync)
   }, [])
-  return <label className="showcase-theme" htmlFor={id}>
-    <span aria-hidden="true">◐</span><span className="showcase-sr-only">Theme</span>
-    <select id={id} value={theme} onChange={event => {
-      const value = event.target.value
-      setTheme(value)
-      document.documentElement.classList.remove("light", "dark")
-      if (value !== "system") document.documentElement.classList.add(value)
-      try { localStorage.setItem("zuno-theme", value) } catch { /* Theme still works when storage is unavailable. */ }
-    }}>
-      <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
-    </select>
-  </label>
+  return <button type="button" className="showcase-theme" aria-label="Toggle theme" onClick={() => {
+    const root = document.documentElement
+    const isDark = root.classList.contains("dark") || (!root.classList.contains("light") && matchMedia("(prefers-color-scheme: dark)").matches)
+    const value = isDark ? "light" : "dark"
+    root.classList.remove("light", "dark")
+    root.classList.add(value)
+    try { localStorage.setItem("zuno-theme", value) } catch { /* Theme still works when storage is unavailable. */ }
+  }}>
+    <svg className="showcase-theme-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+    <svg className="showcase-theme-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+  </button>
 }
 
 export function Showcase({ ui, component, query = "" }: { ui: DemoComponents; component?: string; query?: string }) {
@@ -54,7 +48,7 @@ export function Showcase({ ui, component, query = "" }: { ui: DemoComponents; co
 export function FixturePage({ ui, framework }: { ui: DemoComponents; framework: string }) {
   return <div className="showcase-app">
     <a className="showcase-skip" href="#examples">Skip to examples</a>
-    <header className="showcase-fixture-header"><a className="showcase-brand" href="#examples"><span className="showcase-logo" aria-hidden="true">z</span>zuno<span className="showcase-version">preview</span></a><ThemeSelect /></header>
+    <header className="showcase-fixture-header"><a className="showcase-brand" href="#examples"><span className="showcase-logo" aria-hidden="true">z</span>zuno<span className="showcase-version">preview</span></a><ThemeToggle /></header>
     <main id="examples" className="showcase-fixture-main">
       <div className="showcase-eyebrow"><span className="showcase-status-dot" />VERIFICATION FIXTURE · {framework}</div>
       <h1 className="showcase-title">The same design.<br /><span>In your own project.</span></h1>

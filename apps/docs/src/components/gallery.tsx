@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Tabs } from "@base-ui/react/tabs"
 import { Form } from "@base-ui/react/form"
 import { Showcase, CopyButton, CodeBlock, catalog, catalogByName } from "@zuno/showcase"
+import { groupCatalog } from "@/components/catalog-groups"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel, FieldControl, FieldDescription, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -179,6 +180,8 @@ export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }
   const [query, setQuery] = useState("")
   if (component) return <ComponentDetail key={component} component={component} source={source} deps={deps} />
   const command = "npx zunoui@latest init"
+  const needle = query.trim().toLowerCase()
+  const groups = groupCatalog(catalog.filter(entry => !needle || (entry.title + " " + entry.description).toLowerCase().includes(needle)))
   return <>
     <div className="docs-breadcrumb">Library <span>/</span> Components</div>
     <section className="docs-hero">
@@ -187,10 +190,12 @@ export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }
       <div className="docs-hero-actions"><Link href="/docs" className="docs-primary-link">Start building <span aria-hidden="true">↗</span></Link><span className="docs-tech-label">Base UI inside. ZUNO outside.</span></div>
     </section>
     <div className="docs-command"><span className="docs-command-dollar" aria-hidden="true">$</span><code>{command}</code><CopyButton text={command} /></div>
-    <div className="docs-gallery-tools"><div className="docs-filter-links"><Link href="/components" aria-current="page">All <span>{catalog.length}</span></Link>{catalog.map(entry => <Link key={entry.name} href={"/components/" + entry.name}>{entry.title}</Link>)}</div>
-      <label className="docs-search"><span aria-hidden="true">⌕</span><span className="showcase-sr-only">Search examples</span><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search examples…" /></label>
-    </div>
-    <Showcase ui={ui} query={query} />
+    <label className="docs-search docs-catalog-search"><span aria-hidden="true">⌕</span><span className="showcase-sr-only">Search components</span><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search components…" /></label>
+    {groups.map(group => <section key={group.label} className="docs-catalog-group" aria-labelledby={"group-" + group.label}>
+      <div className="docs-catalog-group-heading"><h2 id={"group-" + group.label}>{group.label}</h2><span>{group.entries.length}</span></div>
+      <div className="docs-catalog-grid">{group.entries.map(entry => <Link key={entry.name} href={"/components/" + entry.name} className="docs-catalog-card"><h3>{entry.title}</h3><p>{entry.description}</p><span>{entry.examples.length} {entry.examples.length === 1 ? "example" : "examples"} →</span></Link>)}</div>
+    </section>)}
+    {!groups.length && <p className="docs-catalog-empty" role="status">No components match “{query}”.</p>}
     <div className="docs-bottom-note"><span aria-hidden="true">✳</span><div><h2>A catalog that grows with you.</h2><p>These are ZUNO's first components. Every addition ships with real examples and its source code.</p></div><Link href="/docs">Learn the basics ↗</Link></div>
   </>
 }

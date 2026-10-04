@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { SiteShell } from "@/components/site-shell"
+import "@fontsource/poppins/latin-500.css"
+import "@fontsource/poppins/latin-600.css"
 import "./globals.css"
 import { themeScript } from "@zuno/showcase/theme-script"
 

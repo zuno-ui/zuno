@@ -1,9 +1,9 @@
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
 
 
 .showcase-app {
-  --zuno-font-sans: "Geist Variable", system-ui, sans-serif;
+  --zuno-font-sans: "Inter Variable", Inter, system-ui, sans-serif;
   --zuno-font-mono: "Geist Mono Variable", ui-monospace, monospace;
   --showcase-border: color-mix(in srgb, var(--foreground) 12%, var(--background));
   --showcase-soft: color-mix(in srgb, var(--foreground) 3%, var(--background));
@@ -27,8 +27,12 @@
 .showcase-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 750; letter-spacing: -1.3px; }
 .showcase-logo { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--primary); color: var(--primary-foreground); font-size: 25px; font-style: italic; }
 .showcase-version { margin-left: 5px; border: 1px solid var(--showcase-border); border-radius: 5px; padding: 4px 6px; font: 12px/1.5 var(--zuno-font-sans); letter-spacing: 0; color: var(--muted-foreground); }
-.showcase-theme { display: inline-flex; align-items: center; gap: 8px; font-size: 18px; }
-.showcase-theme select { min-height: 36px; border: 1px solid var(--showcase-border); border-radius: 7px; background: var(--background); color: var(--foreground); padding: 4px 8px; font-size: 12px; }
+.showcase-theme { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.showcase-theme:hover { color: var(--foreground); background: var(--showcase-soft); }
+.showcase-theme:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.showcase-theme-sun, .dark .showcase-theme-moon { display: none; }
+.dark .showcase-theme-sun { display: block; }
+@media (prefers-color-scheme: dark) { :root:not(.light) .showcase-theme-moon { display: none; } :root:not(.light) .showcase-theme-sun { display: block; } }
 .showcase-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--showcase-accent); font: 12px/1.5 var(--zuno-font-sans); letter-spacing: .06em; line-height: 1.6; }
 .showcase-status-dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; flex-shrink: 0; }
 .showcase-title { margin: 25px 0 18px; font-size: clamp(32px, 4.1vw, 56px); line-height: 1.1; letter-spacing: -.04em; font-weight: 600; }
