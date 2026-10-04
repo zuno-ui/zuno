@@ -485,6 +485,61 @@
       ]
     },
     {
+      "name": "data-toolbar",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "registry/components/data-toolbar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bulk-actions-bar",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/bulk-actions-bar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "comparison-table",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/table"
+      ],
+      "files": [
+        {
+          "path": "registry/components/comparison-table.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/timeline.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "password-input",
       "type": "registry:component",
       "registryDependencies": [

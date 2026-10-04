@@ -285,6 +285,22 @@ export type DemoComponents = {
   SaveIndicator: ComponentType<ComponentProps<"span"> & { status: "idle" | "dirty" | "saving" | "saved" | "error" }>
   ConfirmAction: ComponentType<{ title: ReactNode; description?: ReactNode; children?: ReactNode; onConfirm: () => unknown; trigger?: ReactElement; open?: boolean; onOpenChange?: (open: boolean) => void; confirmLabel?: ReactNode; cancelLabel?: ReactNode; destructive?: boolean; errorMessage?: ReactNode | ((error: unknown) => ReactNode) }>
   ConnectionStatus: ComponentType<ComponentProps<"span"> & { status: "connected" | "connecting" | "degraded" | "disconnected" }>
+  DataToolbar: ComponentType<ComponentProps<"div">>
+  DataToolbarFilters: ComponentType<ComponentProps<"div">>
+  DataToolbarActions: ComponentType<ComponentProps<"div">>
+  DataToolbarCount: ComponentType<ComponentProps<"p">>
+  DataToolbarDensity: ComponentType<{ value: "comfortable" | "compact"; onValueChange: (value: "comfortable" | "compact") => void; labels?: Record<"comfortable" | "compact", string>; className?: string; "aria-label"?: string }>
+  DataToolbarFilterList: ComponentType<ComponentProps<"ul">>
+  DataToolbarFilter: ComponentType<Omit<ComponentProps<"li">, "children"> & { children: ReactNode; onRemove: () => void; removeLabel?: string }>
+  BulkActionsBar: ComponentType<ComponentProps<"div"> & { count: number; onClear: () => void; label?: (count: number) => ReactNode; clearLabel?: ReactNode }>
+  ComparisonTable: ComponentType<{ caption: ReactNode; columns: { key: string; label: ReactNode; description?: ReactNode }[]; rows?: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[]; groups?: { label: ReactNode; rows: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[] }[]; highlight?: string; dimensionLabel?: ReactNode; includedLabel?: string; excludedLabel?: string; density?: "comfortable" | "compact"; className?: string }>
+  Timeline: ComponentType<ComponentProps<"ol">>
+  TimelineItem: ComponentType<ComponentProps<"li"> & { status?: "neutral" | "success" | "warning" | "info" | "error"; icon?: ReactNode }>
+  TimelineHeader: ComponentType<ComponentProps<"div">>
+  TimelineTitle: ComponentType<ComponentProps<"p">>
+  TimelineTime: ComponentType<ComponentProps<"time">>
+  TimelineDescription: ComponentType<ComponentProps<"p">>
+  TimelineDetails: ComponentType<Omit<ComponentProps<"details">, "summary"> & { summary: ReactNode }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -298,6 +314,9 @@ const BellIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props
 const CircleCheckIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
 const TriangleAlertIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
 const PlusIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+const GitCommitIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><circle cx="12" cy="12" r="3" /><path d="M3 12h6" /><path d="M15 12h6" /></svg>
+const MessageSquareIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+const TagIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg>
 
 function EmailExample({ ui }: { ui: DemoComponents }) {
   const { Field, FieldLabel, FieldControl, FieldDescription, FieldError, Form, Button } = ui
@@ -960,6 +979,119 @@ function ConnectionSocketDemo({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
+const toolbarProjects = [
+  { name: "Marketing site", owner: "Ana Ruiz", status: "active" },
+  { name: "Billing API", owner: "Luis Gómez", status: "active" },
+  { name: "Mobile app", owner: "Sara Kim", status: "paused" },
+  { name: "Data pipeline", owner: "Ana Ruiz", status: "active" },
+  { name: "Design system", owner: "Omar Haddad", status: "paused" },
+]
+
+function DataToolbarTableDemo({ ui }: { ui: DemoComponents }) {
+  const { DataToolbar, DataToolbarFilters, DataToolbarActions, DataToolbarDensity, DataToolbarCount, SearchInput, NativeSelect, NativeSelectOption, Button, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusBadge } = ui
+  const [query, setQuery] = useState("")
+  const [status, setStatus] = useState("all")
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable")
+  const rows = toolbarProjects.filter(project => project.name.toLowerCase().includes(query.toLowerCase()) && (status === "all" || project.status === status))
+  return <div className="flex w-full flex-col gap-3">
+    <DataToolbar aria-label="Projects">
+      <DataToolbarFilters>
+        <div className="w-full max-w-56"><SearchInput aria-label="Search projects" placeholder="Search projects…" value={query} onChange={event => setQuery(event.target.value)} onClear={() => setQuery("")} /></div>
+        <div className="w-36"><NativeSelect aria-label="Status" value={status} onChange={event => setStatus(event.target.value)}><NativeSelectOption value="all">All statuses</NativeSelectOption><NativeSelectOption value="active">Active</NativeSelectOption><NativeSelectOption value="paused">Paused</NativeSelectOption></NativeSelect></div>
+      </DataToolbarFilters>
+      <DataToolbarActions>
+        <DataToolbarDensity value={density} onValueChange={setDensity} />
+        <Button variant="outline" size="sm">Export</Button>
+      </DataToolbarActions>
+    </DataToolbar>
+    <DataToolbarCount>{rows.length} of {toolbarProjects.length} projects</DataToolbarCount>
+    <Table density={density} containerProps={{ tabIndex: 0, role: "region", "aria-label": "Projects" }}>
+      <TableHeader><TableRow><TableHead>Project</TableHead><TableHead>Owner</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+      <TableBody>{rows.map(project => <TableRow key={project.name}><TableCell className="font-medium">{project.name}</TableCell><TableCell>{project.owner}</TableCell><TableCell><StatusBadge status={project.status === "active" ? "success" : "neutral"}>{project.status === "active" ? "Active" : "Paused"}</StatusBadge></TableCell></TableRow>)}
+        {!rows.length && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No projects match these filters.</TableCell></TableRow>}
+      </TableBody>
+    </Table>
+  </div>
+}
+
+const initialFilters = [{ id: "status", label: "Status: Active" }, { id: "owner", label: "Owner: Ana Ruiz" }, { id: "updated", label: "Updated: last 7 days" }]
+
+function DataToolbarFiltersDemo({ ui }: { ui: DemoComponents }) {
+  const { DataToolbarFilterList, DataToolbarFilter, Button } = ui
+  const [filters, setFilters] = useState(initialFilters)
+  if (!filters.length) return <div className="flex items-center gap-3 text-sm text-muted-foreground">No filters applied.<Button variant="outline" size="sm" onClick={() => setFilters(initialFilters)}>Restore filters</Button></div>
+  return <DataToolbarFilterList aria-label="Active filters">
+    {filters.map(filter => <DataToolbarFilter key={filter.id} onRemove={() => setFilters(current => current.filter(item => item.id !== filter.id))} removeLabel={`Remove ${filter.label}`}>{filter.label}</DataToolbarFilter>)}
+    <li><Button variant="ghost" size="sm" onClick={() => setFilters([])}>Clear all</Button></li>
+  </DataToolbarFilterList>
+}
+
+const invoices = [
+  { id: "INV-1042", customer: "Northwind", amount: "$1,250.00" },
+  { id: "INV-1043", customer: "Globex", amount: "$860.00" },
+  { id: "INV-1044", customer: "Initech", amount: "$2,400.00" },
+  { id: "INV-1045", customer: "Umbrella", amount: "$310.00" },
+]
+
+function BulkActionsTableDemo({ ui }: { ui: DemoComponents }) {
+  const { BulkActionsBar, Button, Checkbox, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } = ui
+  const [rows, setRows] = useState(invoices)
+  const [selected, setSelected] = useState<string[]>([])
+  const selectAllId = useId()
+  const all = rows.length > 0 && selected.length === rows.length
+  function clear() {
+    setSelected([])
+    document.getElementById(selectAllId)?.focus()
+  }
+  return <div className="flex w-full flex-col gap-3">
+    <div className="grid min-h-[3.25rem] content-center">
+      <BulkActionsBar count={selected.length} onClear={clear}>
+        <Button variant="outline" size="sm" onClick={() => { setRows(current => current.filter(row => !selected.includes(row.id))); clear() }}>Archive</Button>
+        <Button variant="outline" size="sm">Download PDF</Button>
+      </BulkActionsBar>
+      {selected.length === 0 && <div className="flex items-center justify-between gap-3 px-3 text-sm text-muted-foreground">{rows.length} invoices<Button variant="outline" size="sm">Export all</Button></div>}
+    </div>
+    <Table containerProps={{ tabIndex: 0, role: "region", "aria-label": "Invoices" }}>
+      <TableHeader><TableRow><TableHead><Checkbox id={selectAllId} aria-label="Select all invoices" checked={all} indeterminate={selected.length > 0 && !all} onCheckedChange={checked => setSelected(checked ? rows.map(row => row.id) : [])} /></TableHead><TableHead>Invoice</TableHead><TableHead>Customer</TableHead><TableHead className="text-end">Amount</TableHead></TableRow></TableHeader>
+      <TableBody>{rows.map(row => <TableRow key={row.id} data-state={selected.includes(row.id) ? "selected" : undefined}><TableCell><Checkbox aria-label={`Select ${row.id}`} checked={selected.includes(row.id)} onCheckedChange={checked => setSelected(current => checked ? [...current, row.id] : current.filter(id => id !== row.id))} /></TableCell><TableCell className="font-medium">{row.id}</TableCell><TableCell>{row.customer}</TableCell><TableCell className="text-end tabular-nums">{row.amount}</TableCell></TableRow>)}
+        {!rows.length && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">All invoices archived. <Button variant="link" size="sm" onClick={() => setRows(invoices)}>Restore</Button></TableCell></TableRow>}
+      </TableBody>
+    </Table>
+  </div>
+}
+
+function BulkActionsLabelDemo({ ui }: { ui: DemoComponents }) {
+  const { BulkActionsBar, Button } = ui
+  const [count, setCount] = useState(3)
+  return <div className="flex w-full flex-col items-start gap-3">
+    <BulkActionsBar className="w-full" count={count} label={value => `${value} of 12 files selected`} onClear={() => setCount(0)}>
+      <Button variant="outline" size="sm">Download</Button>
+      <Button variant="destructive" size="sm">Delete</Button>
+    </BulkActionsBar>
+    {count === 0 && <Button variant="outline" size="sm" onClick={() => setCount(3)}>Select 3 files</Button>}
+  </div>
+}
+
+const planColumns = [
+  { key: "free", label: "Free", description: "$0" },
+  { key: "pro", label: "Pro", description: "$20 per seat · Recommended" },
+  { key: "enterprise", label: "Enterprise", description: "Custom pricing" },
+]
+const planGroups = [
+  { label: "Usage", rows: [{ label: "Projects", values: { free: "3", pro: "Unlimited", enterprise: "Unlimited" } }, { label: "Seats", values: { free: "1", pro: "Up to 50", enterprise: "Unlimited" } }] },
+  { label: "Security", rows: [{ label: "SSO", description: "SAML and OIDC", values: { free: false, pro: false, enterprise: true } }, { label: "Audit log", values: { free: false, pro: true, enterprise: true } }] },
+]
+
+function TimelineActivity({ ui }: { ui: DemoComponents }) {
+  const { Timeline, TimelineItem, TimelineHeader, TimelineTitle, TimelineTime, TimelineDescription, TimelineDetails } = ui
+  return <Timeline className="w-full max-w-md">
+    <TimelineItem status="error"><TimelineHeader><TimelineTitle>Deploy failed</TimelineTitle><TimelineTime dateTime="2026-10-03T14:32">14:32</TimelineTime></TimelineHeader><TimelineDescription>Build #483 by Ana Ruiz stopped at the test step.</TimelineDescription><TimelineDetails summary="Show log"><pre className="overflow-x-auto font-mono text-xs">FAIL  checkout.test.ts › applies the discount{"\n"}Expected 90, received 100</pre></TimelineDetails></TimelineItem>
+    <TimelineItem status="success"><TimelineHeader><TimelineTitle>Deploy succeeded</TimelineTitle><TimelineTime dateTime="2026-10-03T11:05">11:05</TimelineTime></TimelineHeader><TimelineDescription>Luis Gómez promoted build #482 to production.</TimelineDescription></TimelineItem>
+    <TimelineItem status="info"><TimelineHeader><TimelineTitle>Review requested</TimelineTitle><TimelineTime dateTime="2026-10-03T09:40">9:40</TimelineTime></TimelineHeader><TimelineDescription>Sara Kim asked Omar Haddad to review the pricing change.</TimelineDescription></TimelineItem>
+    <TimelineItem><TimelineHeader><TimelineTitle>Project created</TimelineTitle><TimelineTime dateTime="2026-10-01T16:20">Oct 1</TimelineTime></TimelineHeader></TimelineItem>
+  </Timeline>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1201,6 +1333,38 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     examples: {
       "connection-status-states": ({ ConnectionStatus }) => <div className="flex flex-col items-start gap-2"><ConnectionStatus status="connected">Live · 42 ms</ConnectionStatus><ConnectionStatus status="connecting">Reconnecting…</ConnectionStatus><ConnectionStatus status="degraded" /><ConnectionStatus status="disconnected" /></div>,
       "connection-status-socket": ui => <ConnectionSocketDemo ui={ui} />,
+    },
+  },
+  "data-toolbar": {
+    preview: ui => <DataToolbarTableDemo ui={ui} />,
+    examples: {
+      "data-toolbar-table": ui => <DataToolbarTableDemo ui={ui} />,
+      "data-toolbar-filters": ui => <DataToolbarFiltersDemo ui={ui} />,
+    },
+  },
+  "bulk-actions-bar": {
+    preview: ui => <BulkActionsTableDemo ui={ui} />,
+    examples: {
+      "bulk-actions-bar-table": ui => <BulkActionsTableDemo ui={ui} />,
+      "bulk-actions-bar-label": ui => <BulkActionsLabelDemo ui={ui} />,
+    },
+  },
+  "comparison-table": {
+    preview: ({ ComparisonTable }) => <ComparisonTable caption="Compare plans" highlight="pro" columns={planColumns} groups={planGroups} />,
+    examples: {
+      "comparison-table-plans": ({ ComparisonTable }) => <ComparisonTable caption="Compare plans" highlight="pro" columns={planColumns} groups={planGroups} />,
+      "comparison-table-simple": ({ ComparisonTable }) => <ComparisonTable caption="Storage options" dimensionLabel="Capability" columns={[{ key: "standard", label: "Standard" }, { key: "archive", label: "Archive" }]} rows={[{ label: "Retrieval", values: { standard: "Instant", archive: "Within 12 hours" } }, { label: "Price per GB", values: { standard: "$0.023", archive: "$0.004" } }, { label: "Versioning", values: { standard: true, archive: false } }]} />,
+    },
+  },
+  timeline: {
+    preview: ui => <TimelineActivity ui={ui} />,
+    examples: {
+      "timeline-activity": ui => <TimelineActivity ui={ui} />,
+      "timeline-icons": ({ Timeline, TimelineItem, TimelineHeader, TimelineTitle, TimelineTime, TimelineDescription }) => <Timeline className="w-full max-w-md">
+        <TimelineItem icon={<GitCommitIcon />}><TimelineHeader><TimelineTitle>Luis Gómez pushed 3 commits</TimelineTitle><TimelineTime dateTime="2026-10-03T09:15">9:15</TimelineTime></TimelineHeader><TimelineDescription>to feature/checkout-discounts</TimelineDescription></TimelineItem>
+        <TimelineItem icon={<MessageSquareIcon />}><TimelineHeader><TimelineTitle>Sara Kim commented</TimelineTitle><TimelineTime dateTime="2026-10-03T10:02">10:02</TimelineTime></TimelineHeader><TimelineDescription>“Can we keep the old coupon field for one more release?”</TimelineDescription></TimelineItem>
+        <TimelineItem icon={<TagIcon />}><TimelineHeader><TimelineTitle>Released v2.4.0</TimelineTitle><TimelineTime dateTime="2026-10-03T16:40">16:40</TimelineTime></TimelineHeader></TimelineItem>
+      </Timeline>,
     },
   },
   "password-input": {

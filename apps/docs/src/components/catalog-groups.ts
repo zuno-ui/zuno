@@ -7,7 +7,7 @@ const groups: [string, string[]][] = [
   ["Forms", ["field", "form-section", "label", "input", "input-group", "input-otp", "password-input", "search-input", "textarea", "native-select", "select", "combobox", "checkbox", "radio-group", "switch", "slider", "calendar", "date-picker"]],
   ["Layout", ["container", "stack", "cluster", "responsive-grid", "aspect-ratio", "separator", "scroll-area", "card", "item", "page-header", "section-header", "sidebar", "direction"]],
   ["Navigation", ["breadcrumb", "pagination", "tabs", "navigation-menu", "command"]],
-  ["Data display", ["table", "description-list", "stat-card", "badge", "status-badge", "avatar", "kbd", "typography", "icon", "accordion", "collapsible"]],
+  ["Data display", ["table", "data-toolbar", "bulk-actions-bar", "comparison-table", "timeline", "description-list", "stat-card", "badge", "status-badge", "avatar", "kbd", "typography", "icon", "accordion", "collapsible"]],
   ["Feedback", ["alert", "toast", "progress", "spinner", "skeleton", "empty", "save-indicator", "connection-status"]],
   ["Overlays", ["dialog", "alert-dialog", "drawer", "sheet", "popover", "tooltip", "dropdown-menu"]],
 ]
