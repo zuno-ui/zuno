@@ -294,6 +294,21 @@ export type DemoComponents = {
   DataToolbarFilter: ComponentType<Omit<ComponentProps<"li">, "children"> & { children: ReactNode; onRemove: () => void; removeLabel?: string }>
   BulkActionsBar: ComponentType<ComponentProps<"div"> & { count: number; onClear: () => void; label?: (count: number) => ReactNode; clearLabel?: ReactNode }>
   ComparisonTable: ComponentType<{ caption: ReactNode; columns: { key: string; label: ReactNode; description?: ReactNode }[]; rows?: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[]; groups?: { label: ReactNode; rows: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[] }[]; highlight?: string; dimensionLabel?: ReactNode; includedLabel?: string; excludedLabel?: string; density?: "comfortable" | "compact"; className?: string }>
+  UserMenu: ComponentType<{ children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }>
+  UserMenuTrigger: ComponentType<{ user: { name: string; email?: string; image?: string }; compact?: boolean; label?: string; className?: string }>
+  UserMenuContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end"; align?: "start" | "center" | "end" }>
+  UserMenuHeader: ComponentType<{ user: { name: string; email?: string; image?: string }; children?: ReactNode; className?: string }>
+  UserMenuItem: ComponentType<{ children?: ReactNode; className?: string; onClick?: () => void; disabled?: boolean }>
+  UserMenuGroup: ComponentType<{ children?: ReactNode }>
+  UserMenuSeparator: ComponentType<{ className?: string }>
+  WorkspaceSwitcher: ComponentType<{ workspaces: { id: string; name: string; description?: string; logo?: ReactNode }[]; value: string; onSwitch: (workspace: { id: string; name: string }) => unknown; label?: string; searchPlaceholder?: string; emptyMessage?: ReactNode; errorMessage?: ReactNode | ((error: unknown) => ReactNode); footer?: ReactNode; className?: string }>
+  CommandPalette: ComponentType<{ commands: { id: string; label: string; group?: string; keywords?: string[]; shortcut?: string; disabled?: boolean; onSelect: () => void }[]; open?: boolean; onOpenChange?: (open: boolean) => void; hotkey?: string | false; title?: string; placeholder?: string; emptyMessage?: ReactNode }>
+  PageNavigation: ComponentType<Omit<ComponentProps<"nav">, "children"> & { items: { id: string; label: ReactNode; level?: 2 | 3 }[]; offset?: number; title?: ReactNode }>
+  Stepper: ComponentType<Omit<ComponentProps<"nav">, "children"> & { steps: { id: string; label: ReactNode; description?: ReactNode; error?: boolean }[]; current: string; onStepChange?: (id: string) => void; canVisit?: (step: { id: string }, index: number) => boolean; orientation?: "horizontal" | "vertical"; stepLabel?: (position: number) => ReactNode; labels?: { completed: string; error: string } }>
+  SplitLayout: ComponentType<ComponentProps<"div"> & { asideWidth?: string; mainMinWidth?: string; collapsed?: boolean; defaultCollapsed?: boolean; onCollapsedChange?: (collapsed: boolean) => void }>
+  SplitLayoutMain: ComponentType<ComponentProps<"div">>
+  SplitLayoutAside: ComponentType<ComponentProps<"aside">>
+  SplitLayoutTrigger: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
   Timeline: ComponentType<ComponentProps<"ol">>
   TimelineItem: ComponentType<ComponentProps<"li"> & { status?: "neutral" | "success" | "warning" | "info" | "error"; icon?: ReactNode }>
   TimelineHeader: ComponentType<ComponentProps<"div">>
@@ -589,7 +604,7 @@ function CommandBasic({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
-function CommandPalette({ ui }: { ui: DemoComponents }) {
+function CommandDialogDemo({ ui }: { ui: DemoComponents }) {
   const { Button, Kbd, KbdGroup, CommandDialog, Command, CommandInput, CommandEmpty, CommandList, CommandItem } = ui
   const [open, setOpen] = useState(false)
   const [ran, setRan] = useState("")
@@ -1092,6 +1107,168 @@ function TimelineActivity({ ui }: { ui: DemoComponents }) {
   </Timeline>
 }
 
+const demoUser = { name: "Ana Ruiz", email: "ana@acme.com" }
+
+function UserMenuSidebarDemo({ ui }: { ui: DemoComponents }) {
+  const { UserMenu, UserMenuTrigger, UserMenuContent, UserMenuHeader, UserMenuGroup, UserMenuItem, UserMenuSeparator } = ui
+  const [chosen, setChosen] = useState("")
+  return <div className="flex w-full max-w-60 flex-col gap-2">
+    <UserMenu>
+      <UserMenuTrigger user={demoUser} className="w-full" />
+      <UserMenuContent side="top">
+        <UserMenuHeader user={demoUser} />
+        <UserMenuSeparator />
+        <UserMenuGroup>
+          {["Profile", "Billing", "Settings"].map(item => <UserMenuItem key={item} onClick={() => setChosen(item)}>{item}</UserMenuItem>)}
+        </UserMenuGroup>
+        <UserMenuSeparator />
+        <UserMenuItem onClick={() => setChosen("Sign out")}>Sign out</UserMenuItem>
+      </UserMenuContent>
+    </UserMenu>
+    <p role="status" className="text-xs text-muted-foreground">{chosen ? `Chose “${chosen}”.` : ""}</p>
+  </div>
+}
+
+function UserMenuCompactDemo({ ui }: { ui: DemoComponents }) {
+  const { UserMenu, UserMenuTrigger, UserMenuContent, UserMenuHeader, UserMenuItem, UserMenuSeparator } = ui
+  const user = { name: "Luis Gómez", email: "luis@acme.com" }
+  return <div className="flex w-full max-w-sm items-center justify-between rounded-lg border border-border px-3 py-2 text-sm font-medium">
+    Acme dashboard
+    <UserMenu>
+      <UserMenuTrigger user={user} compact />
+      <UserMenuContent align="end">
+        <UserMenuHeader user={user} />
+        <UserMenuSeparator />
+        <UserMenuItem>Keyboard shortcuts</UserMenuItem>
+        <UserMenuItem>Sign out</UserMenuItem>
+      </UserMenuContent>
+    </UserMenu>
+  </div>
+}
+
+const demoWorkspaces = [
+  { id: "acme", name: "Acme Inc.", description: "Pro · 12 members" },
+  { id: "globex", name: "Globex", description: "Free · 3 members" },
+  { id: "initech", name: "Initech", description: "Enterprise" },
+  { id: "umbrella", name: "Umbrella", description: "Pro · 40 members" },
+]
+
+function WorkspaceSwitcherDemo({ ui }: { ui: DemoComponents }) {
+  const { WorkspaceSwitcher, Button } = ui
+  const [current, setCurrent] = useState("acme")
+  const failed = useRef(false)
+  return <div className="w-full max-w-60">
+    <WorkspaceSwitcher
+      className="w-full"
+      workspaces={demoWorkspaces}
+      value={current}
+      onSwitch={async workspace => {
+        const fail = workspace.id === "globex" && !failed.current
+        if (fail) failed.current = true
+        await simulateRequest(fail)
+        setCurrent(workspace.id)
+      }}
+      footer={<Button variant="ghost" size="sm" className="w-full justify-start">Create workspace</Button>}
+    />
+  </div>
+}
+
+function CommandPaletteDemo({ ui, hotkey }: { ui: DemoComponents; hotkey?: false }) {
+  const { CommandPalette, Button, Kbd, KbdGroup } = ui
+  const [open, setOpen] = useState(false)
+  const [ran, setRan] = useState("")
+  const commands = [
+    { id: "new-project", label: "New project", group: "Create", shortcut: "N" },
+    { id: "invite", label: "Invite teammate", group: "Create" },
+    { id: "dashboard", label: "Go to dashboard", group: "Navigate" },
+    { id: "settings", label: "Open settings", group: "Navigate", keywords: ["preferences", "account"] },
+    { id: "billing", label: "Billing", group: "Navigate", disabled: true },
+  ].map(command => ({ ...command, onSelect: () => setRan(command.label) }))
+  return <div className="flex flex-col items-center gap-2">
+    <Button variant="outline" onClick={() => setOpen(true)}>Search… <KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>
+    <CommandPalette open={open} onOpenChange={setOpen} commands={commands} hotkey={hotkey} />
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
+
+function PageNavigationDemo({ ui }: { ui: DemoComponents }) {
+  const { PageNavigation } = ui
+  const prefix = useId().replace(/:/g, "")
+  const sections = [
+    { id: `${prefix}-overview`, label: "Overview", text: "Deploy any branch to a preview URL, then promote it to production when it is ready." },
+    { id: `${prefix}-setup`, label: "Setup", text: "Connect the repository and choose the framework preset; the build command is filled in for you." },
+    { id: `${prefix}-environment`, label: "Environment", level: 3 as const, text: "Add the variables each environment needs. Production values are never exposed to previews." },
+    { id: `${prefix}-deploy`, label: "Deploy", text: "Push to the branch. The first build runs automatically and later pushes create new previews." },
+  ]
+  return <div className="grid w-full grid-cols-[minmax(0,1fr)_10rem] gap-6">
+    <article className="flex flex-col gap-10 text-sm">
+      {sections.map(section => <section key={section.id} className="min-h-40"><h3 id={section.id} className="mb-2 scroll-mt-24 font-medium">{section.label}</h3><p className="text-muted-foreground">{section.text}</p></section>)}
+    </article>
+    <PageNavigation className="sticky top-24 self-start" items={sections.map(({ id, label, level }) => ({ id, label, level }))} />
+  </div>
+}
+
+const checkoutSteps = [
+  { id: "cart", label: "Cart", description: "3 items" },
+  { id: "shipping", label: "Shipping" },
+  { id: "payment", label: "Payment" },
+  { id: "review", label: "Review" },
+]
+
+function StepperFlowDemo({ ui }: { ui: DemoComponents }) {
+  const { Stepper, Button } = ui
+  const [step, setStep] = useState("shipping")
+  const index = checkoutSteps.findIndex(item => item.id === step)
+  return <div className="flex w-full flex-col gap-4">
+    <Stepper current={step} onStepChange={setStep} steps={checkoutSteps} />
+    <div className="flex gap-2">
+      <Button variant="outline" size="sm" disabled={index === 0} onClick={() => setStep(checkoutSteps[index - 1].id)}>Back</Button>
+      <Button size="sm" disabled={index === checkoutSteps.length - 1} onClick={() => setStep(checkoutSteps[index + 1].id)}>Continue</Button>
+    </div>
+  </div>
+}
+
+function StepperVerticalDemo({ ui }: { ui: DemoComponents }) {
+  const { Stepper } = ui
+  const [step, setStep] = useState("domain")
+  return <Stepper orientation="vertical" current={step} onStepChange={setStep} className="w-full max-w-xs" steps={[
+    { id: "project", label: "Create project" },
+    { id: "repository", label: "Connect repository", error: true, description: "Permission denied" },
+    { id: "domain", label: "Add a domain" },
+    { id: "deploy", label: "Deploy" },
+  ]} />
+}
+
+function SplitLayoutDetailsDemo({ ui }: { ui: DemoComponents }) {
+  const { SplitLayout, SplitLayoutMain, SplitLayoutAside, SplitLayoutTrigger, DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails } = ui
+  return <div className="w-full">
+    <SplitLayout asideWidth="12rem" mainMinWidth="16rem">
+      <SplitLayoutMain className="rounded-lg border border-border p-4">
+        <div className="mb-3 flex items-center justify-between gap-2"><h3 className="text-sm font-medium">Invoice INV-1042</h3><SplitLayoutTrigger aria-label="Details panel" /></div>
+        <p className="text-sm text-muted-foreground">Northwind ordered 25 seats of the Pro plan. The invoice was sent on October 1 and is due in 14 days.</p>
+      </SplitLayoutMain>
+      <SplitLayoutAside aria-label="Details" className="rounded-lg border border-border p-4">
+        <DescriptionList><DescriptionListItem><DescriptionListTerm>Status</DescriptionListTerm><DescriptionListDetails>Sent</DescriptionListDetails></DescriptionListItem><DescriptionListItem><DescriptionListTerm>Amount</DescriptionListTerm><DescriptionListDetails>$1,250.00</DescriptionListDetails></DescriptionListItem><DescriptionListItem><DescriptionListTerm>Due</DescriptionListTerm><DescriptionListDetails>Oct 15</DescriptionListDetails></DescriptionListItem></DescriptionList>
+      </SplitLayoutAside>
+    </SplitLayout>
+  </div>
+}
+
+function SplitLayoutStartDemo({ ui }: { ui: DemoComponents }) {
+  const { SplitLayout, SplitLayoutMain, SplitLayoutAside, SplitLayoutTrigger, Checkbox } = ui
+  return <div className="w-full">
+    <SplitLayout asideWidth="10rem" mainMinWidth="16rem" defaultCollapsed>
+      <SplitLayoutAside aria-label="Filters" className="flex flex-col gap-2 rounded-lg border border-border p-4 text-sm">
+        {["Active", "Paused", "Archived"].map(label => <label key={label} className="flex items-center gap-2"><Checkbox defaultChecked={label === "Active"} />{label}</label>)}
+      </SplitLayoutAside>
+      <SplitLayoutMain className="rounded-lg border border-border p-4">
+        <div className="mb-3 flex items-center gap-2"><SplitLayoutTrigger aria-label="Filters panel" /><h3 className="text-sm font-medium">24 results</h3></div>
+        <p className="text-sm text-muted-foreground">Open the filters panel to narrow the results.</p>
+      </SplitLayoutMain>
+    </SplitLayout>
+  </div>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1367,6 +1544,45 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       </Timeline>,
     },
   },
+  "user-menu": {
+    preview: ui => <UserMenuSidebarDemo ui={ui} />,
+    examples: {
+      "user-menu-sidebar": ui => <UserMenuSidebarDemo ui={ui} />,
+      "user-menu-compact": ui => <UserMenuCompactDemo ui={ui} />,
+    },
+  },
+  "workspace-switcher": {
+    preview: ui => <WorkspaceSwitcherDemo ui={ui} />,
+    examples: {
+      "workspace-switcher-basic": ui => <WorkspaceSwitcherDemo ui={ui} />,
+    },
+  },
+  "command-palette": {
+    preview: ui => <CommandPaletteDemo ui={ui} />,
+    examples: {
+      "command-palette-basic": ui => <CommandPaletteDemo ui={ui} hotkey={false} />,
+    },
+  },
+  "page-navigation": {
+    preview: ui => <PageNavigationDemo ui={ui} />,
+    examples: {
+      "page-navigation-article": ui => <PageNavigationDemo ui={ui} />,
+    },
+  },
+  stepper: {
+    preview: ui => <StepperFlowDemo ui={ui} />,
+    examples: {
+      "stepper-flow": ui => <StepperFlowDemo ui={ui} />,
+      "stepper-vertical": ui => <StepperVerticalDemo ui={ui} />,
+    },
+  },
+  "split-layout": {
+    preview: ui => <SplitLayoutDetailsDemo ui={ui} />,
+    examples: {
+      "split-layout-details": ui => <SplitLayoutDetailsDemo ui={ui} />,
+      "split-layout-start": ui => <SplitLayoutStartDemo ui={ui} />,
+    },
+  },
   "password-input": {
     preview: ({ PasswordInput }) => <label className="showcase-example-form">Password<PasswordInput autoComplete="current-password" placeholder="••••••••" /></label>,
     examples: {
@@ -1494,7 +1710,7 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ui => <CommandBasic ui={ui} />,
     examples: {
       "command-basic": ui => <CommandBasic ui={ui} />,
-      "command-dialog": ui => <CommandPalette ui={ui} />,
+      "command-dialog": ui => <CommandDialogDemo ui={ui} />,
     },
   },
   direction: {
