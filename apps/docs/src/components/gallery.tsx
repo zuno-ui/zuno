@@ -188,6 +188,7 @@ function ComponentDetail({ component, source, deps }: { component: string; sourc
 
 export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }: { component?: string; source?: string; deps?: Deps }) {
   const [query, setQuery] = useState("")
+  const searchRef = useRef<HTMLInputElement>(null)
   if (component) return <ComponentDetail key={component} component={component} source={source} deps={deps} />
   const command = "npx zunoui@latest init"
   const needle = query.trim().toLowerCase()
@@ -200,7 +201,19 @@ export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }
       <div className="docs-hero-actions"><Link href="/docs" className="docs-primary-link">Start building <span aria-hidden="true">↗</span></Link><span className="docs-tech-label">Base UI inside. ZUNO outside.</span></div>
     </section>
     <div className="docs-command"><span className="docs-command-dollar" aria-hidden="true">$</span><code>{command}</code><CopyButton text={command} /></div>
-    <label className="docs-search docs-catalog-search"><span aria-hidden="true">⌕</span><span className="showcase-sr-only">Search components</span><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search components…" /></label>
+    <div className="docs-catalog-toolbar">
+      <div className="docs-catalog-search">
+        <Label htmlFor="catalog-search">Search components</Label>
+        <InputGroup className="min-h-12" aria-label="Component search">
+          <InputGroupAddon><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></svg></InputGroupAddon>
+          <InputGroupInput ref={searchRef} id="catalog-search" type="search" value={query} onValueChange={setQuery} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Find a component…" className="[&::-webkit-search-cancel-button]:hidden" />
+          <InputGroupAddon align="inline-end">
+            <InputGroupText role="status" aria-atomic="true"><Badge variant="secondary">{groups.reduce((total, group) => total + group.entries.length, 0)} <span className="showcase-sr-only">components found</span></Badge></InputGroupText>
+            {query && <InputGroupButton aria-label="Clear search" onClick={() => { setQuery(""); searchRef.current?.focus() }}>Clear <Kbd aria-hidden="true">Esc</Kbd></InputGroupButton>}
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
+    </div>
     {groups.map(group => <section key={group.label} className="docs-catalog-group" aria-labelledby={"group-" + group.label}>
       <div className="docs-catalog-group-heading"><h2 id={"group-" + group.label}>{group.label}</h2><span>{group.entries.length}</span></div>
       <div className="docs-catalog-grid">{group.entries.map(entry => <Link key={entry.name} href={"/components/" + entry.name} className="docs-catalog-card"><h3>{entry.title}</h3><p>{entry.description}</p><span>{entry.examples.length} {entry.examples.length === 1 ? "example" : "examples"} →</span></Link>)}</div>
