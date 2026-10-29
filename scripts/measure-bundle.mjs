@@ -1,7 +1,9 @@
 // Bundle budget measurement.
 // Builds a minimal production app with the real fixture toolchain (Vite + @tailwindcss/vite),
 // once as a baseline and once with the target component, and reports TWO gzip figures per entry:
-//   - incremental: cost over a shared base that already has Base UI present.
+//   - incremental: cost over a shared base that already has Base UI present. For a composition, the ZUNO
+//     components it imports are external too: each has its own budget, so this measures only the code the
+//     composition adds on top of them.
 //   - firstInstall: cost over an app with no ZUNO dependencies (component + the deps it pulls).
 // Fails if the incremental JS/CSS cost exceeds the component's budget.
 import { createRequire } from "node:module"
@@ -81,7 +83,7 @@ export async function measure(names) {
       const entry = entries[name] ?? { name, kind: "html-css" }
       const kind = entry.kind
       const component = { entry: entryOf(name) }
-      const inc = await sizes(dir, { component, external: BASE_EXTERNAL, withBaseUi: true })
+      const inc = await sizes(dir, { component, external: kind === "composition" ? [...BASE_EXTERNAL, /^@\/components\//] : BASE_EXTERNAL, withBaseUi: true })
       const first = await sizes(dir, { component, external: FIRST_EXTERNAL, withBaseUi: false })
       const jsIncremental = Math.max(0, inc.js - b1.js)
       const cssIncremental = Math.max(0, inc.css - b1.css)

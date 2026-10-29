@@ -404,6 +404,19 @@
       ]
     },
     {
+      "name": "section-header",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/section-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-section",
       "type": "registry:component",
       "registryDependencies": [
@@ -426,6 +439,187 @@
       "files": [
         {
           "path": "registry/components/status-badge.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "save-indicator",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/save-indicator.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "confirm-action",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/alert-dialog",
+        "@zuno/button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/confirm-action.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "connection-status",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/connection-status.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "data-toolbar",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "registry/components/data-toolbar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bulk-actions-bar",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/bulk-actions-bar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "comparison-table",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/table"
+      ],
+      "files": [
+        {
+          "path": "registry/components/comparison-table.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/timeline.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "user-menu",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/avatar",
+        "@zuno/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "registry/components/user-menu.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "workspace-switcher",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/command",
+        "@zuno/popover",
+        "@zuno/spinner"
+      ],
+      "files": [
+        {
+          "path": "registry/components/workspace-switcher.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "command-palette",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/command"
+      ],
+      "files": [
+        {
+          "path": "registry/components/command-palette.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page-navigation",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/page-navigation.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "stepper",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/stepper.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "split-layout",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/split-layout.tsx",
           "type": "registry:component"
         }
       ]
@@ -469,6 +663,33 @@
       "files": [
         {
           "path": "registry/components/copy-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/description-list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "stat-card",
+      "type": "registry:component",
+      "registryDependencies": [
+        "@zuno/utils",
+        "@zuno/card"
+      ],
+      "files": [
+        {
+          "path": "registry/components/stat-card.tsx",
           "type": "registry:component"
         }
       ]

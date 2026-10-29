@@ -1,5 +1,5 @@
 {
-  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it.",
+  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it. A composition is measured without the ZUNO components it imports, which carry their own budgets.",
   "updated": "2026-09-10",
   "phase": "F1",
   "target": { "official": 22, "own": 11, "total": 33 },
@@ -67,11 +67,27 @@
     { "id": "K-03", "name": "cluster", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-04", "name": "responsive-grid", "kind": "html-css", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-05", "name": "page-header", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-06", "name": "section-header", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-07", "name": "split-layout", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
     { "id": "K-08", "name": "form-section", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-09", "name": "password-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-10", "name": "search-input", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
+    { "id": "K-19", "name": "data-toolbar", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-21", "name": "bulk-actions-bar", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-22", "name": "description-list", "kind": "html-css", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-23", "name": "stat-card", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-24", "name": "timeline", "kind": "html-css", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-28", "name": "comparison-table", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-29", "name": "user-menu", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-30", "name": "workspace-switcher", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-32", "name": "stepper", "kind": "html-css", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-33", "name": "command-palette", "kind": "composition", "status": "stable", "reviewed": "2026-10-03" },
+    { "id": "K-34", "name": "page-navigation", "kind": "html-css", "status": "stable", "reviewed": "2026-10-03" },
     { "id": "K-35", "name": "status-badge", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
     { "id": "K-36", "name": "copy-button", "kind": "composition", "status": "stable", "reviewed": "2026-09-09" },
-    { "id": "K-37", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
+    { "id": "K-37", "name": "save-indicator", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-39", "name": "confirm-action", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-40", "name": "connection-status", "kind": "composition", "status": "stable", "reviewed": "2026-09-29" },
+    { "id": "K-49", "name": "icon", "kind": "html-css", "status": "stable", "reviewed": "2026-09-10" }
   ]
 }

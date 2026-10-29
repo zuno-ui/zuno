@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment, useEffect, useId, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
+import { Fragment, useEffect, useId, useRef, useState, type ComponentType, type ComponentProps, type ReactNode, type ReactElement, type SVGProps } from "react"
 import type { DateRange, DayPickerProps } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import { meta, type ComponentMeta, type ExampleMeta } from "./catalog-meta"
@@ -266,6 +266,56 @@ export type DemoComponents = {
   ToastProvider: ComponentType<{ children?: ReactNode }>
   Toaster: ComponentType<{ className?: string }>
   useToast: () => { add: (options: { title?: ReactNode; description?: ReactNode; type?: string; timeout?: number }) => string; close: (id?: string) => void }
+  DescriptionList: ComponentType<ComponentProps<"dl"> & { layout?: "stacked" | "inline"; divided?: boolean }>
+  DescriptionListItem: ComponentType<ComponentProps<"div">>
+  DescriptionListTerm: ComponentType<ComponentProps<"dt">>
+  DescriptionListDetails: ComponentType<ComponentProps<"dd">>
+  SectionHeader: ComponentType<ComponentProps<"div">>
+  SectionHeaderContent: ComponentType<ComponentProps<"div">>
+  SectionHeaderTitle: ComponentType<ComponentProps<"h2"> & { level?: 2 | 3 | 4 }>
+  SectionHeaderDescription: ComponentType<ComponentProps<"p">>
+  SectionHeaderMeta: ComponentType<ComponentProps<"div">>
+  SectionHeaderActions: ComponentType<ComponentProps<"div">>
+  StatCard: ComponentType<ComponentProps<"div">>
+  StatCardHeader: ComponentType<ComponentProps<"div">>
+  StatCardLabel: ComponentType<ComponentProps<"p">>
+  StatCardValue: ComponentType<ComponentProps<"p">>
+  StatCardFooter: ComponentType<ComponentProps<"div">>
+  StatCardTrend: ComponentType<ComponentProps<"span"> & { direction: "up" | "down" | "flat"; sentiment?: "positive" | "negative" | "neutral" }>
+  SaveIndicator: ComponentType<ComponentProps<"span"> & { status: "idle" | "dirty" | "saving" | "saved" | "error" }>
+  ConfirmAction: ComponentType<{ title: ReactNode; description?: ReactNode; children?: ReactNode; onConfirm: () => unknown; trigger?: ReactElement; open?: boolean; onOpenChange?: (open: boolean) => void; confirmLabel?: ReactNode; cancelLabel?: ReactNode; destructive?: boolean; errorMessage?: ReactNode | ((error: unknown) => ReactNode) }>
+  ConnectionStatus: ComponentType<ComponentProps<"span"> & { status: "connected" | "connecting" | "degraded" | "disconnected" }>
+  DataToolbar: ComponentType<ComponentProps<"div">>
+  DataToolbarFilters: ComponentType<ComponentProps<"div">>
+  DataToolbarActions: ComponentType<ComponentProps<"div">>
+  DataToolbarCount: ComponentType<ComponentProps<"p">>
+  DataToolbarDensity: ComponentType<{ value: "comfortable" | "compact"; onValueChange: (value: "comfortable" | "compact") => void; labels?: Record<"comfortable" | "compact", string>; className?: string; "aria-label"?: string }>
+  DataToolbarFilterList: ComponentType<ComponentProps<"ul">>
+  DataToolbarFilter: ComponentType<Omit<ComponentProps<"li">, "children"> & { children: ReactNode; onRemove: () => void; removeLabel?: string }>
+  BulkActionsBar: ComponentType<ComponentProps<"div"> & { count: number; onClear: () => void; label?: (count: number) => ReactNode; clearLabel?: ReactNode }>
+  ComparisonTable: ComponentType<{ caption: ReactNode; columns: { key: string; label: ReactNode; description?: ReactNode }[]; rows?: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[]; groups?: { label: ReactNode; rows: { label: ReactNode; description?: ReactNode; values: Record<string, ReactNode> }[] }[]; highlight?: string; dimensionLabel?: ReactNode; includedLabel?: string; excludedLabel?: string; density?: "comfortable" | "compact"; className?: string }>
+  UserMenu: ComponentType<{ children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }>
+  UserMenuTrigger: ComponentType<{ user: { name: string; email?: string; image?: string }; compact?: boolean; label?: string; className?: string }>
+  UserMenuContent: ComponentType<{ children?: ReactNode; className?: string; side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end"; align?: "start" | "center" | "end" }>
+  UserMenuHeader: ComponentType<{ user: { name: string; email?: string; image?: string }; children?: ReactNode; className?: string }>
+  UserMenuItem: ComponentType<{ children?: ReactNode; className?: string; onClick?: () => void; disabled?: boolean }>
+  UserMenuGroup: ComponentType<{ children?: ReactNode }>
+  UserMenuSeparator: ComponentType<{ className?: string }>
+  WorkspaceSwitcher: ComponentType<{ workspaces: { id: string; name: string; description?: string; logo?: ReactNode }[]; value: string; onSwitch: (workspace: { id: string; name: string }) => unknown; label?: string; searchPlaceholder?: string; emptyMessage?: ReactNode; errorMessage?: ReactNode | ((error: unknown) => ReactNode); footer?: ReactNode; className?: string }>
+  CommandPalette: ComponentType<{ commands: { id: string; label: string; group?: string; keywords?: string[]; shortcut?: string; disabled?: boolean; onSelect: () => void }[]; open?: boolean; onOpenChange?: (open: boolean) => void; hotkey?: string | false; title?: string; placeholder?: string; emptyMessage?: ReactNode }>
+  PageNavigation: ComponentType<Omit<ComponentProps<"nav">, "children"> & { items: { id: string; label: ReactNode; level?: 2 | 3 }[]; offset?: number; title?: ReactNode }>
+  Stepper: ComponentType<Omit<ComponentProps<"nav">, "children"> & { steps: { id: string; label: ReactNode; description?: ReactNode; error?: boolean }[]; current: string; onStepChange?: (id: string) => void; canVisit?: (step: { id: string }, index: number) => boolean; orientation?: "horizontal" | "vertical"; stepLabel?: (position: number) => ReactNode; labels?: { completed: string; error: string } }>
+  SplitLayout: ComponentType<ComponentProps<"div"> & { asideWidth?: string; mainMinWidth?: string; collapsed?: boolean; defaultCollapsed?: boolean; onCollapsedChange?: (collapsed: boolean) => void }>
+  SplitLayoutMain: ComponentType<ComponentProps<"div">>
+  SplitLayoutAside: ComponentType<ComponentProps<"aside">>
+  SplitLayoutTrigger: ComponentType<{ children?: ReactNode; className?: string; "aria-label"?: string }>
+  Timeline: ComponentType<ComponentProps<"ol">>
+  TimelineItem: ComponentType<ComponentProps<"li"> & { status?: "neutral" | "success" | "warning" | "info" | "error"; icon?: ReactNode }>
+  TimelineHeader: ComponentType<ComponentProps<"div">>
+  TimelineTitle: ComponentType<ComponentProps<"p">>
+  TimelineTime: ComponentType<ComponentProps<"time">>
+  TimelineDescription: ComponentType<ComponentProps<"p">>
+  TimelineDetails: ComponentType<Omit<ComponentProps<"details">, "summary"> & { summary: ReactNode }>
 }
 
 type Render = (ui: DemoComponents) => ReactNode
@@ -279,6 +329,9 @@ const BellIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props
 const CircleCheckIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
 const TriangleAlertIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
 const PlusIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+const GitCommitIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><circle cx="12" cy="12" r="3" /><path d="M3 12h6" /><path d="M15 12h6" /></svg>
+const MessageSquareIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+const TagIcon = (props: SVGProps<SVGSVGElement>) => <svg {...svgBase} {...props}><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg>
 
 function EmailExample({ ui }: { ui: DemoComponents }) {
   const { Field, FieldLabel, FieldControl, FieldDescription, FieldError, Form, Button } = ui
@@ -551,7 +604,7 @@ function CommandBasic({ ui }: { ui: DemoComponents }) {
   </div>
 }
 
-function CommandPalette({ ui }: { ui: DemoComponents }) {
+function CommandDialogDemo({ ui }: { ui: DemoComponents }) {
   const { Button, Kbd, KbdGroup, CommandDialog, Command, CommandInput, CommandEmpty, CommandList, CommandItem } = ui
   const [open, setOpen] = useState(false)
   const [ran, setRan] = useState("")
@@ -802,6 +855,420 @@ function ToastTriggers({ ui }: { ui: DemoComponents }) {
 
 const box = "rounded-lg border border-border bg-card px-4 py-3 text-sm text-card-foreground"
 
+const billingPairs = [["Plan", "Pro, billed yearly"], ["Seats", "12 of 15 used"], ["Next invoice", "October 1, 2026 · $240.00"], ["Billing email", "finance@acme.dev"]]
+
+function DescriptionListStacked({ ui }: { ui: DemoComponents }) {
+  const { Card, CardHeader, CardTitle, CardContent, DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails } = ui
+  return <Card className="w-full max-w-sm"><CardHeader><CardTitle>Subscription</CardTitle></CardHeader><CardContent>
+    <DescriptionList>{billingPairs.map(([term, value]) => <DescriptionListItem key={term}><DescriptionListTerm>{term}</DescriptionListTerm><DescriptionListDetails>{value}</DescriptionListDetails></DescriptionListItem>)}</DescriptionList>
+  </CardContent></Card>
+}
+
+function DescriptionListInline({ ui }: { ui: DemoComponents }) {
+  const { DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails, StatusBadge, CopyButton } = ui
+  return <DescriptionList layout="inline" divided className="w-full max-w-xl">
+    <DescriptionListItem><DescriptionListTerm>Project</DescriptionListTerm><DescriptionListDetails>Marketing site</DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>Status</DescriptionListTerm><DescriptionListDetails><StatusBadge status="success">Active</StatusBadge></DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>API key</DescriptionListTerm><DescriptionListDetails className="flex items-center gap-2"><code className="text-xs">zk_live_…4f2a</code><CopyButton value="zk_live_demo_4f2a" label="Copy API key" /></DescriptionListDetails></DescriptionListItem>
+    <DescriptionListItem><DescriptionListTerm>Domains</DescriptionListTerm><DescriptionListDetails>acme.dev</DescriptionListDetails><DescriptionListDetails>www.acme.dev</DescriptionListDetails></DescriptionListItem>
+  </DescriptionList>
+}
+
+function SectionHeaderBasic({ ui }: { ui: DemoComponents }) {
+  const { SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderDescription, SectionHeaderActions, Button } = ui
+  return <SectionHeader className="w-full"><SectionHeaderContent><SectionHeaderTitle>Members</SectionHeaderTitle><SectionHeaderDescription>People with access to this workspace.</SectionHeaderDescription></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="outline">Invite member</Button></SectionHeaderActions></SectionHeader>
+}
+
+function SectionHeaderWithMeta({ ui }: { ui: DemoComponents }) {
+  const { SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderMeta, SectionHeaderActions, StatusBadge, Button } = ui
+  return <SectionHeader className="w-full"><SectionHeaderContent><SectionHeaderTitle>Deployments</SectionHeaderTitle><SectionHeaderMeta><StatusBadge status="success">Healthy</StatusBadge><span>24 this week</span><span>Last one 12 min ago</span></SectionHeaderMeta></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="ghost">View all</Button><Button size="sm">Deploy</Button></SectionHeaderActions></SectionHeader>
+}
+
+function SectionHeaderNested({ ui }: { ui: DemoComponents }) {
+  const { Card, CardContent, SectionHeader, SectionHeaderContent, SectionHeaderTitle, SectionHeaderDescription, SectionHeaderActions, Button } = ui
+  return <Card className="w-full max-w-md"><CardContent className="pt-6"><SectionHeader><SectionHeaderContent><SectionHeaderTitle level={3} className="text-base">API keys</SectionHeaderTitle><SectionHeaderDescription>Keys are shown once when you create them.</SectionHeaderDescription></SectionHeaderContent><SectionHeaderActions><Button size="sm" variant="outline">Create key</Button></SectionHeaderActions></SectionHeader></CardContent></Card>
+}
+
+const statMetrics = [
+  { label: "Monthly revenue", value: "$48,210", change: "+12.4%", direction: "up", period: "vs. August" },
+  { label: "Active users", value: "2,318", change: "0%", direction: "flat", period: "vs. August" },
+  { label: "p95 latency", value: "182 ms", change: "−38 ms", direction: "down", sentiment: "positive", period: "vs. last week" },
+] as const
+
+function StatCardGrid({ ui }: { ui: DemoComponents }) {
+  const { ResponsiveGrid, StatCard, StatCardLabel, StatCardValue, StatCardFooter, StatCardTrend } = ui
+  return <ResponsiveGrid min="12rem" gap="4" className="w-full">{statMetrics.map(metric => <StatCard key={metric.label}>
+    <StatCardLabel>{metric.label}</StatCardLabel>
+    <StatCardValue>{metric.value}</StatCardValue>
+    <StatCardFooter><StatCardTrend direction={metric.direction} sentiment={"sentiment" in metric ? metric.sentiment : undefined}>{metric.change}</StatCardTrend><span>{metric.period}</span></StatCardFooter>
+  </StatCard>)}</ResponsiveGrid>
+}
+
+function StatCardWithHeader({ ui }: { ui: DemoComponents }) {
+  const { StatCard, StatCardHeader, StatCardLabel, StatCardValue, StatCardFooter, StatCardTrend } = ui
+  return <StatCard className="w-full max-w-60">
+    <StatCardHeader><StatCardLabel>Open incidents</StatCardLabel><svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4"><path d="M8 2 1.5 13.5h13z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8 6.5v3M8 11.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></StatCardHeader>
+    <StatCardValue>3</StatCardValue>
+    <StatCardFooter><StatCardTrend direction="up" sentiment="negative">+2</StatCardTrend><span>since yesterday</span></StatCardFooter>
+  </StatCard>
+}
+
+function SaveIndicatorEditor({ ui }: { ui: DemoComponents }) {
+  const { SaveIndicator, Textarea, Label, Button, Checkbox } = ui
+  const id = useId()
+  const [text, setText] = useState("Ship the pricing page on Friday.")
+  const [status, setStatus] = useState<"idle" | "dirty" | "saving" | "saved" | "error">("idle")
+  const [failNext, setFailNext] = useState(false)
+  function save(fail = failNext) {
+    setStatus("saving")
+    // Simulated request; in an app, await the real call.
+    setTimeout(() => setStatus(fail ? "error" : "saved"), 900)
+  }
+  return <div className="flex w-full max-w-md flex-col gap-3">
+    <Label htmlFor={id}>Note</Label>
+    <Textarea id={id} value={text} onChange={event => { setText(event.target.value); setStatus("dirty") }} />
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-3"><SaveIndicator status={status} />{status === "error" && <Button size="sm" variant="outline" onClick={() => { setFailNext(false); save(false) }}>Retry</Button>}</div>
+      <div className="flex items-center gap-2">
+        <Checkbox id={id + "-fail"} checked={failNext} onCheckedChange={setFailNext} /><Label htmlFor={id + "-fail"} className="text-muted-foreground">Fail next save</Label>
+        <Button size="sm" onClick={() => save()} disabled={status !== "dirty"}>Save</Button>
+      </div>
+    </div>
+  </div>
+}
+
+const simulateRequest = (fail = false) => new Promise<void>((resolve, reject) => setTimeout(() => fail ? reject(new Error("offline")) : resolve(), 1200))
+
+function ConfirmDestructive({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, Button } = ui
+  const [deleted, setDeleted] = useState(false)
+  return deleted
+    ? <Button variant="outline" onClick={() => setDeleted(false)}>Restore demo project</Button>
+    : <ConfirmAction trigger={<Button variant="destructive">Delete project</Button>} title="Delete Marketing site?" description="Its 24 deployments and 2 domains are removed. This can't be undone." confirmLabel="Delete project" destructive onConfirm={() => simulateRequest().then(() => setDeleted(true))} />
+}
+
+function ConfirmWithError({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, Button } = ui
+  const attempts = useRef(0)
+  return <ConfirmAction trigger={<Button variant="outline">Revoke key</Button>} title="Revoke API key zk_live_…4f2a?" description="Apps using it stop working right away. The first attempt in this demo fails." confirmLabel="Revoke key" destructive onOpenChange={open => { if (open) attempts.current = 0 }} onConfirm={() => simulateRequest(attempts.current++ === 0)} errorMessage="You're offline. Check your connection and try again." />
+}
+
+function ConfirmFromMenu({ ui }: { ui: DemoComponents }) {
+  const { ConfirmAction, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Button } = ui
+  const [confirming, setConfirming] = useState(false)
+  return <div className="flex items-center gap-3">
+    <span className="text-sm">Ana Ruiz</span>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="Actions for Ana Ruiz" />}><svg viewBox="0 0 16 16" aria-hidden="true" className="size-4" fill="currentColor"><circle cx="3.5" cy="8" r="1.25" /><circle cx="8" cy="8" r="1.25" /><circle cx="12.5" cy="8" r="1.25" /></svg></DropdownMenuTrigger>
+      <DropdownMenuContent><DropdownMenuItem>Change role</DropdownMenuItem><DropdownMenuItem onClick={() => setConfirming(true)}>Remove from team</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
+    <ConfirmAction open={confirming} onOpenChange={setConfirming} title="Remove Ana Ruiz?" description="She loses access to all projects in this team." confirmLabel="Remove" destructive onConfirm={() => simulateRequest()} />
+  </div>
+}
+
+function ConnectionSocketDemo({ ui }: { ui: DemoComponents }) {
+  const { ConnectionStatus, Button } = ui
+  const [status, setStatus] = useState<"connected" | "connecting" | "degraded" | "disconnected">("connected")
+  const [retryIn, setRetryIn] = useState(0)
+  // Simulated socket: after a drop it counts down, reconnects, then comes back live.
+  useEffect(() => {
+    if (status === "disconnected") {
+      if (retryIn === 0) {
+        setStatus("connecting")
+        return
+      }
+      const tick = setTimeout(() => setRetryIn(seconds => seconds - 1), 1000)
+      return () => clearTimeout(tick)
+    }
+    if (status === "connecting") {
+      const done = setTimeout(() => setStatus("connected"), 1500)
+      return () => clearTimeout(done)
+    }
+  }, [status, retryIn])
+  return <div className="flex flex-col items-start gap-3">
+    <ConnectionStatus status={status}>{status === "disconnected" ? "Disconnected · will retry" : status === "connecting" ? "Reconnecting…" : status === "connected" ? "Live" : undefined}</ConnectionStatus>
+    <div className="flex flex-wrap gap-2">
+      <Button size="sm" variant="outline" onClick={() => { setRetryIn(3); setStatus("disconnected") }} disabled={status !== "connected" && status !== "degraded"}>Drop connection</Button>
+      <Button size="sm" variant="outline" onClick={() => setStatus(status === "degraded" ? "connected" : "degraded")} disabled={status !== "connected" && status !== "degraded"}>{status === "degraded" ? "Recover" : "Slow down"}</Button>
+    </div>
+  </div>
+}
+
+const toolbarProjects = [
+  { name: "Marketing site", owner: "Ana Ruiz", status: "active" },
+  { name: "Billing API", owner: "Luis Gómez", status: "active" },
+  { name: "Mobile app", owner: "Sara Kim", status: "paused" },
+  { name: "Data pipeline", owner: "Ana Ruiz", status: "active" },
+  { name: "Design system", owner: "Omar Haddad", status: "paused" },
+]
+
+function DataToolbarTableDemo({ ui }: { ui: DemoComponents }) {
+  const { DataToolbar, DataToolbarFilters, DataToolbarActions, DataToolbarDensity, DataToolbarCount, SearchInput, NativeSelect, NativeSelectOption, Button, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusBadge } = ui
+  const [query, setQuery] = useState("")
+  const [status, setStatus] = useState("all")
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable")
+  const rows = toolbarProjects.filter(project => project.name.toLowerCase().includes(query.toLowerCase()) && (status === "all" || project.status === status))
+  return <div className="flex w-full flex-col gap-3">
+    <DataToolbar aria-label="Projects">
+      <DataToolbarFilters>
+        <div className="w-full max-w-56"><SearchInput aria-label="Search projects" placeholder="Search projects…" value={query} onChange={event => setQuery(event.target.value)} onClear={() => setQuery("")} /></div>
+        <div className="w-36"><NativeSelect aria-label="Status" value={status} onChange={event => setStatus(event.target.value)}><NativeSelectOption value="all">All statuses</NativeSelectOption><NativeSelectOption value="active">Active</NativeSelectOption><NativeSelectOption value="paused">Paused</NativeSelectOption></NativeSelect></div>
+      </DataToolbarFilters>
+      <DataToolbarActions>
+        <DataToolbarDensity value={density} onValueChange={setDensity} />
+        <Button variant="outline" size="sm">Export</Button>
+      </DataToolbarActions>
+    </DataToolbar>
+    <DataToolbarCount>{rows.length} of {toolbarProjects.length} projects</DataToolbarCount>
+    <Table density={density} containerProps={{ tabIndex: 0, role: "region", "aria-label": "Projects" }}>
+      <TableHeader><TableRow><TableHead>Project</TableHead><TableHead>Owner</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+      <TableBody>{rows.map(project => <TableRow key={project.name}><TableCell className="font-medium">{project.name}</TableCell><TableCell>{project.owner}</TableCell><TableCell><StatusBadge status={project.status === "active" ? "success" : "neutral"}>{project.status === "active" ? "Active" : "Paused"}</StatusBadge></TableCell></TableRow>)}
+        {!rows.length && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No projects match these filters.</TableCell></TableRow>}
+      </TableBody>
+    </Table>
+  </div>
+}
+
+const initialFilters = [{ id: "status", label: "Status: Active" }, { id: "owner", label: "Owner: Ana Ruiz" }, { id: "updated", label: "Updated: last 7 days" }]
+
+function DataToolbarFiltersDemo({ ui }: { ui: DemoComponents }) {
+  const { DataToolbarFilterList, DataToolbarFilter, Button } = ui
+  const [filters, setFilters] = useState(initialFilters)
+  if (!filters.length) return <div className="flex items-center gap-3 text-sm text-muted-foreground">No filters applied.<Button variant="outline" size="sm" onClick={() => setFilters(initialFilters)}>Restore filters</Button></div>
+  return <DataToolbarFilterList aria-label="Active filters">
+    {filters.map(filter => <DataToolbarFilter key={filter.id} onRemove={() => setFilters(current => current.filter(item => item.id !== filter.id))} removeLabel={`Remove ${filter.label}`}>{filter.label}</DataToolbarFilter>)}
+    <li><Button variant="ghost" size="sm" onClick={() => setFilters([])}>Clear all</Button></li>
+  </DataToolbarFilterList>
+}
+
+const invoices = [
+  { id: "INV-1042", customer: "Northwind", amount: "$1,250.00" },
+  { id: "INV-1043", customer: "Globex", amount: "$860.00" },
+  { id: "INV-1044", customer: "Initech", amount: "$2,400.00" },
+  { id: "INV-1045", customer: "Umbrella", amount: "$310.00" },
+]
+
+function BulkActionsTableDemo({ ui }: { ui: DemoComponents }) {
+  const { BulkActionsBar, Button, Checkbox, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } = ui
+  const [rows, setRows] = useState(invoices)
+  const [selected, setSelected] = useState<string[]>([])
+  const selectAllId = useId()
+  const all = rows.length > 0 && selected.length === rows.length
+  function clear() {
+    setSelected([])
+    document.getElementById(selectAllId)?.focus()
+  }
+  return <div className="flex w-full flex-col gap-3">
+    <div className="grid min-h-[3.25rem] content-center">
+      <BulkActionsBar count={selected.length} onClear={clear}>
+        <Button variant="outline" size="sm" onClick={() => { setRows(current => current.filter(row => !selected.includes(row.id))); clear() }}>Archive</Button>
+        <Button variant="outline" size="sm">Download PDF</Button>
+      </BulkActionsBar>
+      {selected.length === 0 && <div className="flex items-center justify-between gap-3 px-3 text-sm text-muted-foreground">{rows.length} invoices<Button variant="outline" size="sm">Export all</Button></div>}
+    </div>
+    <Table containerProps={{ tabIndex: 0, role: "region", "aria-label": "Invoices" }}>
+      <TableHeader><TableRow><TableHead><Checkbox id={selectAllId} aria-label="Select all invoices" checked={all} indeterminate={selected.length > 0 && !all} onCheckedChange={checked => setSelected(checked ? rows.map(row => row.id) : [])} /></TableHead><TableHead>Invoice</TableHead><TableHead>Customer</TableHead><TableHead className="text-end">Amount</TableHead></TableRow></TableHeader>
+      <TableBody>{rows.map(row => <TableRow key={row.id} data-state={selected.includes(row.id) ? "selected" : undefined}><TableCell><Checkbox aria-label={`Select ${row.id}`} checked={selected.includes(row.id)} onCheckedChange={checked => setSelected(current => checked ? [...current, row.id] : current.filter(id => id !== row.id))} /></TableCell><TableCell className="font-medium">{row.id}</TableCell><TableCell>{row.customer}</TableCell><TableCell className="text-end tabular-nums">{row.amount}</TableCell></TableRow>)}
+        {!rows.length && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">All invoices archived. <Button variant="link" size="sm" onClick={() => setRows(invoices)}>Restore</Button></TableCell></TableRow>}
+      </TableBody>
+    </Table>
+  </div>
+}
+
+function BulkActionsLabelDemo({ ui }: { ui: DemoComponents }) {
+  const { BulkActionsBar, Button } = ui
+  const [count, setCount] = useState(3)
+  return <div className="flex w-full flex-col items-start gap-3">
+    <BulkActionsBar className="w-full" count={count} label={value => `${value} of 12 files selected`} onClear={() => setCount(0)}>
+      <Button variant="outline" size="sm">Download</Button>
+      <Button variant="destructive" size="sm">Delete</Button>
+    </BulkActionsBar>
+    {count === 0 && <Button variant="outline" size="sm" onClick={() => setCount(3)}>Select 3 files</Button>}
+  </div>
+}
+
+const planColumns = [
+  { key: "free", label: "Free", description: "$0" },
+  { key: "pro", label: "Pro", description: "$20 per seat · Recommended" },
+  { key: "enterprise", label: "Enterprise", description: "Custom pricing" },
+]
+const planGroups = [
+  { label: "Usage", rows: [{ label: "Projects", values: { free: "3", pro: "Unlimited", enterprise: "Unlimited" } }, { label: "Seats", values: { free: "1", pro: "Up to 50", enterprise: "Unlimited" } }] },
+  { label: "Security", rows: [{ label: "SSO", description: "SAML and OIDC", values: { free: false, pro: false, enterprise: true } }, { label: "Audit log", values: { free: false, pro: true, enterprise: true } }] },
+]
+
+function TimelineActivity({ ui }: { ui: DemoComponents }) {
+  const { Timeline, TimelineItem, TimelineHeader, TimelineTitle, TimelineTime, TimelineDescription, TimelineDetails } = ui
+  return <Timeline className="w-full max-w-md">
+    <TimelineItem status="error"><TimelineHeader><TimelineTitle>Deploy failed</TimelineTitle><TimelineTime dateTime="2026-10-03T14:32">14:32</TimelineTime></TimelineHeader><TimelineDescription>Build #483 by Ana Ruiz stopped at the test step.</TimelineDescription><TimelineDetails summary="Show log"><pre className="overflow-x-auto font-mono text-xs">FAIL  checkout.test.ts › applies the discount{"\n"}Expected 90, received 100</pre></TimelineDetails></TimelineItem>
+    <TimelineItem status="success"><TimelineHeader><TimelineTitle>Deploy succeeded</TimelineTitle><TimelineTime dateTime="2026-10-03T11:05">11:05</TimelineTime></TimelineHeader><TimelineDescription>Luis Gómez promoted build #482 to production.</TimelineDescription></TimelineItem>
+    <TimelineItem status="info"><TimelineHeader><TimelineTitle>Review requested</TimelineTitle><TimelineTime dateTime="2026-10-03T09:40">9:40</TimelineTime></TimelineHeader><TimelineDescription>Sara Kim asked Omar Haddad to review the pricing change.</TimelineDescription></TimelineItem>
+    <TimelineItem><TimelineHeader><TimelineTitle>Project created</TimelineTitle><TimelineTime dateTime="2026-10-01T16:20">Oct 1</TimelineTime></TimelineHeader></TimelineItem>
+  </Timeline>
+}
+
+const demoUser = { name: "Ana Ruiz", email: "ana@acme.com" }
+
+function UserMenuSidebarDemo({ ui }: { ui: DemoComponents }) {
+  const { UserMenu, UserMenuTrigger, UserMenuContent, UserMenuHeader, UserMenuGroup, UserMenuItem, UserMenuSeparator } = ui
+  const [chosen, setChosen] = useState("")
+  return <div className="flex w-full max-w-60 flex-col gap-2">
+    <UserMenu>
+      <UserMenuTrigger user={demoUser} className="w-full" />
+      <UserMenuContent side="top">
+        <UserMenuHeader user={demoUser} />
+        <UserMenuSeparator />
+        <UserMenuGroup>
+          {["Profile", "Billing", "Settings"].map(item => <UserMenuItem key={item} onClick={() => setChosen(item)}>{item}</UserMenuItem>)}
+        </UserMenuGroup>
+        <UserMenuSeparator />
+        <UserMenuItem onClick={() => setChosen("Sign out")}>Sign out</UserMenuItem>
+      </UserMenuContent>
+    </UserMenu>
+    <p role="status" className="text-xs text-muted-foreground">{chosen ? `Chose “${chosen}”.` : ""}</p>
+  </div>
+}
+
+function UserMenuCompactDemo({ ui }: { ui: DemoComponents }) {
+  const { UserMenu, UserMenuTrigger, UserMenuContent, UserMenuHeader, UserMenuItem, UserMenuSeparator } = ui
+  const user = { name: "Luis Gómez", email: "luis@acme.com" }
+  return <div className="flex w-full max-w-sm items-center justify-between rounded-lg border border-border px-3 py-2 text-sm font-medium">
+    Acme dashboard
+    <UserMenu>
+      <UserMenuTrigger user={user} compact />
+      <UserMenuContent align="end">
+        <UserMenuHeader user={user} />
+        <UserMenuSeparator />
+        <UserMenuItem>Keyboard shortcuts</UserMenuItem>
+        <UserMenuItem>Sign out</UserMenuItem>
+      </UserMenuContent>
+    </UserMenu>
+  </div>
+}
+
+const demoWorkspaces = [
+  { id: "acme", name: "Acme Inc.", description: "Pro · 12 members" },
+  { id: "globex", name: "Globex", description: "Free · 3 members" },
+  { id: "initech", name: "Initech", description: "Enterprise" },
+  { id: "umbrella", name: "Umbrella", description: "Pro · 40 members" },
+]
+
+function WorkspaceSwitcherDemo({ ui }: { ui: DemoComponents }) {
+  const { WorkspaceSwitcher, Button } = ui
+  const [current, setCurrent] = useState("acme")
+  const failed = useRef(false)
+  return <div className="w-full max-w-60">
+    <WorkspaceSwitcher
+      className="w-full"
+      workspaces={demoWorkspaces}
+      value={current}
+      onSwitch={async workspace => {
+        const fail = workspace.id === "globex" && !failed.current
+        if (fail) failed.current = true
+        await simulateRequest(fail)
+        setCurrent(workspace.id)
+      }}
+      footer={<Button variant="ghost" size="sm" className="w-full justify-start">Create workspace</Button>}
+    />
+  </div>
+}
+
+function CommandPaletteDemo({ ui, hotkey }: { ui: DemoComponents; hotkey?: false }) {
+  const { CommandPalette, Button, Kbd, KbdGroup } = ui
+  const [open, setOpen] = useState(false)
+  const [ran, setRan] = useState("")
+  const commands = [
+    { id: "new-project", label: "New project", group: "Create", shortcut: "N" },
+    { id: "invite", label: "Invite teammate", group: "Create" },
+    { id: "dashboard", label: "Go to dashboard", group: "Navigate" },
+    { id: "settings", label: "Open settings", group: "Navigate", keywords: ["preferences", "account"] },
+    { id: "billing", label: "Billing", group: "Navigate", disabled: true },
+  ].map(command => ({ ...command, onSelect: () => setRan(command.label) }))
+  return <div className="flex flex-col items-center gap-2">
+    <Button variant="outline" onClick={() => setOpen(true)}>Search… <KbdGroup><Kbd label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup></Button>
+    <CommandPalette open={open} onOpenChange={setOpen} commands={commands} hotkey={hotkey} />
+    <p role="status" className="text-sm text-muted-foreground">{ran ? `Ran “${ran}”.` : ""}</p>
+  </div>
+}
+
+function PageNavigationDemo({ ui }: { ui: DemoComponents }) {
+  const { PageNavigation } = ui
+  const prefix = useId().replace(/:/g, "")
+  const sections = [
+    { id: `${prefix}-overview`, label: "Overview", text: "Deploy any branch to a preview URL, then promote it to production when it is ready." },
+    { id: `${prefix}-setup`, label: "Setup", text: "Connect the repository and choose the framework preset; the build command is filled in for you." },
+    { id: `${prefix}-environment`, label: "Environment", level: 3 as const, text: "Add the variables each environment needs. Production values are never exposed to previews." },
+    { id: `${prefix}-deploy`, label: "Deploy", text: "Push to the branch. The first build runs automatically and later pushes create new previews." },
+  ]
+  return <div className="grid w-full grid-cols-[minmax(0,1fr)_10rem] gap-6">
+    <article className="flex flex-col gap-10 text-sm">
+      {sections.map(section => <section key={section.id} className="min-h-40"><h3 id={section.id} className="mb-2 scroll-mt-24 font-medium">{section.label}</h3><p className="text-muted-foreground">{section.text}</p></section>)}
+    </article>
+    <PageNavigation className="sticky top-24 self-start" items={sections.map(({ id, label, level }) => ({ id, label, level }))} />
+  </div>
+}
+
+const checkoutSteps = [
+  { id: "cart", label: "Cart", description: "3 items" },
+  { id: "shipping", label: "Shipping" },
+  { id: "payment", label: "Payment" },
+  { id: "review", label: "Review" },
+]
+
+function StepperFlowDemo({ ui }: { ui: DemoComponents }) {
+  const { Stepper, Button } = ui
+  const [step, setStep] = useState("shipping")
+  const index = checkoutSteps.findIndex(item => item.id === step)
+  return <div className="flex w-full flex-col gap-4">
+    <Stepper current={step} onStepChange={setStep} steps={checkoutSteps} />
+    <div className="flex gap-2">
+      <Button variant="outline" size="sm" disabled={index === 0} onClick={() => setStep(checkoutSteps[index - 1].id)}>Back</Button>
+      <Button size="sm" disabled={index === checkoutSteps.length - 1} onClick={() => setStep(checkoutSteps[index + 1].id)}>Continue</Button>
+    </div>
+  </div>
+}
+
+function StepperVerticalDemo({ ui }: { ui: DemoComponents }) {
+  const { Stepper } = ui
+  const [step, setStep] = useState("domain")
+  return <Stepper orientation="vertical" current={step} onStepChange={setStep} className="w-full max-w-xs" steps={[
+    { id: "project", label: "Create project" },
+    { id: "repository", label: "Connect repository", error: true, description: "Permission denied" },
+    { id: "domain", label: "Add a domain" },
+    { id: "deploy", label: "Deploy" },
+  ]} />
+}
+
+function SplitLayoutDetailsDemo({ ui }: { ui: DemoComponents }) {
+  const { SplitLayout, SplitLayoutMain, SplitLayoutAside, SplitLayoutTrigger, DescriptionList, DescriptionListItem, DescriptionListTerm, DescriptionListDetails } = ui
+  return <div className="w-full">
+    <SplitLayout asideWidth="12rem" mainMinWidth="16rem">
+      <SplitLayoutMain className="rounded-lg border border-border p-4">
+        <div className="mb-3 flex items-center justify-between gap-2"><h3 className="text-sm font-medium">Invoice INV-1042</h3><SplitLayoutTrigger aria-label="Details panel" /></div>
+        <p className="text-sm text-muted-foreground">Northwind ordered 25 seats of the Pro plan. The invoice was sent on October 1 and is due in 14 days.</p>
+      </SplitLayoutMain>
+      <SplitLayoutAside aria-label="Details" className="rounded-lg border border-border p-4">
+        <DescriptionList><DescriptionListItem><DescriptionListTerm>Status</DescriptionListTerm><DescriptionListDetails>Sent</DescriptionListDetails></DescriptionListItem><DescriptionListItem><DescriptionListTerm>Amount</DescriptionListTerm><DescriptionListDetails>$1,250.00</DescriptionListDetails></DescriptionListItem><DescriptionListItem><DescriptionListTerm>Due</DescriptionListTerm><DescriptionListDetails>Oct 15</DescriptionListDetails></DescriptionListItem></DescriptionList>
+      </SplitLayoutAside>
+    </SplitLayout>
+  </div>
+}
+
+function SplitLayoutStartDemo({ ui }: { ui: DemoComponents }) {
+  const { SplitLayout, SplitLayoutMain, SplitLayoutAside, SplitLayoutTrigger, Checkbox } = ui
+  return <div className="w-full">
+    <SplitLayout asideWidth="10rem" mainMinWidth="16rem" defaultCollapsed>
+      <SplitLayoutAside aria-label="Filters" className="flex flex-col gap-2 rounded-lg border border-border p-4 text-sm">
+        {["Active", "Paused", "Archived"].map(label => <label key={label} className="flex items-center gap-2"><Checkbox defaultChecked={label === "Active"} />{label}</label>)}
+      </SplitLayoutAside>
+      <SplitLayoutMain className="rounded-lg border border-border p-4">
+        <div className="mb-3 flex items-center gap-2"><SplitLayoutTrigger aria-label="Filters panel" /><h3 className="text-sm font-medium">24 results</h3></div>
+        <p className="text-sm text-muted-foreground">Open the filters panel to narrow the results.</p>
+      </SplitLayoutMain>
+    </SplitLayout>
+  </div>
+}
+
 const renderers: Record<string, { preview: Render; examples: Record<string, Render> }> = {
   button: {
     preview: ({ Button }) => <Button>Create project</Button>,
@@ -1003,6 +1470,14 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
       "page-header-basic": ({ PageHeader, PageHeaderContent, PageHeaderHeading, PageHeaderDescription, PageHeaderActions, Button }) => <PageHeader className="w-full"><PageHeaderContent><PageHeaderHeading>Projects</PageHeaderHeading><PageHeaderDescription>Manage and organize your work.</PageHeaderDescription></PageHeaderContent><PageHeaderActions><Button variant="outline">Import</Button><Button>New project</Button></PageHeaderActions></PageHeader>,
     },
   },
+  "section-header": {
+    preview: ui => <SectionHeaderBasic ui={ui} />,
+    examples: {
+      "section-header-basic": ui => <SectionHeaderBasic ui={ui} />,
+      "section-header-meta": ui => <SectionHeaderWithMeta ui={ui} />,
+      "section-header-nested": ui => <SectionHeaderNested ui={ui} />,
+    },
+  },
   "form-section": {
     preview: ({ FormSection, FormSectionHeader, FormSectionTitle, FormSectionDescription, FormSectionContent, Field, FieldLabel, FieldControl }) => <FormSection className="w-full max-w-md"><FormSectionHeader><FormSectionTitle>Profile</FormSectionTitle><FormSectionDescription>How others see you.</FormSectionDescription></FormSectionHeader><FormSectionContent><Field name="name"><FieldLabel>Name</FieldLabel><FieldControl placeholder="Your name" /></Field></FormSectionContent></FormSection>,
     examples: {
@@ -1013,6 +1488,99 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ StatusBadge }) => <StatusBadge status="success">Active</StatusBadge>,
     examples: {
       "status-badge-states": ({ StatusBadge }) => <div className="showcase-button-row"><StatusBadge status="success">Active</StatusBadge><StatusBadge status="warning">Pending</StatusBadge><StatusBadge status="error">Failed</StatusBadge><StatusBadge status="info">In review</StatusBadge><StatusBadge status="neutral" indicator={false}>Draft</StatusBadge></div>,
+    },
+  },
+  "save-indicator": {
+    preview: ui => <SaveIndicatorEditor ui={ui} />,
+    examples: {
+      "save-indicator-states": ({ SaveIndicator }) => <div className="flex flex-col items-start gap-2"><SaveIndicator status="idle" /><SaveIndicator status="dirty" /><SaveIndicator status="saving" /><SaveIndicator status="saved">Saved at 14:32</SaveIndicator><SaveIndicator status="error" /></div>,
+      "save-indicator-editor": ui => <SaveIndicatorEditor ui={ui} />,
+    },
+  },
+  "confirm-action": {
+    preview: ui => <ConfirmDestructive ui={ui} />,
+    examples: {
+      "confirm-action-destructive": ui => <ConfirmDestructive ui={ui} />,
+      "confirm-action-error": ui => <ConfirmWithError ui={ui} />,
+      "confirm-action-menu": ui => <ConfirmFromMenu ui={ui} />,
+    },
+  },
+  "connection-status": {
+    preview: ui => <ConnectionSocketDemo ui={ui} />,
+    examples: {
+      "connection-status-states": ({ ConnectionStatus }) => <div className="flex flex-col items-start gap-2"><ConnectionStatus status="connected">Live · 42 ms</ConnectionStatus><ConnectionStatus status="connecting">Reconnecting…</ConnectionStatus><ConnectionStatus status="degraded" /><ConnectionStatus status="disconnected" /></div>,
+      "connection-status-socket": ui => <ConnectionSocketDemo ui={ui} />,
+    },
+  },
+  "data-toolbar": {
+    preview: ui => <DataToolbarTableDemo ui={ui} />,
+    examples: {
+      "data-toolbar-table": ui => <DataToolbarTableDemo ui={ui} />,
+      "data-toolbar-filters": ui => <DataToolbarFiltersDemo ui={ui} />,
+    },
+  },
+  "bulk-actions-bar": {
+    preview: ui => <BulkActionsTableDemo ui={ui} />,
+    examples: {
+      "bulk-actions-bar-table": ui => <BulkActionsTableDemo ui={ui} />,
+      "bulk-actions-bar-label": ui => <BulkActionsLabelDemo ui={ui} />,
+    },
+  },
+  "comparison-table": {
+    preview: ({ ComparisonTable }) => <ComparisonTable caption="Compare plans" highlight="pro" columns={planColumns} groups={planGroups} />,
+    examples: {
+      "comparison-table-plans": ({ ComparisonTable }) => <ComparisonTable caption="Compare plans" highlight="pro" columns={planColumns} groups={planGroups} />,
+      "comparison-table-simple": ({ ComparisonTable }) => <ComparisonTable caption="Storage options" dimensionLabel="Capability" columns={[{ key: "standard", label: "Standard" }, { key: "archive", label: "Archive" }]} rows={[{ label: "Retrieval", values: { standard: "Instant", archive: "Within 12 hours" } }, { label: "Price per GB", values: { standard: "$0.023", archive: "$0.004" } }, { label: "Versioning", values: { standard: true, archive: false } }]} />,
+    },
+  },
+  timeline: {
+    preview: ui => <TimelineActivity ui={ui} />,
+    examples: {
+      "timeline-activity": ui => <TimelineActivity ui={ui} />,
+      "timeline-icons": ({ Timeline, TimelineItem, TimelineHeader, TimelineTitle, TimelineTime, TimelineDescription }) => <Timeline className="w-full max-w-md">
+        <TimelineItem icon={<GitCommitIcon />}><TimelineHeader><TimelineTitle>Luis Gómez pushed 3 commits</TimelineTitle><TimelineTime dateTime="2026-10-03T09:15">9:15</TimelineTime></TimelineHeader><TimelineDescription>to feature/checkout-discounts</TimelineDescription></TimelineItem>
+        <TimelineItem icon={<MessageSquareIcon />}><TimelineHeader><TimelineTitle>Sara Kim commented</TimelineTitle><TimelineTime dateTime="2026-10-03T10:02">10:02</TimelineTime></TimelineHeader><TimelineDescription>“Can we keep the old coupon field for one more release?”</TimelineDescription></TimelineItem>
+        <TimelineItem icon={<TagIcon />}><TimelineHeader><TimelineTitle>Released v2.4.0</TimelineTitle><TimelineTime dateTime="2026-10-03T16:40">16:40</TimelineTime></TimelineHeader></TimelineItem>
+      </Timeline>,
+    },
+  },
+  "user-menu": {
+    preview: ui => <UserMenuSidebarDemo ui={ui} />,
+    examples: {
+      "user-menu-sidebar": ui => <UserMenuSidebarDemo ui={ui} />,
+      "user-menu-compact": ui => <UserMenuCompactDemo ui={ui} />,
+    },
+  },
+  "workspace-switcher": {
+    preview: ui => <WorkspaceSwitcherDemo ui={ui} />,
+    examples: {
+      "workspace-switcher-basic": ui => <WorkspaceSwitcherDemo ui={ui} />,
+    },
+  },
+  "command-palette": {
+    preview: ui => <CommandPaletteDemo ui={ui} />,
+    examples: {
+      "command-palette-basic": ui => <CommandPaletteDemo ui={ui} hotkey={false} />,
+    },
+  },
+  "page-navigation": {
+    preview: ui => <PageNavigationDemo ui={ui} />,
+    examples: {
+      "page-navigation-article": ui => <PageNavigationDemo ui={ui} />,
+    },
+  },
+  stepper: {
+    preview: ui => <StepperFlowDemo ui={ui} />,
+    examples: {
+      "stepper-flow": ui => <StepperFlowDemo ui={ui} />,
+      "stepper-vertical": ui => <StepperVerticalDemo ui={ui} />,
+    },
+  },
+  "split-layout": {
+    preview: ui => <SplitLayoutDetailsDemo ui={ui} />,
+    examples: {
+      "split-layout-details": ui => <SplitLayoutDetailsDemo ui={ui} />,
+      "split-layout-start": ui => <SplitLayoutStartDemo ui={ui} />,
     },
   },
   "password-input": {
@@ -1031,6 +1599,20 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
     examples: {
       "copy-button-basic": ({ CopyButton }) => <CopyButton value="npx zunoui@latest init">Copy command</CopyButton>,
+    },
+  },
+  "description-list": {
+    preview: ui => <DescriptionListStacked ui={ui} />,
+    examples: {
+      "description-list-stacked": ui => <DescriptionListStacked ui={ui} />,
+      "description-list-inline": ui => <DescriptionListInline ui={ui} />,
+    },
+  },
+  "stat-card": {
+    preview: ui => <StatCardGrid ui={ui} />,
+    examples: {
+      "stat-card-grid": ui => <StatCardGrid ui={ui} />,
+      "stat-card-header": ui => <StatCardWithHeader ui={ui} />,
     },
   },
   "radio-group": {
@@ -1128,7 +1710,7 @@ const renderers: Record<string, { preview: Render; examples: Record<string, Rend
     preview: ui => <CommandBasic ui={ui} />,
     examples: {
       "command-basic": ui => <CommandBasic ui={ui} />,
-      "command-dialog": ui => <CommandPalette ui={ui} />,
+      "command-dialog": ui => <CommandDialogDemo ui={ui} />,
     },
   },
   direction: {
