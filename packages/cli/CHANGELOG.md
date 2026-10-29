@@ -1,5 +1,30 @@
 # zunoui
 
+## 0.1.0-alpha.6
+
+### Minor Changes
+
+- 19f2d42: F2 catalog: 6 own components can be installed with `zunoui add`, the first batch of ZUNO's P1 entries.
+
+  - Layout and data: description-list (term/value pairs on a real `<dl>`, stacked or inline), section-header (a section heading with metadata and actions that wraps by available width) and stat-card (a metric with a textual trend that separates direction from sentiment).
+  - States: save-indicator and connection-status (live regions driven by what the app reports), and confirm-action (an AlertDialog confirmation that waits for the operation, shows its error in place and closes only on success).
+
+- 55660e6: F2 catalog: 4 more own components can be installed with `zunoui add`, the second batch of ZUNO's P1 entries, for data views.
+
+  - data-toolbar: search, filters, row density and actions above a list or table, without tying them to a table engine; an announced result count and removable active filters that keep focus in place.
+  - bulk-actions-bar: the selected count (announced as it changes), the bulk actions and a way to clear the selection.
+  - comparison-table: options side by side across shared dimensions, built on Table with column, row and row-group headers, accessible included/not-included values and a pinned first column on phones.
+  - timeline: events in order with a status, author, time and optional collapsible details, on a real ordered list.
+
+- 2d2f594: F2 catalog: 6 more own components can be installed with `zunoui add`, the third batch of ZUNO's P1 entries, for navigation and layout.
+
+  - user-menu: the signed-in account in a DropdownMenu, with avatar initials as a fallback and a compact avatar-only trigger; authentication stays in your app.
+  - workspace-switcher: switch organizations with search; it waits for the switch with a spinner on the chosen workspace and shows the failure in place.
+  - command-palette: commands as data behind ⌘K / Ctrl+K, with groups, keywords, shortcut hints and disabled commands; it closes before running the command.
+  - page-navigation: an on-this-page table of contents with plain anchor links and the active section, no router needed.
+  - stepper: progress through a multi-step flow; the steps a user may revisit follow your validation, and completed or failed steps are announced in words.
+  - split-layout: a main area and a collapsible side panel with no breakpoints; the panel wraps under the main area when the box gets narrow.
+
 ## 0.1.0-alpha.5
 
 ### Minor Changes
