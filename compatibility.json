@@ -1,10 +1,22 @@
 {
-  "$comment": "Internal inventory of ZUNO component coverage for the F1 phase. Not an official shadcn format. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it. A composition is measured without the ZUNO components it imports, which carry their own budgets.",
-  "updated": "2026-09-10",
-  "phase": "F1",
-  "target": { "official": 22, "own": 11, "total": 33 },
+  "$comment": "Internal inventory of ZUNO component coverage. 'official' and 'own' list installable entries. 'pendingF2' tracks work required to close F2. Statuses: planned | preview | stable. 'kind' declares where each family comes from: base-ui | html-css | composition | integration. An integration wraps a third-party engine and must declare its own budget (kB gzip, incremental) and a budgetNote justifying it. A composition is measured without the ZUNO components it imports, which carry their own budgets.",
+  "updated": "2026-11-03",
+  "phase": "F2",
+  "published": { "official": 51, "own": 27, "total": 78 },
+  "pendingF2": {
+    "ownP1": [
+      { "id": "K-11", "name": "number-input" },
+      { "id": "K-14", "name": "tag-input" },
+      { "id": "K-15", "name": "async-combobox" },
+      { "id": "K-16", "name": "file-upload" },
+      { "id": "K-38", "name": "inline-edit" },
+      { "id": "K-41", "name": "code-block" }
+    ],
+    "integrations": ["react-hook-form", "sonner"],
+    "blocks": "Define and publish the first batch of installable P1 blocks."
+  },
   "legend": {
-    "planned": "Committed for F1; not implemented yet.",
+    "planned": "Committed for the current phase; not implemented yet.",
     "preview": "Implemented and installable; the full Definition of Done is still missing (docs, bundle measurement or a manual accessibility review).",
     "stable": "Meets the Definition of Done: anatomy/API, Light/Dark, states, tests, docs, a real example, a valid manifest, a measured budget and provenance."
   },

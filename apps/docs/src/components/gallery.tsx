@@ -192,7 +192,7 @@ export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }
   if (component) return <ComponentDetail key={component} component={component} source={source} deps={deps} />
   const command = "npx zunoui@latest init"
   const needle = query.trim().toLowerCase()
-  const groups = groupCatalog(catalog.filter(entry => !needle || (entry.title + " " + entry.description).toLowerCase().includes(needle)))
+  const groups = groupCatalog(catalog.filter(entry => !needle || (entry.name + " " + entry.title + " " + entry.description).toLowerCase().includes(needle)))
   return <>
     <div className="docs-breadcrumb">Library <span>/</span> Components</div>
     <section className="docs-hero">
@@ -214,8 +214,8 @@ export function Gallery({ component, source = "", deps = { npm: [], zuno: [] } }
         </InputGroup>
       </div>
     </div>
-    {groups.map(group => <section key={group.label} className="docs-catalog-group" aria-labelledby={"group-" + group.label}>
-      <div className="docs-catalog-group-heading"><h2 id={"group-" + group.label}>{group.label}</h2><span>{group.entries.length}</span></div>
+    {groups.map(group => <section key={group.label} className="docs-catalog-group" aria-labelledby={"group-" + group.label.toLowerCase().replaceAll(" ", "-")}>
+      <div className="docs-catalog-group-heading"><h2 id={"group-" + group.label.toLowerCase().replaceAll(" ", "-")}>{group.label}</h2><span>{group.entries.length}</span></div>
       <div className="docs-catalog-grid">{group.entries.map(entry => <Link key={entry.name} href={"/components/" + entry.name} className="docs-catalog-card"><h3>{entry.title}</h3><p>{entry.description}</p><span>{entry.examples.length} {entry.examples.length === 1 ? "example" : "examples"} →</span></Link>)}</div>
     </section>)}
     {!groups.length && <p className="docs-catalog-empty" role="status">No components match “{query}”.</p>}

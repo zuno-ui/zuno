@@ -25,7 +25,7 @@ Browse every component, its examples, API and accessibility notes at [zunoui.dev
 
 ## What you get
 
-- 33 components: form controls, layout primitives, overlays and feedback, with light, dark and system themes.
+- 78 components: 51 standard UI components and 27 ZUNO components for forms, layout, navigation, data views and feedback, with light, dark and system themes.
 - Source code in your repository instead of a component package. Runtime dependencies are limited to `@base-ui/react`, `clsx` and `tailwind-merge`.
 - A CLI that works with npm, Bun, pnpm and Yarn, keeps your theme and existing configuration, and offers `diff` and guarded `update` commands for copied components.
 - A shadcn-style registry served at `https://zunoui.dev/r/{name}.json`.
