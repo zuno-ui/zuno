@@ -98,7 +98,7 @@ body { margin: 0; background: var(--background); color: var(--foreground); }
 .docs-detail .showcase-card-toolbar { padding: 0 0 16px; justify-content: flex-start; }
 .docs-detail .showcase-component-label { display: none; }
 .docs-detail .zuno-preview-panel > .zuno-code-block { border: 1px solid var(--showcase-border); border-radius: 10px; overflow: hidden; }
-.docs-detail .showcase-preview { min-height: 280px; padding: 40px 24px; background-image: none; }
+.docs-detail .showcase-preview { min-height: 280px; padding: 40px 24px; background-image: none; overflow-x: auto; justify-content: safe center; }
 .docs-detail .showcase-example-form { max-width: 640px; }
 .docs-detail-toc nav { position: sticky; top: 112px; display: grid; gap: 4px; font-size: 13px; padding-top: 12px; }
 .docs-detail-toc p { display: flex; align-items: center; gap: 8px; font-weight: 600; margin: 0 0 12px; }
