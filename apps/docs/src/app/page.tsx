@@ -8,21 +8,26 @@ import { LandingSystemArt } from "@/components/landing-system-art"
 import { LandingAsciiField } from "@/components/landing-ascii-field"
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
 
+const socialImage = {
+  url: "/og-image.png",
+  type: "image/png",
+  width: 1200,
+  height: 630,
+  alt: "Zuno UI. Build with intent. Make it yours. Editable React components.",
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://zunoui.dev"),
   openGraph: {
     type: "website",
     url: "/",
     siteName: "Zuno UI",
-    images: [{
-      url: "/og-image.png",
-      type: "image/png",
-      width: 1200,
-      height: 630,
-      alt: "Zuno UI. Build with intent. Make it yours. Editable React components.",
-    }],
+    images: [socialImage],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    images: [socialImage],
+  },
 }
 
 const featured = meta.filter(({ name }) => ["button", "field", "dialog", "tabs", "select", "toast"].includes(name))
