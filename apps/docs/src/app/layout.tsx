@@ -5,8 +5,9 @@ import "@fontsource/poppins/latin-500.css"
 import "@fontsource/poppins/latin-600.css"
 import "./globals.css"
 import { themeScript } from "@zuno/showcase/theme-script"
+import { presetScript, presetStyles } from "@/lib/presets"
 
 export const metadata: Metadata = { title: { default: "ZUNO — Components with intent", template: "%s · ZUNO" }, description: "React components built on Base UI. Explore examples, read the source and build with ZUNO." }
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body><SiteShell>{children}</SiteShell></body></html>
+  return <html lang="en" suppressHydrationWarning><head><style dangerouslySetInnerHTML={{ __html: presetStyles }} /><script dangerouslySetInnerHTML={{ __html: presetScript }} /><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body><SiteShell>{children}</SiteShell></body></html>
 }

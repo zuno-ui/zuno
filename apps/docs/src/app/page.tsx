@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import type { ReactNode } from "react"
 import { meta } from "@zuno/showcase/meta"
 import { CodeBlock, CopyButton } from "@zuno/showcase"
 import { Button } from "@/components/ui/button"
 import { LandingSystemArt } from "@/components/landing-system-art"
 import { LandingAsciiField } from "@/components/landing-ascii-field"
+import { LandingComponents } from "@/components/landing-components"
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
 
 const socialImage = {
@@ -32,15 +32,6 @@ export const metadata: Metadata = {
 
 const featured = meta.filter(({ name }) => ["button", "field", "dialog", "tabs", "select", "toast"].includes(name))
 
-const previews: Record<string, ReactNode> = {
-  button: <div className="landing-preview-buttons"><span>Get started <b>↗</b></span><span>Secondary</span><span>↗</span></div>,
-  field: <div className="landing-preview-field"><span>Email address</span><div>you@company.com <span>↵</span></div><small>Your next great idea starts here.</small></div>,
-  tabs: <div className="landing-preview-tabs"><span>Overview</span><span>Activity</span><span>Settings</span></div>,
-  dialog: <div className="landing-preview-dialog"><span>One more thing… <b>×</b></span><i /><i /><small>Cancel <b>Continue →</b></small></div>,
-  select: <div className="landing-preview-select"><span>Choose your framework <b>⌄</b></span><div>React <b>✓</b></div><div>Next.js</div></div>,
-  toast: <div className="landing-preview-toast"><span>✓</span><div>Changes saved<small>Everything is right where you left it.</small></div><b>×</b></div>,
-}
-
 const codeSamples = [
   { value: "install", language: "bash", filename: "Terminal", code: "npx zunoui@latest init\nnpx zunoui@latest add button switch" },
   { value: "use", language: "tsx", filename: "app/settings.tsx", code: 'import { Button } from "@/components/ui/button"\nimport { Switch } from "@/components/ui/switch"\n\nexport function Settings() {\n  return <>\n    <Switch defaultChecked aria-label="Product updates" />\n    <Button>Save changes</Button>\n  </>\n}' },
@@ -63,12 +54,13 @@ export default function Home() {
       </figure>
       <div className="landing-hero-strip"><span>Your code. Your design. Your product.</span><a href="#landing-components">{meta.length} components · {meta.reduce((total, item) => total + item.examples.length, 0)} examples <span aria-hidden="true">↓</span></a></div>
     </section>
+    <LandingComponents items={featured.map(item => ({ name: item.name, title: item.title, description: item.description, exampleCount: item.examples.length }))} />
     <div className="landing-stack landing-band" aria-label="Built with"><span>GOOD COMPANY. SOLID FOUNDATIONS.</span><div><span>React</span><span>Base UI</span><span>Tailwind CSS</span><span>TypeScript</span></div><span aria-hidden="true">[ BUILT TO FIT YOUR STACK ]</span></div>
-    <section className="landing-section landing-band" aria-labelledby="landing-components">
+    <section className="landing-section landing-band" aria-labelledby="landing-install-title">
       <div className="landing-split">
         <div className="landing-split-copy">
-          <p className="landing-kicker">01 / FROM SOURCE TO SCREEN</p>
-          <h2 id="landing-components">From the first action.<br /><span>To the last detail.</span></h2>
+          <p className="landing-kicker">02 / FROM SOURCE TO SCREEN</p>
+          <h2 id="landing-install-title">From the first action.<br /><span>To the last detail.</span></h2>
           <p>Add a component with one command. It lands in your project as plain code, ready to use and change.</p>
           <Link className="landing-text-link" href="/components">Browse all {meta.length} components <span aria-hidden="true">↗</span></Link>
           <ul className="landing-checks">{["Accessible by default with Base UI", "Light and dark themes from shared tokens", "Editable source, right in your project"].map(item => <li key={item}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>{item}</li>)}</ul>
@@ -78,8 +70,6 @@ export default function Home() {
           {codeSamples.map(sample => <TabsPanel key={sample.value} value={sample.value}><CodeBlock {...sample} /></TabsPanel>)}
         </Tabs>
       </div>
-      <div className="landing-catalog-heading"><div><p className="landing-kicker">02 / THE BUILDING BLOCKS</p><h2>A few pieces. Endless possibilities.</h2></div><Link className="landing-text-link" href="/components">View the collection ↗</Link></div>
-      <div className="landing-components">{featured.map((item, index) => <Link key={item.name} href={`/components/${item.name}`} className="landing-component"><div className="landing-component-index"><span>0{index + 1}</span><span aria-hidden="true">↗</span></div><div className="landing-component-preview" aria-hidden="true">{previews[item.name]}</div><h3>{item.title}</h3><p>{item.description}</p><span className="landing-component-count">{item.examples.length} {item.examples.length === 1 ? "example" : "examples"} →</span></Link>)}</div>
     </section>
     <section className="landing-principles landing-band" aria-label="ZUNO principles"><div><div className="landing-principle-art landing-pattern-source" aria-hidden="true"><pre>{"+-------------------+\n|  your idea        |\n|  + your code      |\n|  = your product _ |\n+-------------------+"}</pre></div><span className="showcase-eyebrow">01 / YOUR CODE</span><h2>Make it yours.</h2><p>Components live in your project. Adapt their design and behavior to what you are building.</p></div><div><div className="landing-principle-art landing-pattern-grid" aria-hidden="true"><span /><span /><span /></div><span className="showcase-eyebrow">02 / A SHARED FOUNDATION</span><h2>Everything fits.</h2><p>Shared tokens, light and dark themes, and Base UI primitives keep the interface consistent.</p></div><div><div className="landing-principle-art landing-pattern-steps" aria-hidden="true"><span>░░</span><span>▒▒</span><span>▓▓</span><span>██</span></div><span className="showcase-eyebrow">03 / AT YOUR PACE</span><h2>Start small.</h2><p>Pick a component, explore its examples and add the pieces your product needs.</p></div></section>
     <section className="landing-faq landing-band" aria-labelledby="landing-faq-title"><div><p className="landing-kicker">03 / A LITTLE CLARITY</p><h2 id="landing-faq-title">Before you build.</h2><p>A few things you might be wondering.</p></div><div className="landing-faq-items"><details><summary>Is ZUNO a component package?<span aria-hidden="true">+</span></summary><p>The CLI copies component source into your project. You can read it, change it and keep it alongside the rest of your code. Components use Base UI and shared Tailwind CSS tokens.</p></details><details><summary>Can I use my own design system?<span aria-hidden="true">+</span></summary><p>Yes. Adapt the shared tokens or edit individual components to match your product. The getting started guide also covers adding ZUNO to an existing theme.</p></details><details><summary>What does alpha mean?<span aria-hidden="true">+</span></summary><p>ZUNO is still evolving. APIs and available components may change before 1.0.0. Review the source and alpha notes before using it in your project.</p></details></div></section>
