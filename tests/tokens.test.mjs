@@ -1,6 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
+import { presets, buildPreset, builderPreviewCss, defaultBuilderConfig } from "../apps/docs/src/lib/presets.ts"
 
 test("preset: theme parity, utility mappings, text and control contrast", async t => {
   // The complementary --zuno-* roles live in their own entry, so both files are checked.
@@ -13,6 +14,14 @@ test("preset: theme parity, utility mappings, text and control contrast", async 
   const system = merge(/:root:not\(\.light\):not\(\.dark\) \{([^}]+)\}/)
   assert.deepEqual(Object.keys(light).sort(), Object.keys(dark).sort())
   assert.deepEqual(system, dark)
+  for (const [mode, original] of Object.entries({ light, dark })) {
+    const preview = colors(builderPreviewCss({ ...defaultBuilderConfig, mode }))
+    assert.deepEqual(preview, original, `Forced ${mode} preview must include all registered state and theme colors`)
+  }
+  for (const mode of ["light", "dark"]) {
+    const original = mode === "light" ? light : dark
+    for (const [name, value] of Object.entries(presets[0][mode])) assert.equal(value, original[name], `Neutral must preserve ${mode} ${name}`)
+  }
   for (const name of Object.keys(light)) assert.ok(css.includes(`--color-${name}: var(--${name});`), name)
   const luminance = hex => hex.slice(1).match(/../g).map(value => {
     const s = parseInt(value, 16) / 255
@@ -22,7 +31,11 @@ test("preset: theme parity, utility mappings, text and control contrast", async 
     ...["background", "card", "popover"].map(surface => ["destructive", surface]),
     ...["card", "popover", "primary", "secondary", "accent", "destructive", "zuno-destructive-solid", "sidebar", "sidebar-primary", "sidebar-accent"].map(name => [name + "-foreground", name]),
     ...["success", "warning", "info", "error"].map(name => ["zuno-" + name, "zuno-" + name + "-surface"])]
-  for (const [mode, theme] of Object.entries({ light, dark })) {
+  const combinations = presets.flatMap(preset => [preset, ...["warm", "zinc"].map(base => ({ ...buildPreset({ ...defaultBuilderConfig, preset: preset.id, base }), name: `${preset.name}/${base}` }))])
+  for (const [mode, theme] of combinations.flatMap(preset => [
+    [`${preset.name} light`, { ...light, ...preset.light }],
+    [`${preset.name} dark`, { ...dark, ...preset.dark }],
+  ])) {
     for (const [fg, bg] of pairs) {
       const a = luminance(theme[fg]), b = luminance(theme[bg])
       const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
